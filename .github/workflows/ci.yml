@@ -1,29 +1,53 @@
-name: CI - Build All Services
+name: Build and Push to GCP
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+
+env:
+  PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
+  REGION: us-central1
+  # This MUST match the repository_id in your infra/main.tf
+  REPO_NAME: ace-agent-repo
 
 jobs:
-  build:
+  build-and-push:
     runs-on: ubuntu-latest
+    
+    # REQUIRED: These permissions allow the Workload Identity handshake
+    permissions:
+      contents: read
+      id-token: write
+
     strategy:
       matrix:
-        # The exact folder names you provided
         service: [backend-go, backend-python, frontend-angular]
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # ADD THIS STEP: It prints the file tree to the logs
-    - name: Debug File Structure
-      run: ls -R
+    # 1. Authenticate to Google Cloud using Workload Identity
+    - name: Google Auth
+      id: auth
+      uses: google-github-actions/auth@v2
+      with:
+        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
 
-    - name: Build ${{ matrix.service }}
-      run: |
-        docker build ./${{ matrix.service }} \
-          --file ./${{ matrix.service }}/Dockerfile \
-          --tag my-app-${{ matrix.service }}:test
+    # 2. Set up the Cloud SDK
+    - name: Set up Cloud SDK
+      uses: google-github-actions/setup-gcloud@v2
+
+    # 3. Configure Docker to talk to Google Artifact Registry
+    - name: Configure Docker Auth
+      run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+    # 4. Build and Push
+    - name: Build and Push ${{ matrix.service }}
+      uses: docker/build-push-action@v5
+      with:
+        context: ./${{ matrix.service }}
+        file: ./${{ matrix.service }}/Dockerfile
+        push: true
+        tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ matrix.service }}:${{ github.sha }}
