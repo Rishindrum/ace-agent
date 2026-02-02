@@ -1,42 +1,49 @@
+version: '3.8'
+
 services:
-  # Service 1: The Brain (Python)
-  ace-brain:
-    image: ace-brain
-    build: ./backend-python  # Build from this folder if image is missing
+  # --- THE BRAIN (Python) ---
+  backend-python:
+    build: ./backend-python
     ports:
       - "50051:50051"
     environment:
-      # Pass your keys securely to the container
-      - GEMINI_API_KEY=AIzaSyDXLu1bUeeat_TXW_ZMYaiaHG-CWRV8wXM
-      - NEO4J_PASSWORD=_PH52Nlyr7AfWYQVsY-DLe3zfmuqT1FSecSzVC8uuHI
-      # (Use the same Connection URI as before)
+      # Force logs to show up immediately
+      - PYTHONUNBUFFERED=1
+      # Pass your keys from your local .env file
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - NEO4J_URI=${NEO4J_URI}
+      - NEO4J_PASSWORD=${NEO4J_PASSWORD}
     networks:
       - ace-network
 
-  # Service 2: The Gateway (Go)
-  ace-gateway:
-    image: ace-gateway
+  # --- THE GATEWAY (Go) ---
+  backend-go:
     build: ./backend-go
     ports:
       - "8080:8080"
     environment:
-      # CRITICAL: Tell Go to talk to the container named 'ace-brain'
-      - TUTOR_SERVICE_ADDR=ace-brain:50051
+      # THE MAGIC: We tell Go to look for "backend-python", not "localhost"
+      - TUTOR_SERVICE_ADDR=backend-python:50051
     depends_on:
-      - ace-brain  # Wait for Python to start before starting Go
+      - backend-python  # Wait for Python to start
     networks:
       - ace-network
 
-  # Service 3: The Frontend (Angular + Nginx)
-  ace-frontend:
-    image: ace-frontend
+  # --- THE FRONTEND (Angular) ---
+  frontend-angular:
     build: ./frontend-angular
     ports:
-      - "80:80"  # Expose on standard HTTP port
+      - "4200:4200"
+    # This command makes sure the server is visible outside the container
+    command: npx ng serve --host 0.0.0.0 --disable-host-check --poll 2000
+    volumes:
+      # "Mount" your folder so you can edit code live (optional but recommended)
+      - ./frontend-angular:/app
+      - /app/node_modules
     networks:
       - ace-network
 
-# Create a private WiFi network for these containers to talk
+# Create the virtual WiFi
 networks:
   ace-network:
     driver: bridge

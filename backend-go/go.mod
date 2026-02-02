@@ -1,6 +1,6 @@
 module ace-agent/backend-go
 
-go 1.25.6
+go 1.25
 
 require (
 	github.com/gorilla/websocket v1.5.3

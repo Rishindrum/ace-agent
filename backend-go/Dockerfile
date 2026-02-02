@@ -1,34 +1,22 @@
-# --- STAGE 1: THE BUILDER ---
-# We start with the official Go image (contains compiler, tools, etc.)
-FROM golang:alpine AS builder
-
-# Set the working directory inside the container
+# Use official Golang image to build the binary
+FROM golang:1.25 AS builder
 WORKDIR /app
 
-# Copy dependency files first (for caching)
-# This way, if you change code but not dependencies, Docker skips downloading them again.
+# Copy module files and download deps
 COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy the rest of the source code
+# Copy source code and build
 COPY . .
+RUN CGO_ENABLED=0 GOOS=linux go build -o ace-gateway main.go
 
-# Build the application
-# -o main: Name the output file 'main'
-# . : Build everything in the current directory
-RUN go build -o main .
-
-# --- STAGE 2: THE RUNNER ---
-# We switch to 'Alpine', a super lightweight Linux (only ~5MB)
+# --- Final Stage (Small Image) ---
 FROM alpine:latest
-
 WORKDIR /root/
+COPY --from=builder /app/ace-gateway .
 
-# Copy only the compiled binary from the 'builder' stage
-COPY --from=builder /app/main .
-
-# Expose port 8080 (Matches your Go code)
+# Expose the port Go runs on
 EXPOSE 8080
 
-# Command to run when the container starts
-CMD ["./main"]
+# Run the binary
+CMD ["./ace-gateway"]
