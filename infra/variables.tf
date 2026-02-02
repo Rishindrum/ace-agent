@@ -13,3 +13,9 @@ variable "repo_name" {
   description = "Artifact Registry Repository Name"
   default     = "ace-agent-repo"
 }
+
+variable "gemini_api_key" {
+  description = "The API key for Google Gemini"
+  type        = string
+  sensitive   = true
+}

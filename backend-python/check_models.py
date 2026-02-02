@@ -1,8 +1,9 @@
 from google import genai
 import os
 
-# PASTE YOUR KEY HERE DIRECTLY FOR THE TEST
-client = genai.Client(api_key="AIzaSyDXLu1bUeeat_TXW_ZMYaiaHG-CWRV8wXM")
+
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+client = genai.Client(api_key=GEMINI_API_KEY)
 
 print("Checking available models...")
 try:

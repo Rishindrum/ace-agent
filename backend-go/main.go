@@ -23,15 +23,28 @@ import (
 // Global gRPC client
 var tutorClient pb.TutorServiceClient
 
-func uploadHandler(w http.ResponseWriter, r *http.Request) {
-	// Allow Angular (localhost:4200) to talk to us
-	w.Header().Set("Access-Control-Allow-Origin", "*")
-	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+// --- NEW FUNCTION: GLOBAL CORS MIDDLEWARE ---
+func enableCORS(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// 1. Allow any origin (Solved your error)
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		// 2. Allow all common methods
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		// 3. Allow ALL standard headers (This fixes the "0 Unknown Error")
+		w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-	if r.Method == "OPTIONS" {
-		return
-	}
+		// 4. Handle Preflight OPTIONS request
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func uploadHandler(w http.ResponseWriter, r *http.Request) {
+	// (You can delete the manual header lines here since the middleware handles it now)
 
 	if r.Method != http.MethodPost {
 		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
@@ -68,11 +81,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 
 	resp, err := tutorClient.ProcessSyllabus(context.Background(), req)
 
-	// --- FIX START: HANDLE PYTHON ERRORS ---
 	if err != nil {
 		log.Printf("[Error] Python Brain failed: %v", err)
 		http.Error(w, "AI Brain Error: "+err.Error(), http.StatusInternalServerError)
-		return // <--- STOP HERE so we don't crash
+		return
 	}
 
 	if resp == nil {
@@ -80,14 +92,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "AI returned no data", http.StatusInternalServerError)
 		return
 	}
-	// --- FIX END ---
 
 	// 4. Send JSON back to Angular
 	w.Header().Set("Content-Type", "application/json")
 
 	var graphData []interface{}
 	if resp.GraphJson != "" {
-		// Safe to unmarshal now because we checked resp != nil
 		json.Unmarshal([]byte(resp.GraphJson), &graphData)
 	}
 
@@ -100,54 +110,49 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 var upgrader = websocket.Upgrader{
-    CheckOrigin: func(r *http.Request) bool {
-        return true 
-    },
+	CheckOrigin: func(r *http.Request) bool {
+		return true
+	},
 }
 
 func wsHandler(w http.ResponseWriter, r *http.Request) {
-    // 1. Upgrade HTTP to WebSocket
-    conn, err := upgrader.Upgrade(w, r, nil)
-    if err != nil {
-        log.Printf("[Error] WebSocket Upgrade Failed: %v", err)
-        return
-    }
-    defer conn.Close()
+	conn, err := upgrader.Upgrade(w, r, nil)
+	if err != nil {
+		log.Printf("[Error] WebSocket Upgrade Failed: %v", err)
+		return
+	}
+	defer conn.Close()
 
-    log.Println("[Go] Client connected to Chat")
+	log.Println("[Go] Client connected to Chat")
 
-    for {
-        // 2. Read Message from Angular
-        _, msg, err := conn.ReadMessage()
-        if err != nil {
-            log.Printf("[Go] Client disconnected: %v", err)
-            break
-        }
-        
-        log.Printf("[Go] Received: %s", msg)
+	for {
+		_, msg, err := conn.ReadMessage()
+		if err != nil {
+			log.Printf("[Go] Client disconnected: %v", err)
+			break
+		}
 
-        // 3. Call Python Brain (gRPC)
-        // Create a context with a timeout so it doesn't hang forever
-        ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-        
-        grpcReq := &pb.ChatRequest{Message: string(msg)}
-        resp, err := tutorClient.Chat(ctx, grpcReq)
-        cancel() // Clean up context
+		log.Printf("[Go] Received: %s", msg)
 
-        var reply string
-        if err != nil {
-            log.Printf("[Error] gRPC to Brain failed: %v", err)
-            reply = "I'm having trouble reaching my brain right now."
-        } else {
-            reply = resp.Response
-        }
+		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
-        // 4. Write Response back to Angular
-        if err := conn.WriteMessage(websocket.TextMessage, []byte(reply)); err != nil {
-            log.Printf("[Error] Write to Client failed: %v", err)
-            break
-        }
-    }
+		grpcReq := &pb.ChatRequest{Message: string(msg)}
+		resp, err := tutorClient.Chat(ctx, grpcReq)
+		cancel()
+
+		var reply string
+		if err != nil {
+			log.Printf("[Error] gRPC to Brain failed: %v", err)
+			reply = "I'm having trouble reaching my brain right now."
+		} else {
+			reply = resp.Response
+		}
+
+		if err := conn.WriteMessage(websocket.TextMessage, []byte(reply)); err != nil {
+			log.Printf("[Error] Write to Client failed: %v", err)
+			break
+		}
+	}
 }
 
 func main() {
@@ -159,19 +164,14 @@ func main() {
 
 	var opts []grpc.DialOption
 
-	// 2. SMART SWITCH:
-	// If we are on localhost, use Insecure.
-	// If we are on Cloud (address doesn't contain 'localhost'), use Secure TLS.
 	if strings.Contains(tutorAddr, "localhost") {
 		log.Println("[Go] Using INSECURE connection (Localhost)")
 		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
 	} else {
 		log.Println("[Go] Using SECURE connection (Cloud)")
-		// Use system certificates (like your browser does)
 		creds := credentials.NewTLS(&tls.Config{})
 		opts = append(opts, grpc.WithTransportCredentials(creds))
 
-		// Ensure we connect to port 443 (HTTPS) if no port is specified
 		if !strings.Contains(tutorAddr, ":") {
 			tutorAddr = tutorAddr + ":443"
 		}
@@ -188,11 +188,11 @@ func main() {
 	// B. Start HTTP Server for Angular
 	mux := http.NewServeMux()
 	mux.HandleFunc("/upload", uploadHandler)
-	// NEW ROUTE
 	mux.HandleFunc("/ws", wsHandler)
 
 	fmt.Println("[Go] Gateway running on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+
+	if err := http.ListenAndServe(":8080", enableCORS(mux)); err != nil {
 		log.Fatal(err)
 	}
 }

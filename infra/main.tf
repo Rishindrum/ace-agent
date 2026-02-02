@@ -41,6 +41,16 @@ resource "google_cloud_run_service" "backend_python" {
     spec {
       containers {
         image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repo_name}/backend-python:latest"
+
+        env {
+          name = "GEMINI_API_KEY"
+          value = var.gemini_api_key
+        }
+
+        ports {
+          container_port = 50051
+          name           = "h2c"  # <--- Critical for gRPC!
+        }
       }
     }
   }
@@ -55,6 +65,10 @@ resource "google_cloud_run_service" "frontend" {
     spec {
       containers {
         image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.repo_name}/frontend-angular:latest"
+
+        ports {
+          container_port = 80
+        }
       }
     }
   }
