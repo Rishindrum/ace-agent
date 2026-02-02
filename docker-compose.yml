@@ -1,0 +1,42 @@
+services:
+  # Service 1: The Brain (Python)
+  ace-brain:
+    image: ace-brain
+    build: ./backend-python  # Build from this folder if image is missing
+    ports:
+      - "50051:50051"
+    environment:
+      # Pass your keys securely to the container
+      - GEMINI_API_KEY=AIzaSyDXLu1bUeeat_TXW_ZMYaiaHG-CWRV8wXM
+      - NEO4J_PASSWORD=_PH52Nlyr7AfWYQVsY-DLe3zfmuqT1FSecSzVC8uuHI
+      # (Use the same Connection URI as before)
+    networks:
+      - ace-network
+
+  # Service 2: The Gateway (Go)
+  ace-gateway:
+    image: ace-gateway
+    build: ./backend-go
+    ports:
+      - "8080:8080"
+    environment:
+      # CRITICAL: Tell Go to talk to the container named 'ace-brain'
+      - TUTOR_SERVICE_ADDR=ace-brain:50051
+    depends_on:
+      - ace-brain  # Wait for Python to start before starting Go
+    networks:
+      - ace-network
+
+  # Service 3: The Frontend (Angular + Nginx)
+  ace-frontend:
+    image: ace-frontend
+    build: ./frontend-angular
+    ports:
+      - "80:80"  # Expose on standard HTTP port
+    networks:
+      - ace-network
+
+# Create a private WiFi network for these containers to talk
+networks:
+  ace-network:
+    driver: bridge
