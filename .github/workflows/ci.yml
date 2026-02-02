@@ -50,4 +50,6 @@ jobs:
         context: ./${{ matrix.service }}
         file: ./${{ matrix.service }}/Dockerfile
         push: true
-        tags: ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ matrix.service }}:${{ github.sha }}
+        tags: |
+          ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ matrix.service }}:${{ github.sha }}
+          ${{ env.REGION }}-docker.pkg.dev/${{ env.PROJECT_ID }}/${{ env.REPO_NAME }}/${{ matrix.service }}:latest
