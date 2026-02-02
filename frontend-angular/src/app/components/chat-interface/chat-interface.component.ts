@@ -45,7 +45,7 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     this.socket.onopen = () => {
       console.log('Connected to Chat Server');
       this.messages.push({
-        text: "Connected to Gemini 2.0 Brain. Ready to chat.", 
+        text: "Connected to Gemini 2.5 Brain. Ready to chat.", 
         sender: 'bot', 
         timestamp: new Date()
       });

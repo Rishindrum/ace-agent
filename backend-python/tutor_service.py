@@ -1,6 +1,7 @@
 import grpc
 from concurrent import futures
 import time
+print("DEBUG: Python is starting...", file=sys.stderr)
 import os
 import json
 import io
