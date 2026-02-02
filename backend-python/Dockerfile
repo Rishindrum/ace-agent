@@ -12,7 +12,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Expose the port Python runs on
-EXPOSE 50051
+EXPOSE 8080
 
 # Run the application (Make sure to force unbuffered logs!)
 CMD ["python", "-u", "tutor_service.py"]

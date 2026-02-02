@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"strings"
 
 	pb "ace-agent/backend-go/proto"
 
@@ -147,10 +148,28 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	tutorAddr := os.Getenv("TUTOR_SERVICE_ADDR")
-	if tutorAddr == "" {
-		tutorAddr = "localhost:50051"
-	}
+	// 1. Check for the full Cloud URL first
+    tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
+
+    // 2. Fallback to the Docker address if Cloud URL is missing
+    if tutorAddr == "" {
+        tutorAddr = os.Getenv("TUTOR_SERVICE_ADDR")
+    }
+
+    // 3. Fallback to Localhost
+    if tutorAddr == "" {
+        tutorAddr = "localhost:50051"
+    }
+
+    // 4. CLEANUP: Strip "https://" because gRPC Dial needs just the hostname
+    tutorAddr = strings.Replace(tutorAddr, "https://", "", 1)
+    tutorAddr = strings.Replace(tutorAddr, "http://", "", 1)
+
+    // 5. PORT LOGIC: If there is no colon (:) in the address, it's a Cloud Run URL.
+    // Cloud Run services listen on port 443 (HTTPS) externally.
+    if !strings.Contains(tutorAddr, ":") {
+        tutorAddr = tutorAddr + ":443"
+    }
 
 	log.Printf("[Go] Connecting to Brain at: %s", tutorAddr)
 
