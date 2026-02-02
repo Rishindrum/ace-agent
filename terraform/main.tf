@@ -23,10 +23,6 @@ resource "google_cloud_run_v2_service" "backend_python" {
       # We start with a dummy image so Terraform can build the "House" 
       # before we move the "Furniture" (your code) in.
       image = "us-docker.pkg.dev/cloudrun/container/hello"
-      
-      ports {
-        container_port = 50051
-      }
 
       # Environment Variables (Secrets should strictly go to Secret Manager later)
       env {

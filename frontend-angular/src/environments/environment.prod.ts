@@ -1,8 +1,7 @@
 export const environment = {
   production: true,
-  // The HTTP URL for file uploads (Use the URL you just gave me)
-  apiUrl: 'https://backend-go-31441781562.us-central1.run.app',
-  
-  // The WebSocket URL for chat (Replace 'https' with 'wss')
-  wsUrl: 'wss://backend-go-31441781562.us-central1.run.app/ws'
+  // HTTP URL (for Uploads)
+  apiUrl: 'https://backend-go-4ro4x4eu2q-uc.a.run.app', 
+  // WebSocket URL (for Chat) - Note the 'wss://'
+  wsUrl: 'wss://backend-go-4ro4x4eu2q-uc.a.run.app'
 };

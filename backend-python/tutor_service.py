@@ -288,16 +288,21 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         raise Exception("Gemini remains overloaded after max retries.")
 
 def serve():
+    # 1. Get the port from the environment (Google sets this)
+    # Default to 50051 only if we are running locally
+    port = os.environ.get('PORT', '50051')
+    
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     ace_pb2_grpc.add_TutorServiceServicer_to_server(TutorService(), server)
-    server.add_insecure_port('[::]:50051')
-    print("[Python] Gemini 2.5 Brain is running on port 50051...")
+    
+    # 2. BIND TO 0.0.0.0 (Extremely important for Cloud Run)
+    bind_addr = f'0.0.0.0:{port}'
+    
+    server.add_insecure_port(bind_addr)
+    print(f"[Python] Listening on {bind_addr}")
+    
     server.start()
-    try:
-        while True:
-            time.sleep(86400)
-    except KeyboardInterrupt:
-        server.stop(0)
+    server.wait_for_termination()
 
 if __name__ == '__main__':
     serve()
