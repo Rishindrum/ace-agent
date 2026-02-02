@@ -1,4 +1,4 @@
-name: CI - Build Test
+name: CI - Build All Services
 
 on:
   push:
@@ -7,14 +7,19 @@ on:
     branches: [ "main" ]
 
 jobs:
-  docker-build:
+  build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        # The exact folder names you provided
+        service: [backend-go, backend-python, frontend-angular]
+
     steps:
-    # 1. Checkout your code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Build the Docker image (Dry Run)
-    # This verifies the Dockerfile is valid and the image builds successfully.
-    - name: Build Docker Image
-      run: docker build . --file Dockerfile --tag my-app:test
+    - name: Build ${{ matrix.service }}
+      run: |
+        docker build ./${{ matrix.service }} \
+          --file ./${{ matrix.service }}/Dockerfile \
+          --tag my-app-${{ matrix.service }}:test
