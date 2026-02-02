@@ -1,0 +1,20 @@
+.graph-container {
+  height: 600px; /* Fixed height is mandatory */
+  width: 100%;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #fafafa;
+  margin-top: 20px;
+  overflow: hidden; /* Keeps bubbles inside */
+  position: relative;
+}
+
+.empty-state {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: #888;
+  font-size: 1.2rem;
+  font-weight: 500;
+}

@@ -1,0 +1,87 @@
+.chat-container {
+  display: flex;            // Use Flexbox layout
+  flex-direction: column;   // Stack items vertically (History on top, Input on bottom)
+  height: 600px;            // Fixed height matches the Graph container
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  background-color: #ffffff;
+  overflow: hidden;         // Keep everything inside the rounded corners
+}
+
+// --- 1. MESSAGE HISTORY ---
+.messages-list {
+  flex: 1;                  // Take up ALL available space (push input to bottom)
+  padding: 20px;
+  overflow-y: auto;         // Enable scrolling if messages get too long
+  display: flex;
+  flex-direction: column;   // Stack messages vertically
+  gap: 10px;                // Space between bubbles
+}
+
+// --- 2. THE BUBBLES ---
+.message-bubble {
+  max-width: 70%;           // Don't let bubbles stretch full width
+  padding: 10px 15px;
+  border-radius: 18px;      // Round corners like iMessage
+  font-size: 14px;
+  line-height: 1.4;
+  position: relative;
+  
+  p { margin: 0; }
+  
+  .timestamp {
+    display: block;
+    font-size: 10px;
+    margin-top: 4px;
+    opacity: 0.7;
+    text-align: right;
+  }
+}
+
+// Different colors for User vs Bot
+.user-msg {
+  align-self: flex-end;     // Push to the RIGHT
+  background-color: #3f51b5; // Indigo (Matches your theme)
+  color: white;
+  border-bottom-right-radius: 4px; // Small corner for style
+}
+
+.bot-msg {
+  align-self: flex-start;   // Push to the LEFT
+  background-color: #f1f0f0; // Light Gray
+  color: #333;
+  border-bottom-left-radius: 4px;
+}
+
+// --- 3. INPUT AREA ---
+.input-area {
+  display: flex;
+  padding: 10px;
+  border-top: 1px solid #eee;
+  background-color: #fafafa;
+
+  input {
+    flex: 1;                // Take up all remaining width
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    margin-right: 10px;
+    
+    &:focus {
+      border-color: #3f51b5; // Highlight blue when typing
+    }
+  }
+
+  button {
+    background: none;
+    border: none;
+    color: #3f51b5;
+    cursor: pointer;
+    
+    &:disabled {
+      color: #ccc;
+      cursor: not-allowed;
+    }
+  }
+}

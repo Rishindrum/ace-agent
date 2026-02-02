@@ -1,0 +1,41 @@
+<div class="graph-container">
+  <div *ngIf="nodes && nodes.length > 0; else noData" style="height: 100%; width: 100%;">
+    <ngx-graph
+      class="chart-container"
+      [view]="[800, 600]"
+      [links]="links"
+      [nodes]="nodes"
+      [curve]="curve"
+      [showMiniMap]="true"
+      [autoZoom]="true"
+      [autoCenter]="true">
+
+      <ng-template #nodeTemplate let-node>
+        <svg:g class="node">
+          <svg:circle [attr.r]="40" fill="#3f51b5"></svg:circle>
+          <svg:text dy=".35em" fill="white" text-anchor="middle" font-size="12px" font-weight="bold">
+             {{ node.label.length > 15 ? node.label.substring(0, 15) + '...' : node.label }}
+          </svg:text>
+        </svg:g>
+      </ng-template>
+
+      <ng-template #linkTemplate let-link>
+        <svg:g class="edge">
+          <svg:path class="line" stroke-width="2" marker-end="url(#arrow)"></svg:path>
+          <svg:text class="edge-label" text-anchor="middle">
+            <textPath [attr.href]="'#' + link.id" startOffset="50%">
+              {{ link.label }}
+            </textPath>
+          </svg:text>
+        </svg:g>
+      </ng-template>
+
+    </ngx-graph>
+  </div>
+
+  <ng-template #noData>
+    <div class="empty-state">
+      <p>Upload a syllabus to see the Knowledge Graph.</p>
+    </div>
+  </ng-template>
+</div>

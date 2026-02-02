@@ -1,0 +1,34 @@
+<mat-card class="upload-card">
+  <mat-card-header>
+    <mat-card-title>Syllabus Ingestion</mat-card-title>
+    <mat-card-subtitle>Upload a PDF to build the Knowledge Graph</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="file-input-container">
+      <button mat-raised-button color="primary" (click)="fileInput.click()">
+        <mat-icon>attach_file</mat-icon>
+        Select File
+      </button>
+      <input hidden (change)="onFileSelected($event)" #fileInput type="file" accept=".pdf">
+      
+      <span class="file-name" *ngIf="selectedFile">
+        {{ selectedFile.name }}
+      </span>
+    </div>
+
+    <mat-progress-bar mode="indeterminate" *ngIf="isLoading"></mat-progress-bar>
+    
+    <div class="status-message success-msg" *ngIf="responseMessage">
+      {{ responseMessage }}
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-flat-button color="accent" 
+            [disabled]="!selectedFile || isLoading" 
+            (click)="onUpload()">
+      Generate Graph
+    </button>
+  </mat-card-actions>
+</mat-card>

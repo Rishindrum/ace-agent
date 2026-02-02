@@ -1,0 +1,27 @@
+<div class="chat-container">
+  
+  <div class="messages-list">
+    <div *ngFor="let msg of messages" 
+         class="message-bubble" 
+         [ngClass]="{'user-msg': msg.sender === 'user', 'bot-msg': msg.sender === 'bot'}">
+      
+      <p>{{ msg.text }}</p>
+      
+      <span class="timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <input 
+      type="text" 
+      placeholder="Ask a question about the syllabus..." 
+      [(ngModel)]="newMessage" 
+      (keyup.enter)="sendMessage()"
+    >
+    
+    <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+      <mat-icon>send</mat-icon>
+    </button>
+  </div>
+
+</div>
