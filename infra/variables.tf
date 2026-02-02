@@ -19,3 +19,11 @@ variable "gemini_api_key" {
   type        = string
   sensitive   = true
 }
+
+variable "neo4j_uri" {
+  type = string
+}
+variable "neo4j_password" {
+  type      = string
+  sensitive = true
+}

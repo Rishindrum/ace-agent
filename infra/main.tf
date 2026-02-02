@@ -47,6 +47,19 @@ resource "google_cloud_run_service" "backend_python" {
           value = var.gemini_api_key
         }
 
+        env {
+          name  = "NEO4J_URI"
+          value = var.neo4j_uri
+        }
+        env {
+          name  = "NEO4J_USERNAME"
+          value = "neo4j"
+        }
+        env {
+          name  = "NEO4J_PASSWORD"
+          value = var.neo4j_password
+        }
+
         ports {
           container_port = 50051
           name           = "h2c"  # <--- Critical for gRPC!
