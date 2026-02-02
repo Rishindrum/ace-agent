@@ -14,10 +14,9 @@ jobs:
   build-and-push:
     runs-on: ubuntu-latest
     
-    # REQUIRED: These permissions allow the Workload Identity handshake
+    # We removed 'id-token: write' because the JSON key doesn't need it
     permissions:
       contents: read
-      id-token: write
 
     strategy:
       matrix:
@@ -27,13 +26,12 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 1. Authenticate to Google Cloud using Workload Identity
+    # CHANGED: Authenticate using the JSON Key secret
     - name: Google Auth
       id: auth
       uses: google-github-actions/auth@v2
       with:
-        workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
-        service_account: ${{ secrets.GCP_SERVICE_ACCOUNT }}
+        credentials_json: ${{ secrets.GCP_SA_KEY }}
 
     # 2. Set up the Cloud SDK
     - name: Set up Cloud SDK
@@ -43,7 +41,7 @@ jobs:
     - name: Configure Docker Auth
       run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
 
-    # 4. Build and Push
+    # 4. Build and Push (With both SHA and Latest tags)
     - name: Build and Push ${{ matrix.service }}
       uses: docker/build-push-action@v5
       with:
