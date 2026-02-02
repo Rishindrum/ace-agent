@@ -64,6 +64,17 @@ resource "google_cloud_run_service" "backend_python" {
           container_port = 50051
           name           = "h2c"  # <--- Critical for gRPC!
         }
+
+        startup_probe {
+          initial_delay_seconds = 10   # Wait 10s before first check
+          timeout_seconds       = 5    # Give each check 5s to respond
+          period_seconds        = 10   # Check every 10s
+          failure_threshold     = 10   # Allow 10 fails (Total ~100s buffer)
+          
+          tcp_socket {
+            port = 50051  # Explicitly check the gRPC port
+          }
+        }
       }
     }
   }
