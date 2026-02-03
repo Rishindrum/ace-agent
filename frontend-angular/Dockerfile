@@ -12,5 +12,5 @@ FROM nginx:alpine
 COPY --from=build /app/dist/frontend-angular/browser /usr/share/nginx/html
 # Copy a custom Nginx config for Angular routing
 COPY nginx.conf /etc/nginx/conf.d/default.conf
-EXPOSE 80
+EXPOSE 8080
 CMD ["nginx", "-g", "daemon off;"]

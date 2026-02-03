@@ -34,7 +34,7 @@ services:
   frontend-angular:
     build: ./frontend-angular
     ports:
-      - "4200:4200"
+      - "4200:8080"
     # This command makes sure the server is visible outside the container
     command: npx ng serve --host 0.0.0.0 --disable-host-check --poll 2000
     volumes:
