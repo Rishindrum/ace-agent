@@ -65,5 +65,7 @@ jobs:
           service: backend-go
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-go:latest
           region: us-central1
+          # Use env_vars to explicitly pass the URL captured in Step 5
           env_vars: |
             PYTHON_SERVICE_URL=${{ env.PYTHON_URL }}
+            TUTOR_SERVICE_ADDR=backend-python:443
