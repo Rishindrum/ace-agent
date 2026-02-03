@@ -88,4 +88,4 @@ jobs:
           service: frontend-angular
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/frontend-angular:latest
           region: us-central1
-          flags: --allow-unauthenticated
+          flags: --allow-unauthenticated --verbosity=debug
