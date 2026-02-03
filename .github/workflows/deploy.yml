@@ -69,3 +69,23 @@ jobs:
           env_vars: |
             PYTHON_SERVICE_URL=${{ env.PYTHON_URL }}
             TUTOR_SERVICE_ADDR=backend-python:443
+      
+      # 7. Get Go Gateway URL
+      - name: Get Go URL
+        run: echo "GO_URL=$(gcloud run services describe backend-go --region us-central1 --format 'value(status.url)')" >> $GITHUB_ENV
+
+      # 8. Build & Push Frontend
+      - name: Build and Push Frontend
+        run: |
+          IMAGE_URL=us-central1-docker.pkg.dev/$PROJECT_ID/$REPO_NAME/frontend-angular:latest
+          docker build -t $IMAGE_URL ./frontend-angular
+          docker push $IMAGE_URL
+
+      # 9. Deploy Frontend to Cloud Run
+      - name: Deploy Frontend
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          service: frontend-angular
+          image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/frontend-angular:latest
+          region: us-central1
+          flags: --allow-unauthenticated

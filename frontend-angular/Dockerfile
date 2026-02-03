@@ -1,14 +1,16 @@
-# Use Node image
-FROM node:18-alpine
-
+# Stage 1: Build the Angular app
+FROM node:18-alpine AS build
 WORKDIR /app
-
-# Copy package files and install deps
 COPY package*.json ./
 RUN npm install
-
-# Copy source code
 COPY . .
+RUN npx ng build --configuration production
 
-# Run ng serve, exposing it to the outside (0.0.0.0)
-CMD ["npx", "ng", "serve", "--host", "0.0.0.0", "--disable-host-check"]
+# Stage 2: Serve with Nginx
+FROM nginx:alpine
+# Copy the built files to Nginx's public folder
+COPY --from=build /app/dist/ace-agent-frontend /usr/share/nginx/html
+# Copy a custom Nginx config for Angular routing
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
