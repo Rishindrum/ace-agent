@@ -8,18 +8,11 @@ import { environment } from '../../environments/environment';
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = environment.production 
-    ? environment.apiUrl + '/upload' 
-    : environment.apiUrl;
+  // Keep these as the "Base" only
+  private baseUrl = environment.apiUrl; 
+  private wsBaseUrl = environment.wsUrl;
 
-  private wsUrl = environment.wsUrl;
-
-  // 1. Create the store (The "Radio Station")
-  // We start with null because there is no graph yet.
   private graphDataSubject = new BehaviorSubject<any>(null);
-  
-  // 2. Expose it as an Observable (The "Broadcast")
-  // Components will subscribe to this to get updates.
   public currentGraphData = this.graphDataSubject.asObservable();
 
   constructor(private http: HttpClient) { }
@@ -27,14 +20,17 @@ export class ApiService {
   uploadSyllabus(file: File): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post(`${this.apiUrl}`, formData);
+    
+    // EXPLICITLY add /upload here. 
+    // This ensures it works in both dev and prod.
+    return this.http.post(`${this.baseUrl}/upload`, formData);
   }
 
   getChatSocket(): WebSocket {
-    return new WebSocket(this.wsUrl);
+    // EXPLICITLY add /ws here.
+    return new WebSocket(`${this.wsBaseUrl}/ws`);
   }
-  // 3. Method to update the data
-  // Call this when we get new data from the backend.
+
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);
   }

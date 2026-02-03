@@ -15,6 +15,7 @@ import (
 	"github.com/gorilla/websocket"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/credentials"
 )
 
 // Global gRPC client
@@ -148,40 +149,39 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// 1. Check for the full Cloud URL first
-    tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
-
-    // 2. Fallback to the Docker address if Cloud URL is missing
-    if tutorAddr == "" {
-        tutorAddr = os.Getenv("TUTOR_SERVICE_ADDR")
-    }
-
-    // 3. Fallback to Localhost
+	tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
     if tutorAddr == "" {
         tutorAddr = "localhost:50051"
     }
 
-    // 4. CLEANUP: Strip "https://" because gRPC Dial needs just the hostname
+    // 1. Strip the protocol
     tutorAddr = strings.Replace(tutorAddr, "https://", "", 1)
     tutorAddr = strings.Replace(tutorAddr, "http://", "", 1)
 
-    // 5. PORT LOGIC: If there is no colon (:) in the address, it's a Cloud Run URL.
-    // Cloud Run services listen on port 443 (HTTPS) externally.
-    if !strings.Contains(tutorAddr, ":") {
-        tutorAddr = tutorAddr + ":443"
+    // 2. Cloud Run gRPC logic
+    var opts []grpc.DialOption
+    
+    if strings.Contains(tutorAddr, "run.app") {
+        // IN THE CLOUD: We need to use "NewClient" and the correct transport credentials
+        // Cloud Run expects TLS (443) but we must use system certs
+        log.Printf("[Go] Using Secure Cloud Credentials for: %s", tutorAddr)
+        
+        creds := credentials.NewClientTLSFromCert(nil, "")
+        opts = append(opts, grpc.WithTransportCredentials(creds))
+        
+        if !strings.Contains(tutorAddr, ":") {
+            tutorAddr = tutorAddr + ":443"
+        }
+    } else {
+        // LOCAL: Use Insecure
+        log.Printf("[Go] Using Insecure Credentials for local: %s", tutorAddr)
+        opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
     }
 
-	log.Printf("[Go] Connecting to Brain at: %s", tutorAddr)
-
-	// --- THE FIX IS HERE ---
-	// FORCE INSECURE. Do not use "Smart Switches". Do not use TLS.
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-
-	conn, err := grpc.Dial(tutorAddr, opts...)
-	if err != nil {
-		log.Fatalf("did not connect: %v", err)
-	}
+    conn, err := grpc.NewClient(tutorAddr, opts...) // Use NewClient instead of Dial
+    if err != nil {
+        log.Fatalf("did not connect: %v", err)
+    }
 	tutorClient = pb.NewTutorServiceClient(conn)
 
 	// Start Server
