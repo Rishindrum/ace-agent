@@ -10,6 +10,7 @@ from sklearn.metrics.pairwise import cosine_similarity # <--- For calculating "c
 from google import genai
 from neo4j import GraphDatabase
 from pypdf import PdfReader
+from google.cloud import storage
 
 # --- IMPORTS ---
 import ace_pb2 as ace_pb2
@@ -20,14 +21,24 @@ NEO4J_URI = os.getenv("NEO4J_URI", "neo4j+s://961ec8b5.databases.neo4j.io") # De
 NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD") # Must be provided by Docker
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Must be provided by Docker
+GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "ace-agent-brain-bucket")
 client = genai.Client(api_key=GEMINI_API_KEY)
 
-# --- CUSTOM VECTOR STORE (The Interview Flex) ---
-class SimpleVectorStore:
+
+class PersistentVectorStore:
     def __init__(self, storage_file="ace_brain.pkl"):
         self.storage_file = storage_file
         self.documents = []
         self.vectors = None
+
+        try:
+            self.storage_client = storage.Client()
+            self.bucket = self.storage_client.bucket(GCS_BUCKET_NAME)
+            print(f"[VectorStore] Connected to GCS Bucket: {GCS_BUCKET_NAME}")
+        except Exception as e:
+            print(f"[VectorStore] WARNING: GCS connection failed. Running in local-only mode. Error: {e}")
+            self.bucket = None
+
         self.load() # Try to load existing memory on startup
 
     def add_documents(self, chunks):
@@ -35,16 +46,15 @@ class SimpleVectorStore:
         print(f"[VectorStore] Embedding {len(chunks)} chunks (this may take a moment)...")
         
         try:
-            # Create Embeddings
+            # Create Embeddings (with gemini)
             result = client.models.embed_content(
                 model="text-embedding-004",
                 contents=chunks
             )
             self.vectors = np.array([e.values for e in result.embeddings])
             
-            # SAVE to disk immediately
+            # SAVE to disk and cloud
             self.save()
-            print(f"[VectorStore] Brain saved to {self.storage_file}")
             
         except Exception as e:
             print(f"[VectorStore] Embedding Error: {e}")
@@ -74,8 +84,30 @@ class SimpleVectorStore:
         with open(self.storage_file, 'wb') as f:
             pickle.dump({'docs': self.documents, 'vecs': self.vectors}, f)
 
+        # 2. Upload to GCS
+        if self.bucket:
+            try:
+                blob = self.bucket.blob(f"indices/{self.storage_file}")
+                blob.upload_from_filename(self.storage_file)
+                print(f"[VectorStore] SUCCESSFULLY UPLOADED brain to GCS: indices/{self.storage_file}")
+            except Exception as e:
+                print(f"[VectorStore] GCS Upload Failed: {e}")
+
     def load(self):
         """Loads state from a file if it exists"""
+        loaded = False
+
+        # Get from cloud
+        if self.bucket:
+            try:
+                blob = self.bucket.blob(f"indices/{self.storage_file}")
+                if blob.exists():
+                    print("[VectorStore] Found brain in Cloud! Downloading...")
+                    blob.download_to_filename(self.storage_file)
+                    loaded = True
+            except Exception as e:
+                print(f"[VectorStore] GCS Download failed: {e}")
+
         if os.path.exists(self.storage_file):
             try:
                 with open(self.storage_file, 'rb') as f:
@@ -87,12 +119,16 @@ class SimpleVectorStore:
                 print(f"[VectorStore] Could not load memory: {e}")
 
 # Initialize the store
-vector_store = SimpleVectorStore()
+vector_store = PersistentVectorStore()
 
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
         print("[Python] Connecting to Graph Database...")
-        self.driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+        try:
+            self.driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+            self.driver.verify_connectivity()
+        except Exception as e:
+            print(f"[Python] WARNING: Neo4j Connection FAILED.")
 
     def ProcessSyllabus(self, request, context):
         print(f"[Python] Processing syllabus: {request.file_name}")
@@ -124,29 +160,36 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         Text: {full_text[:5000]}
         """
 
+        # 3. EXTRACT GRAPH (Only if Neo4j is alive)
         concepts = []
-        try:
-            # --- UPDATE: USE RETRY HELPER ---
-            response = self._generate_with_retry(
-                model_name='gemini-2.5-flash',
-                contents=prompt,
-                config={'response_mime_type': 'application/json'}
-            )
-            # --------------------------------
-            
-            data = json.loads(response.text)
-            concepts = data.get("concepts", [])
-        except Exception as e:
-            print(f"[Python] AI Graph Error: {e}")
-
-        # 4. STORE IN NEO4J
-        if concepts:
-            with self.driver.session() as session:
-                session.execute_write(self._create_dynamic_nodes, request.file_name, concepts)
+        if self.driver:
+            print("[Python] Extraction Graph with Gemini...")
+            prompt = f"""
+            Extract the knowledge graph from this course.
+            Return JSON with this EXACT schema:
+            {{ "concepts": [ {{ "name": "Concept Name", "prerequisites": ["Prereq 1"] }} ] }}
+            Text: {full_text[:5000]}
+            """
+            try:
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash-lite',
+                    contents=prompt,
+                    config={'response_mime_type': 'application/json'}
+                )
+                data = json.loads(response.text)
+                concepts = data.get("concepts", [])
+                
+                # Write to Neo4j
+                with self.driver.session() as session:
+                    session.execute_write(self._create_dynamic_nodes, request.file_name, concepts)
+            except Exception as e:
+                print(f"[Python] Graph Logic Error: {e}")
+        else:
+            print("[Python] Skipping Graph Extraction (DB Down)")
 
         return ace_pb2.SyllabusResponse(
             success=True,
-            message=f"Analyzed {request.file_name} & Memorized Content",
+            message=f"Processed {request.file_name}",
             nodes_created=len(concepts),
             graph_json=json.dumps(concepts)
         )
@@ -156,6 +199,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         Searches the Knowledge Graph for topics mentioned in the user's text.
         Returns a string describing the relationships.
         """
+        if not self.driver:
+            return ""
         graph_context = []
         with self.driver.session() as session:
             # Cypher Query: Find any Topic node whose name is mentioned in the User's text

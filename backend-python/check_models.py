@@ -2,7 +2,7 @@ from google import genai
 import os
 
 
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+GEMINI_API_KEY = "AIzaSyB0EFVRE65_OLadbFq6F9LRHGmezKcbAPE"
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 print("Checking available models...")
