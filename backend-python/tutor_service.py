@@ -48,7 +48,7 @@ class PersistentVectorStore:
         try:
             # Create Embeddings (with gemini)
             result = client.models.embed_content(
-                model="text-embedding-004",
+                model="gemini-embedding-001",
                 contents=chunks
             )
             self.vectors = np.array([e.values for e in result.embeddings])
@@ -66,7 +66,7 @@ class PersistentVectorStore:
 
         # Embed query
         q_result = client.models.embed_content(
-            model="text-embedding-004",
+            model="gemini-embedding-001",
             contents=query
         )
         query_vector = np.array([q_result.embeddings[0].values])
