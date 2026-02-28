@@ -5,7 +5,7 @@ import warnings
 
 import ace_pb2 as ace__pb2
 
-GRPC_GENERATED_VERSION = '1.68.1'
+GRPC_GENERATED_VERSION = '1.76.0'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in ace_pb2_grpc.py depends on'
+        + ' but the generated code in ace_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -44,6 +44,16 @@ class TutorServiceStub(object):
                 request_serializer=ace__pb2.ChatRequest.SerializeToString,
                 response_deserializer=ace__pb2.ChatResponse.FromString,
                 _registered_method=True)
+        self.SubmitQuizResult = channel.unary_unary(
+                '/ace.TutorService/SubmitQuizResult',
+                request_serializer=ace__pb2.QuizResultRequest.SerializeToString,
+                response_deserializer=ace__pb2.QuizResultResponse.FromString,
+                _registered_method=True)
+        self.GenerateAdaptiveQuiz = channel.unary_unary(
+                '/ace.TutorService/GenerateAdaptiveQuiz',
+                request_serializer=ace__pb2.AdaptiveQuizRequest.SerializeToString,
+                response_deserializer=ace__pb2.AdaptiveQuizResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer(object):
@@ -61,6 +71,18 @@ class TutorServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SubmitQuizResult(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GenerateAdaptiveQuiz(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -73,6 +95,16 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.Chat,
                     request_deserializer=ace__pb2.ChatRequest.FromString,
                     response_serializer=ace__pb2.ChatResponse.SerializeToString,
+            ),
+            'SubmitQuizResult': grpc.unary_unary_rpc_method_handler(
+                    servicer.SubmitQuizResult,
+                    request_deserializer=ace__pb2.QuizResultRequest.FromString,
+                    response_serializer=ace__pb2.QuizResultResponse.SerializeToString,
+            ),
+            'GenerateAdaptiveQuiz': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateAdaptiveQuiz,
+                    request_deserializer=ace__pb2.AdaptiveQuizRequest.FromString,
+                    response_serializer=ace__pb2.AdaptiveQuizResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -129,6 +161,60 @@ class TutorService(object):
             '/ace.TutorService/Chat',
             ace__pb2.ChatRequest.SerializeToString,
             ace__pb2.ChatResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SubmitQuizResult(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/SubmitQuizResult',
+            ace__pb2.QuizResultRequest.SerializeToString,
+            ace__pb2.QuizResultResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateAdaptiveQuiz(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GenerateAdaptiveQuiz',
+            ace__pb2.AdaptiveQuizRequest.SerializeToString,
+            ace__pb2.AdaptiveQuizResponse.FromString,
             options,
             channel_credentials,
             insecure,

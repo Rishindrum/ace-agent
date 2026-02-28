@@ -7,6 +7,8 @@ option go_package = "pb/proto";
 service TutorService {
   rpc ProcessSyllabus (SyllabusRequest) returns (SyllabusResponse);
   rpc Chat (ChatRequest) returns (ChatResponse);
+  rpc SubmitQuizResult (QuizResultRequest) returns (QuizResultResponse);
+  rpc GenerateAdaptiveQuiz (AdaptiveQuizRequest) returns (AdaptiveQuizResponse);
 }
 
 message SyllabusRequest {
@@ -28,4 +30,27 @@ message ChatRequest {
 
 message ChatResponse {
   string response = 1;     // The AI's answer
+}
+
+// Sent by UI when a student finishes a quiz
+message QuizResultRequest {
+  string user_id = 1;
+  string topic_name = 2;
+  int32 score = 3; 
+}
+
+message QuizResultResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+// Sent by UI when a student clicks "Generate Review Quiz"
+message AdaptiveQuizRequest {
+  string user_id = 1;
+  string syllabus_name = 2; // Which class are they studying for?
+}
+
+// We can reuse ChatResponse for the quiz return, or make a specific one:
+message AdaptiveQuizResponse {
+  string quiz_json = 1; // Gemini's strict JSON output of questions
 }

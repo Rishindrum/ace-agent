@@ -60,6 +60,16 @@ resource "google_cloud_run_v2_service" "backend_python" {
         name  = "GCS_BUCKET_NAME"
         value = google_storage_bucket.brain_bucket.name 
       }
+
+      env {
+        name  = "BQ_DATASET"
+        value = google_bigquery_dataset.ace_dataset.dataset_id
+      }
+      
+      env {
+        name  = "BQ_TABLE"
+        value = google_bigquery_table.quiz_scores.table_id
+      }
     }
   }
 
@@ -149,6 +159,49 @@ resource "google_cloud_run_service_iam_member" "public_frontend" {
   location = google_cloud_run_v2_service.frontend_angular.location
   role     = "roles/run.invoker"
   member   = "allUsers"
+}
+
+# 7. THE LONG TERM MEMORY (BigQuery Dataset & Table)
+resource "google_bigquery_dataset" "ace_dataset" {
+  dataset_id                  = "ace_performance"
+  friendly_name               = "Ace Student Performance"
+  description                 = "Stores user quiz scores and topic mastery"
+  location                    = "US"
+}
+
+resource "google_bigquery_table" "quiz_scores" {
+  dataset_id = google_bigquery_dataset.ace_dataset.dataset_id
+  table_id   = "quiz_scores"
+
+  # The schema defining our "Spreadsheet" columns
+  schema = <<EOF
+[
+  {
+    "name": "user_id",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "The Firebase UID of the student"
+  },
+  {
+    "name": "topic_name",
+    "type": "STRING",
+    "mode": "REQUIRED",
+    "description": "The specific syllabus topic tested"
+  },
+  {
+    "name": "score",
+    "type": "INTEGER",
+    "mode": "REQUIRED",
+    "description": "The percentage score (0-100)"
+  },
+  {
+    "name": "timestamp",
+    "type": "TIMESTAMP",
+    "mode": "REQUIRED",
+    "description": "When the quiz was taken"
+  }
+]
+EOF
 }
 
 
