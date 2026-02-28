@@ -41,7 +41,7 @@ jobs:
           service: backend-python
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-python:latest
           region: us-central1
-          flags: --update-env-vars=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},NEO4J_URI=${{ secrets.NEO4J_URI }},NEO4J_PASSWORD=${{ secrets.NEO4J_PASSWORD }},PYTHONUNBUFFERED=1
+          flags: --update-env-vars=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},NEO4J_URI=${{ secrets.NEO4J_URI }},NEO4J_PASSWORD=${{ secrets.NEO4J_PASSWORD }},NEO4J_USER=${{ secrets.NEO4J_USER }},PYTHONUNBUFFERED=1
 
       # 4. Build & Push Go (The Gateway)
       - name: Build and Push Go
