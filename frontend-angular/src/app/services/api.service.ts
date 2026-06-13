@@ -15,6 +15,9 @@ export class ApiService {
   private graphDataSubject = new BehaviorSubject<any>(null);
   public currentGraphData = this.graphDataSubject.asObservable();
 
+  private activeSyllabusSubject = new BehaviorSubject<string>('');
+  public activeSyllabus = this.activeSyllabusSubject.asObservable();
+
   constructor(private http: HttpClient) { }
 
   uploadSyllabus(file: File): Observable<any> {
@@ -31,7 +34,27 @@ export class ApiService {
     return new WebSocket(`${this.wsBaseUrl}/ws`);
   }
 
+  submitQuizResult(userId: string, topicName: string, score: number): Observable<any> {
+    return this.http.post(`${this.baseUrl}/quiz/submit`, {
+      user_id: userId,
+      topic_name: topicName,
+      score: score
+    });
+  }
+
+  getQuizScores(userId: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/quiz/scores?user_id=${userId}`);
+  }
+
+  generateAdaptiveQuiz(userId: string, syllabusName: string): Observable<any> {
+    return this.http.get(`${this.baseUrl}/quiz/adaptive?user_id=${userId}&syllabus_name=${syllabusName}`);
+  }
+
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);
+  }
+
+  updateActiveSyllabus(name: string) {
+    this.activeSyllabusSubject.next(name);
   }
 }

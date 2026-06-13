@@ -54,6 +54,16 @@ class TutorServiceStub(object):
                 request_serializer=ace__pb2.AdaptiveQuizRequest.SerializeToString,
                 response_deserializer=ace__pb2.AdaptiveQuizResponse.FromString,
                 _registered_method=True)
+        self.GetQuizScores = channel.unary_unary(
+                '/ace.TutorService/GetQuizScores',
+                request_serializer=ace__pb2.GetQuizScoresRequest.SerializeToString,
+                response_deserializer=ace__pb2.GetQuizScoresResponse.FromString,
+                _registered_method=True)
+        self.IngestMaterial = channel.unary_unary(
+                '/ace.TutorService/IngestMaterial',
+                request_serializer=ace__pb2.IngestRequest.SerializeToString,
+                response_deserializer=ace__pb2.IngestResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer(object):
@@ -83,6 +93,18 @@ class TutorServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetQuizScores(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def IngestMaterial(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -105,6 +127,16 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.GenerateAdaptiveQuiz,
                     request_deserializer=ace__pb2.AdaptiveQuizRequest.FromString,
                     response_serializer=ace__pb2.AdaptiveQuizResponse.SerializeToString,
+            ),
+            'GetQuizScores': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetQuizScores,
+                    request_deserializer=ace__pb2.GetQuizScoresRequest.FromString,
+                    response_serializer=ace__pb2.GetQuizScoresResponse.SerializeToString,
+            ),
+            'IngestMaterial': grpc.unary_unary_rpc_method_handler(
+                    servicer.IngestMaterial,
+                    request_deserializer=ace__pb2.IngestRequest.FromString,
+                    response_serializer=ace__pb2.IngestResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -215,6 +247,60 @@ class TutorService(object):
             '/ace.TutorService/GenerateAdaptiveQuiz',
             ace__pb2.AdaptiveQuizRequest.SerializeToString,
             ace__pb2.AdaptiveQuizResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetQuizScores(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GetQuizScores',
+            ace__pb2.GetQuizScoresRequest.SerializeToString,
+            ace__pb2.GetQuizScoresResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def IngestMaterial(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/IngestMaterial',
+            ace__pb2.IngestRequest.SerializeToString,
+            ace__pb2.IngestResponse.FromString,
             options,
             channel_credentials,
             insecure,

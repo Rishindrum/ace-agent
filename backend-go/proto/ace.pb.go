@@ -24,7 +24,7 @@ const (
 type SyllabusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FileName      string                 `protobuf:"bytes,1,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
-	FileData      []byte                 `protobuf:"bytes,2,opt,name=file_data,json=fileData,proto3" json:"file_data,omitempty"` // NEW: The actual PDF bytes
+	FileData      []byte                 `protobuf:"bytes,2,opt,name=file_data,json=fileData,proto3" json:"file_data,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -78,7 +78,7 @@ type SyllabusResponse struct {
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
 	NodesCreated  int32                  `protobuf:"varint,3,opt,name=nodes_created,json=nodesCreated,proto3" json:"nodes_created,omitempty"`
-	GraphJson     string                 `protobuf:"bytes,4,opt,name=graph_json,json=graphJson,proto3" json:"graph_json,omitempty"` // NEW: The node data for the UI
+	GraphJson     string                 `protobuf:"bytes,4,opt,name=graph_json,json=graphJson,proto3" json:"graph_json,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -448,6 +448,291 @@ func (x *AdaptiveQuizResponse) GetQuizJson() string {
 	return ""
 }
 
+// Sent by UI to read student performance/scores
+type GetQuizScoresRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetQuizScoresRequest) Reset() {
+	*x = GetQuizScoresRequest{}
+	mi := &file_ace_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetQuizScoresRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetQuizScoresRequest) ProtoMessage() {}
+
+func (x *GetQuizScoresRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetQuizScoresRequest.ProtoReflect.Descriptor instead.
+func (*GetQuizScoresRequest) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *GetQuizScoresRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+type QuizScoreRecord struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	TopicName     string                 `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
+	Score         int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
+	Timestamp     string                 `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *QuizScoreRecord) Reset() {
+	*x = QuizScoreRecord{}
+	mi := &file_ace_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *QuizScoreRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*QuizScoreRecord) ProtoMessage() {}
+
+func (x *QuizScoreRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use QuizScoreRecord.ProtoReflect.Descriptor instead.
+func (*QuizScoreRecord) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *QuizScoreRecord) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *QuizScoreRecord) GetTopicName() string {
+	if x != nil {
+		return x.TopicName
+	}
+	return ""
+}
+
+func (x *QuizScoreRecord) GetScore() int32 {
+	if x != nil {
+		return x.Score
+	}
+	return 0
+}
+
+func (x *QuizScoreRecord) GetTimestamp() string {
+	if x != nil {
+		return x.Timestamp
+	}
+	return ""
+}
+
+type GetQuizScoresResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Scores        []*QuizScoreRecord     `protobuf:"bytes,1,rep,name=scores,proto3" json:"scores,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetQuizScoresResponse) Reset() {
+	*x = GetQuizScoresResponse{}
+	mi := &file_ace_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetQuizScoresResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetQuizScoresResponse) ProtoMessage() {}
+
+func (x *GetQuizScoresResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetQuizScoresResponse.ProtoReflect.Descriptor instead.
+func (*GetQuizScoresResponse) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetQuizScoresResponse) GetScores() []*QuizScoreRecord {
+	if x != nil {
+		return x.Scores
+	}
+	return nil
+}
+
+func (x *GetQuizScoresResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetQuizScoresResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type IngestRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	TopicName     string                 `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
+	RawText       string                 `protobuf:"bytes,3,opt,name=raw_text,json=rawText,proto3" json:"raw_text,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IngestRequest) Reset() {
+	*x = IngestRequest{}
+	mi := &file_ace_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IngestRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IngestRequest) ProtoMessage() {}
+
+func (x *IngestRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IngestRequest.ProtoReflect.Descriptor instead.
+func (*IngestRequest) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *IngestRequest) GetWeekNumber() int32 {
+	if x != nil {
+		return x.WeekNumber
+	}
+	return 0
+}
+
+func (x *IngestRequest) GetTopicName() string {
+	if x != nil {
+		return x.TopicName
+	}
+	return ""
+}
+
+func (x *IngestRequest) GetRawText() string {
+	if x != nil {
+		return x.RawText
+	}
+	return ""
+}
+
+type IngestResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *IngestResponse) Reset() {
+	*x = IngestResponse{}
+	mi := &file_ace_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *IngestResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*IngestResponse) ProtoMessage() {}
+
+func (x *IngestResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use IngestResponse.ProtoReflect.Descriptor instead.
+func (*IngestResponse) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *IngestResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *IngestResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_ace_proto protoreflect.FileDescriptor
 
 const file_ace_proto_rawDesc = "" +
@@ -480,12 +765,35 @@ const file_ace_proto_rawDesc = "" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12#\n" +
 	"\rsyllabus_name\x18\x02 \x01(\tR\fsyllabusName\"3\n" +
 	"\x14AdaptiveQuizResponse\x12\x1b\n" +
-	"\tquiz_json\x18\x01 \x01(\tR\bquizJson2\x8d\x02\n" +
+	"\tquiz_json\x18\x01 \x01(\tR\bquizJson\"/\n" +
+	"\x14GetQuizScoresRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\"}\n" +
+	"\x0fQuizScoreRecord\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
+	"\n" +
+	"topic_name\x18\x02 \x01(\tR\ttopicName\x12\x14\n" +
+	"\x05score\x18\x03 \x01(\x05R\x05score\x12\x1c\n" +
+	"\ttimestamp\x18\x04 \x01(\tR\ttimestamp\"y\n" +
+	"\x15GetQuizScoresResponse\x12,\n" +
+	"\x06scores\x18\x01 \x03(\v2\x14.ace.QuizScoreRecordR\x06scores\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"j\n" +
+	"\rIngestRequest\x12\x1f\n" +
+	"\vweek_number\x18\x01 \x01(\x05R\n" +
+	"weekNumber\x12\x1d\n" +
+	"\n" +
+	"topic_name\x18\x02 \x01(\tR\ttopicName\x12\x19\n" +
+	"\braw_text\x18\x03 \x01(\tR\arawText\"D\n" +
+	"\x0eIngestResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage2\x90\x03\n" +
 	"\fTutorService\x12>\n" +
 	"\x0fProcessSyllabus\x12\x14.ace.SyllabusRequest\x1a\x15.ace.SyllabusResponse\x12+\n" +
 	"\x04Chat\x12\x10.ace.ChatRequest\x1a\x11.ace.ChatResponse\x12C\n" +
 	"\x10SubmitQuizResult\x12\x16.ace.QuizResultRequest\x1a\x17.ace.QuizResultResponse\x12K\n" +
-	"\x14GenerateAdaptiveQuiz\x12\x18.ace.AdaptiveQuizRequest\x1a\x19.ace.AdaptiveQuizResponseB\n" +
+	"\x14GenerateAdaptiveQuiz\x12\x18.ace.AdaptiveQuizRequest\x1a\x19.ace.AdaptiveQuizResponse\x12F\n" +
+	"\rGetQuizScores\x12\x19.ace.GetQuizScoresRequest\x1a\x1a.ace.GetQuizScoresResponse\x129\n" +
+	"\x0eIngestMaterial\x12\x12.ace.IngestRequest\x1a\x13.ace.IngestResponseB\n" +
 	"Z\bpb/protob\x06proto3"
 
 var (
@@ -500,31 +808,41 @@ func file_ace_proto_rawDescGZIP() []byte {
 	return file_ace_proto_rawDescData
 }
 
-var file_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
 var file_ace_proto_goTypes = []any{
-	(*SyllabusRequest)(nil),      // 0: ace.SyllabusRequest
-	(*SyllabusResponse)(nil),     // 1: ace.SyllabusResponse
-	(*ChatRequest)(nil),          // 2: ace.ChatRequest
-	(*ChatResponse)(nil),         // 3: ace.ChatResponse
-	(*QuizResultRequest)(nil),    // 4: ace.QuizResultRequest
-	(*QuizResultResponse)(nil),   // 5: ace.QuizResultResponse
-	(*AdaptiveQuizRequest)(nil),  // 6: ace.AdaptiveQuizRequest
-	(*AdaptiveQuizResponse)(nil), // 7: ace.AdaptiveQuizResponse
+	(*SyllabusRequest)(nil),       // 0: ace.SyllabusRequest
+	(*SyllabusResponse)(nil),      // 1: ace.SyllabusResponse
+	(*ChatRequest)(nil),           // 2: ace.ChatRequest
+	(*ChatResponse)(nil),          // 3: ace.ChatResponse
+	(*QuizResultRequest)(nil),     // 4: ace.QuizResultRequest
+	(*QuizResultResponse)(nil),    // 5: ace.QuizResultResponse
+	(*AdaptiveQuizRequest)(nil),   // 6: ace.AdaptiveQuizRequest
+	(*AdaptiveQuizResponse)(nil),  // 7: ace.AdaptiveQuizResponse
+	(*GetQuizScoresRequest)(nil),  // 8: ace.GetQuizScoresRequest
+	(*QuizScoreRecord)(nil),       // 9: ace.QuizScoreRecord
+	(*GetQuizScoresResponse)(nil), // 10: ace.GetQuizScoresResponse
+	(*IngestRequest)(nil),         // 11: ace.IngestRequest
+	(*IngestResponse)(nil),        // 12: ace.IngestResponse
 }
 var file_ace_proto_depIdxs = []int32{
-	0, // 0: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
-	2, // 1: ace.TutorService.Chat:input_type -> ace.ChatRequest
-	4, // 2: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
-	6, // 3: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
-	1, // 4: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
-	3, // 5: ace.TutorService.Chat:output_type -> ace.ChatResponse
-	5, // 6: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
-	7, // 7: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
-	4, // [4:8] is the sub-list for method output_type
-	0, // [0:4] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	9,  // 0: ace.GetQuizScoresResponse.scores:type_name -> ace.QuizScoreRecord
+	0,  // 1: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
+	2,  // 2: ace.TutorService.Chat:input_type -> ace.ChatRequest
+	4,  // 3: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
+	6,  // 4: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
+	8,  // 5: ace.TutorService.GetQuizScores:input_type -> ace.GetQuizScoresRequest
+	11, // 6: ace.TutorService.IngestMaterial:input_type -> ace.IngestRequest
+	1,  // 7: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
+	3,  // 8: ace.TutorService.Chat:output_type -> ace.ChatResponse
+	5,  // 9: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
+	7,  // 10: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
+	10, // 11: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
+	12, // 12: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
+	7,  // [7:13] is the sub-list for method output_type
+	1,  // [1:7] is the sub-list for method input_type
+	1,  // [1:1] is the sub-list for extension type_name
+	1,  // [1:1] is the sub-list for extension extendee
+	0,  // [0:1] is the sub-list for field type_name
 }
 
 func init() { file_ace_proto_init() }
@@ -538,7 +856,7 @@ func file_ace_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ace_proto_rawDesc), len(file_ace_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   8,
+			NumMessages:   13,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

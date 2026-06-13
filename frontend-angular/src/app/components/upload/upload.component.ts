@@ -56,6 +56,10 @@ export class UploadComponent {
         // We check for both lowercase 'nodes' and uppercase 'NodesCreated' just in case
         const count = res.nodes || res.NodesCreated || 0;
         this.responseMessage = `Success! Found ${count} concepts.`;
+        
+        if (this.selectedFile) {
+          this.api.updateActiveSyllabus(this.selectedFile.name);
+        }
 
         // 3. SAFETY CHECK: Do we have graph data?
         if (res.graph && Array.isArray(res.graph)) {

@@ -148,6 +148,174 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func submitQuizResultHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		UserID    string `json:"user_id"`
+		TopicName string `json:"topic_name"`
+		Score     int32  `json:"score"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	grpcReq := &pb.QuizResultRequest{
+		UserId:    req.UserID,
+		TopicName: req.TopicName,
+		Score:     req.Score,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.SubmitQuizResult(ctx, grpcReq)
+	if err != nil {
+		log.Printf("[Error] SubmitQuizResult gRPC failed: %v", err)
+		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func getQuizScoresHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		http.Error(w, "Missing user_id parameter", http.StatusBadRequest)
+		return
+	}
+
+	grpcReq := &pb.GetQuizScoresRequest{
+		UserId: userID,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.GetQuizScores(ctx, grpcReq)
+	if err != nil {
+		log.Printf("[Error] GetQuizScores gRPC failed: %v", err)
+		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func generateAdaptiveQuizHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := r.URL.Query().Get("user_id")
+	syllabusName := r.URL.Query().Get("syllabus_name")
+	if userID == "" || syllabusName == "" {
+		http.Error(w, "Missing user_id or syllabus_name parameter", http.StatusBadRequest)
+		return
+	}
+
+	grpcReq := &pb.AdaptiveQuizRequest{
+		UserId:       userID,
+		SyllabusName: syllabusName,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.GenerateAdaptiveQuiz(ctx, grpcReq)
+	if err != nil {
+		log.Printf("[Error] GenerateAdaptiveQuiz gRPC failed: %v", err)
+		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.Write([]byte(resp.QuizJson))
+}
+
+func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		WeekNumber int32  `json:"week_number"`
+		TopicName  string `json:"topic_name"`
+		RawText    string `json:"raw_text"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	grpcReq := &pb.IngestRequest{
+		WeekNumber: req.WeekNumber,
+		TopicName:  req.TopicName,
+		RawText:    req.RawText,
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.IngestMaterial(ctx, grpcReq)
+	if err != nil {
+		log.Printf("[Error] IngestMaterial gRPC failed: %v", err)
+		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
 func main() {
 	tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
     if tutorAddr == "" {
@@ -188,6 +356,10 @@ func main() {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/upload", uploadHandler)
 	mux.HandleFunc("/ws", wsHandler)
+	mux.HandleFunc("/quiz/submit", submitQuizResultHandler)
+	mux.HandleFunc("/quiz/scores", getQuizScoresHandler)
+	mux.HandleFunc("/quiz/adaptive", generateAdaptiveQuizHandler)
+	mux.HandleFunc("/api/v1/ingest", ingestMaterialHandler)
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

@@ -23,6 +23,8 @@ const (
 	TutorService_Chat_FullMethodName                 = "/ace.TutorService/Chat"
 	TutorService_SubmitQuizResult_FullMethodName     = "/ace.TutorService/SubmitQuizResult"
 	TutorService_GenerateAdaptiveQuiz_FullMethodName = "/ace.TutorService/GenerateAdaptiveQuiz"
+	TutorService_GetQuizScores_FullMethodName        = "/ace.TutorService/GetQuizScores"
+	TutorService_IngestMaterial_FullMethodName       = "/ace.TutorService/IngestMaterial"
 )
 
 // TutorServiceClient is the client API for TutorService service.
@@ -33,6 +35,8 @@ type TutorServiceClient interface {
 	Chat(ctx context.Context, in *ChatRequest, opts ...grpc.CallOption) (*ChatResponse, error)
 	SubmitQuizResult(ctx context.Context, in *QuizResultRequest, opts ...grpc.CallOption) (*QuizResultResponse, error)
 	GenerateAdaptiveQuiz(ctx context.Context, in *AdaptiveQuizRequest, opts ...grpc.CallOption) (*AdaptiveQuizResponse, error)
+	GetQuizScores(ctx context.Context, in *GetQuizScoresRequest, opts ...grpc.CallOption) (*GetQuizScoresResponse, error)
+	IngestMaterial(ctx context.Context, in *IngestRequest, opts ...grpc.CallOption) (*IngestResponse, error)
 }
 
 type tutorServiceClient struct {
@@ -83,6 +87,26 @@ func (c *tutorServiceClient) GenerateAdaptiveQuiz(ctx context.Context, in *Adapt
 	return out, nil
 }
 
+func (c *tutorServiceClient) GetQuizScores(ctx context.Context, in *GetQuizScoresRequest, opts ...grpc.CallOption) (*GetQuizScoresResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetQuizScoresResponse)
+	err := c.cc.Invoke(ctx, TutorService_GetQuizScores_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tutorServiceClient) IngestMaterial(ctx context.Context, in *IngestRequest, opts ...grpc.CallOption) (*IngestResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(IngestResponse)
+	err := c.cc.Invoke(ctx, TutorService_IngestMaterial_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TutorServiceServer is the server API for TutorService service.
 // All implementations must embed UnimplementedTutorServiceServer
 // for forward compatibility.
@@ -91,6 +115,8 @@ type TutorServiceServer interface {
 	Chat(context.Context, *ChatRequest) (*ChatResponse, error)
 	SubmitQuizResult(context.Context, *QuizResultRequest) (*QuizResultResponse, error)
 	GenerateAdaptiveQuiz(context.Context, *AdaptiveQuizRequest) (*AdaptiveQuizResponse, error)
+	GetQuizScores(context.Context, *GetQuizScoresRequest) (*GetQuizScoresResponse, error)
+	IngestMaterial(context.Context, *IngestRequest) (*IngestResponse, error)
 	mustEmbedUnimplementedTutorServiceServer()
 }
 
@@ -112,6 +138,12 @@ func (UnimplementedTutorServiceServer) SubmitQuizResult(context.Context, *QuizRe
 }
 func (UnimplementedTutorServiceServer) GenerateAdaptiveQuiz(context.Context, *AdaptiveQuizRequest) (*AdaptiveQuizResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GenerateAdaptiveQuiz not implemented")
+}
+func (UnimplementedTutorServiceServer) GetQuizScores(context.Context, *GetQuizScoresRequest) (*GetQuizScoresResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetQuizScores not implemented")
+}
+func (UnimplementedTutorServiceServer) IngestMaterial(context.Context, *IngestRequest) (*IngestResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method IngestMaterial not implemented")
 }
 func (UnimplementedTutorServiceServer) mustEmbedUnimplementedTutorServiceServer() {}
 func (UnimplementedTutorServiceServer) testEmbeddedByValue()                      {}
@@ -206,6 +238,42 @@ func _TutorService_GenerateAdaptiveQuiz_Handler(srv interface{}, ctx context.Con
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TutorService_GetQuizScores_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetQuizScoresRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).GetQuizScores(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_GetQuizScores_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).GetQuizScores(ctx, req.(*GetQuizScoresRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TutorService_IngestMaterial_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IngestRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).IngestMaterial(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_IngestMaterial_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).IngestMaterial(ctx, req.(*IngestRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TutorService_ServiceDesc is the grpc.ServiceDesc for TutorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -228,6 +296,14 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateAdaptiveQuiz",
 			Handler:    _TutorService_GenerateAdaptiveQuiz_Handler,
+		},
+		{
+			MethodName: "GetQuizScores",
+			Handler:    _TutorService_GetQuizScores_Handler,
+		},
+		{
+			MethodName: "IngestMaterial",
+			Handler:    _TutorService_IngestMaterial_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -9,18 +9,20 @@ service TutorService {
   rpc Chat (ChatRequest) returns (ChatResponse);
   rpc SubmitQuizResult (QuizResultRequest) returns (QuizResultResponse);
   rpc GenerateAdaptiveQuiz (AdaptiveQuizRequest) returns (AdaptiveQuizResponse);
+  rpc GetQuizScores (GetQuizScoresRequest) returns (GetQuizScoresResponse);
+  rpc IngestMaterial (IngestRequest) returns (IngestResponse);
 }
 
 message SyllabusRequest {
   string file_name = 1;
-  bytes file_data = 2; // NEW: The actual PDF bytes
+  bytes file_data = 2;
 }
 
 message SyllabusResponse {
   bool success = 1;
   string message = 2;
   int32 nodes_created = 3;
-  string graph_json = 4; // NEW: The node data for the UI
+  string graph_json = 4;
 }
 
 message ChatRequest {
@@ -53,4 +55,33 @@ message AdaptiveQuizRequest {
 // We can reuse ChatResponse for the quiz return, or make a specific one:
 message AdaptiveQuizResponse {
   string quiz_json = 1; // Gemini's strict JSON output of questions
+}
+
+// Sent by UI to read student performance/scores
+message GetQuizScoresRequest {
+  string user_id = 1;
+}
+
+message QuizScoreRecord {
+  string user_id = 1;
+  string topic_name = 2;
+  int32 score = 3;
+  string timestamp = 4;
+}
+
+message GetQuizScoresResponse {
+  repeated QuizScoreRecord scores = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message IngestRequest {
+  int32 week_number = 1;
+  string topic_name = 2;
+  string raw_text = 3;
+}
+
+message IngestResponse {
+  bool success = 1;
+  string message = 2;
 }

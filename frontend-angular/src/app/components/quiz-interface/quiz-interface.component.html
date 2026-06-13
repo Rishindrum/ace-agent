@@ -1,0 +1,131 @@
+<div class="quiz-container">
+  <!-- DASHBOARD / HISTORY VIEW -->
+  <div *ngIf="currentView === 'history'" class="history-view">
+    <div class="card-header">
+      <div class="user-setup">
+        <div class="input-group">
+          <label for="userId">Student ID</label>
+          <input type="text" id="userId" [(ngModel)]="userId" (change)="loadHistory()" placeholder="Enter Student ID" />
+        </div>
+        <div class="input-group">
+          <label for="syllabusName">Syllabus / Course</label>
+          <input type="text" id="syllabusName" [(ngModel)]="syllabusName" placeholder="Upload a syllabus or type name" />
+        </div>
+      </div>
+      <button class="btn btn-primary" (click)="startQuiz()" [disabled]="isLoading || !syllabusName">
+        <mat-icon>psychology</mat-icon> Start Adaptive Quiz
+      </button>
+    </div>
+
+    <div *ngIf="statusMessage" class="status-alert info">
+      {{ statusMessage }}
+    </div>
+
+    <!-- Score History List -->
+    <div class="scores-section">
+      <h4>Performance Dashboard (BigQuery)</h4>
+      <div *ngIf="isLoading && quizHistory.length === 0" class="spinner-placeholder">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+      
+      <div *ngIf="quizHistory.length === 0 && !isLoading" class="no-history">
+        <mat-icon class="huge-icon">history_edu</mat-icon>
+        <p>No quiz scores recorded yet for <strong>{{ userId }}</strong>.</p>
+        <p class="subtitle">Scores will stream to Google BigQuery and show up here once you complete a quiz.</p>
+      </div>
+
+      <div *ngIf="quizHistory.length > 0" class="scores-grid">
+        <div *ngFor="let record of quizHistory" class="score-card" [ngClass]="{
+          'pass-high': record.score >= 80,
+          'pass-med': record.score >= 50 && record.score < 80,
+          'pass-low': record.score < 50
+        }">
+          <div class="card-details">
+            <span class="topic">{{ record.topic_name }}</span>
+            <span class="date">{{ record.timestamp | date:'short' }}</span>
+          </div>
+          <div class="card-score">
+            <span class="score-num">{{ record.score }}%</span>
+            <span class="badge" *ngIf="record.score >= 80">Mastered</span>
+            <span class="badge" *ngIf="record.score >= 50 && record.score < 80">Reviewing</span>
+            <span class="badge" *ngIf="record.score < 50">Weak Area</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ACTIVE QUIZ TAKING VIEW -->
+  <div *ngIf="currentView === 'quiz' && currentQuiz" class="quiz-taking-view">
+    <div class="quiz-header">
+      <h3>{{ currentQuiz.quiz_title }}</h3>
+      <button class="btn btn-outline" (click)="exitQuiz()">Exit</button>
+    </div>
+
+    <div *ngIf="!quizFinished">
+      <div class="progress-bar-container">
+        <div class="progress-info">
+          <span>Question {{ currentQuestionIndex + 1 }} of {{ currentQuiz.questions.length }}</span>
+          <span>Topic: <strong>{{ currentQuiz.questions[currentQuestionIndex].topic }}</strong></span>
+        </div>
+        <mat-progress-bar mode="determinate" [value]="(currentQuestionIndex / currentQuiz.questions.length) * 100"></mat-progress-bar>
+      </div>
+
+      <div class="question-card">
+        <p class="question-text">{{ currentQuiz.questions[currentQuestionIndex].question_text }}</p>
+        
+        <div class="options-list">
+          <button *ngFor="let option of currentQuiz.questions[currentQuestionIndex].options; let idx = index" 
+                  class="option-btn" 
+                  [disabled]="selectedOptionIndex !== null"
+                  [ngClass]="{
+                    'selected': selectedOptionIndex === idx,
+                    'correct': selectedOptionIndex !== null && idx === currentQuiz.questions[currentQuestionIndex].correct_option_index,
+                    'incorrect': selectedOptionIndex === idx && idx !== currentQuiz.questions[currentQuestionIndex].correct_option_index
+                  }"
+                  (click)="selectOption(idx)">
+            <span class="option-indicator">{{ idx + 1 }}</span>
+            <span class="option-text">{{ option }}</span>
+            <mat-icon *ngIf="selectedOptionIndex !== null && idx === currentQuiz.questions[currentQuestionIndex].correct_option_index" class="option-icon">check_circle</mat-icon>
+            <mat-icon *ngIf="selectedOptionIndex === idx && idx !== currentQuiz.questions[currentQuestionIndex].correct_option_index" class="option-icon">cancel</mat-icon>
+          </button>
+        </div>
+
+        <div *ngIf="showExplanation" class="explanation-box" [ngClass]="{
+          'correct-bg': selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index,
+          'incorrect-bg': selectedOptionIndex !== currentQuiz.questions[currentQuestionIndex].correct_option_index
+        }">
+          <p class="explanation-title">
+            <mat-icon *ngIf="selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index">check</mat-icon>
+            <mat-icon *ngIf="selectedOptionIndex !== currentQuiz.questions[currentQuestionIndex].correct_option_index">close</mat-icon>
+            {{ selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index ? 'Correct!' : 'Incorrect' }}
+          </p>
+          <p class="explanation-text">{{ currentQuiz.questions[currentQuestionIndex].explanation }}</p>
+          
+          <button class="btn btn-primary next-btn" (click)="nextQuestion()">
+            {{ currentQuestionIndex === currentQuiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- QUIZ SUMMARY / RESULT VIEW -->
+    <div *ngIf="quizFinished" class="quiz-finished-card">
+      <mat-icon class="huge-icon summary-icon">workspace_premium</mat-icon>
+      <h2>Quiz Completed!</h2>
+      <p class="score-summary">You scored <strong>{{ correctAnswersCount }}</strong> out of <strong>{{ currentQuiz.questions.length }}</strong> correct answers.</p>
+      
+      <div class="score-circle">
+        <span class="percent">{{ Math.round((correctAnswersCount / currentQuiz.questions.length) * 100) }}%</span>
+      </div>
+
+      <div *ngIf="statusMessage" class="status-alert">
+        {{ statusMessage }}
+      </div>
+
+      <button class="btn btn-primary" (click)="exitQuiz()" [disabled]="isLoading">
+        Back to Dashboard
+      </button>
+    </div>
+  </div>
+</div>

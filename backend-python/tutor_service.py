@@ -15,10 +15,11 @@ from google.cloud import storage
 # --- IMPORTS ---
 import ace_pb2 as ace_pb2
 import ace_pb2_grpc as ace_pb2_grpc
+import analytical_memory
 
 # Initialize Gemini
-NEO4J_URI = os.getenv("NEO4J_URI", "neo4j+s://961ec8b5.databases.neo4j.io") # Default if missing
-NEO4J_USER = os.getenv("NEO4J_USER", "neo4j")
+NEO4J_URI = os.getenv("NEO4J_URI")
+NEO4J_USER = os.getenv("NEO4J_USER")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD") # Must be provided by Docker
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Must be provided by Docker
 GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "ace-agent-brain-bucket")
@@ -49,7 +50,8 @@ class PersistentVectorStore:
             # Create Embeddings (with gemini)
             result = client.models.embed_content(
                 model="gemini-embedding-001",
-                contents=chunks
+                contents=chunks,
+                config={'output_dimensionality': 768}
             )
             self.vectors = np.array([e.values for e in result.embeddings])
             
@@ -59,6 +61,36 @@ class PersistentVectorStore:
         except Exception as e:
             print(f"[VectorStore] Embedding Error: {e}")
 
+    def append_documents(self, chunks):
+        """Appends and embeds new documents to the vector store incrementally."""
+        if not chunks:
+            return
+        print(f"[VectorStore] Appending {len(chunks)} chunks to vector store...")
+        try:
+            # Create Embeddings for new chunks (with gemini)
+            result = client.models.embed_content(
+                model="gemini-embedding-001",
+                contents=chunks,
+                config={'output_dimensionality': 768}
+            )
+            new_vectors = np.array([e.values for e in result.embeddings])
+            
+            # Append documents
+            self.documents.extend(chunks)
+            
+            # Concatenate vectors
+            if self.vectors is None:
+                self.vectors = new_vectors
+            else:
+                self.vectors = np.vstack([self.vectors, new_vectors])
+            
+            # SAVE to disk and cloud
+            self.save()
+            print(f"[VectorStore] Successfully appended and saved. Total documents: {len(self.documents)}")
+        except Exception as e:
+            print(f"[VectorStore] Append Embedding Error: {e}")
+
+
     def search(self, query, top_k=3):
         if self.vectors is None or len(self.documents) == 0:
             print("[VectorStore] Memory is empty! Did you upload a PDF?")
@@ -67,7 +99,8 @@ class PersistentVectorStore:
         # Embed query
         q_result = client.models.embed_content(
             model="gemini-embedding-001",
-            contents=query
+            contents=query,
+            config={'output_dimensionality': 768}
         )
         query_vector = np.array([q_result.embeddings[0].values])
 
@@ -286,6 +319,141 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             answer = "I'm having trouble connecting to my brain right now."
 
         return ace_pb2.ChatResponse(response=answer)
+
+    def SubmitQuizResult(self, request, context):
+        print(f"[Python] SubmitQuizResult for user {request.user_id} on topic {request.topic_name} with score {request.score}")
+        success = analytical_memory.write_quiz_score(
+            user_id=request.user_id,
+            topic_name=request.topic_name,
+            score=request.score
+        )
+        if success:
+            return ace_pb2.QuizResultResponse(success=True, message="Quiz result successfully stored in BigQuery.")
+        else:
+            return ace_pb2.QuizResultResponse(success=False, message="Failed to store quiz result in BigQuery.")
+
+    def GetQuizScores(self, request, context):
+        print(f"[Python] GetQuizScores requested for user {request.user_id}")
+        records = analytical_memory.read_quiz_scores(user_id=request.user_id)
+        
+        scores_pb = []
+        for r in records:
+            scores_pb.append(ace_pb2.QuizScoreRecord(
+                user_id=r["user_id"],
+                topic_name=r["topic_name"],
+                score=r["score"],
+                timestamp=r["timestamp"]
+            ))
+            
+        return ace_pb2.GetQuizScoresResponse(
+            scores=scores_pb,
+            success=True,
+            message="Retrieved student quiz scores from BigQuery."
+        )
+
+    def GenerateAdaptiveQuiz(self, request, context):
+        print(f"[Python] GenerateAdaptiveQuiz for user {request.user_id} and syllabus {request.syllabus_name}")
+        
+        # 1. Fetch topics covered by this syllabus from Neo4j
+        topics = []
+        if self.driver:
+            try:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (s:Syllabus)-[:COVERS]->(t:Topic)
+                    WHERE toLower(s.name) = toLower($syllabus_name)
+                    RETURN t.name as topic
+                    """
+                    result = session.run(query, syllabus_name=request.syllabus_name)
+                    topics = [record["topic"] for record in result]
+            except Exception as e:
+                print(f"[Python] Error fetching topics from Neo4j: {e}")
+
+        # 2. Fetch user's performance history from BigQuery
+        performance_history = []
+        try:
+            performance_history = analytical_memory.read_quiz_scores(request.user_id)
+        except Exception as e:
+            print(f"[Python] Error fetching performance history: {e}")
+
+        # 3. Format context for Gemini
+        topics_str = ", ".join(topics) if topics else "General concepts in the course syllabus"
+        
+        history_lines = []
+        for s in performance_history:
+            history_lines.append(f"- {s['topic_name']}: {s['score']}%")
+        history_str = "\n".join(history_lines) if history_lines else "No quiz history yet (this is their first quiz)."
+
+        prompt = f"""
+        You are 'Ace', an AI Tutor. Generate a personalized adaptive review quiz for the student.
+        
+        Syllabus topics to cover: {topics_str}
+        Student's past performance:
+        {history_str}
+        
+        Instructions:
+        1. Design 3 to 5 high-quality multiple choice questions.
+        2. Adapt the difficulty: focus more questions on topics where the student has struggled (scored below 70%) or has not taken a quiz on yet.
+        3. Keep the questions educational, relevant, and clear.
+        4. Return ONLY a JSON object that strictly adheres to this schema:
+        {{
+          "quiz_title": "Adaptive Review Quiz",
+          "questions": [
+            {{
+              "question_text": "Question description?",
+              "options": ["Option 0", "Option 1", "Option 2", "Option 3"],
+              "correct_option_index": 0,
+              "topic": "Topic Name",
+              "explanation": "Explanation for the correct option"
+            }}
+          ]
+        }}
+        """
+
+        try:
+            # Call Gemini with strict JSON configuration
+            response = self._generate_with_retry(
+                model_name='gemini-2.5-flash-lite',
+                contents=prompt,
+                config={'response_mime_type': 'application/json'}
+            )
+            quiz_json = response.text
+        except Exception as e:
+            print(f"[Python] Gemini Adaptive Quiz Error: {e}")
+            fallback_quiz = {
+                "quiz_title": "Review Quiz",
+                "questions": [
+                  {
+                    "question_text": f"Let's review the syllabus: {request.syllabus_name}. Are you ready to begin studying?",
+                    "options": ["Yes, let's do it!", "I need to review first."],
+                    "correct_option_index": 0,
+                    "topic": "Introduction",
+                    "explanation": "Starting is the first step to success!"
+                  }
+                ]
+            }
+            quiz_json = json.dumps(fallback_quiz)
+
+        return ace_pb2.AdaptiveQuizResponse(quiz_json=quiz_json)
+
+    def IngestMaterial(self, request, context):
+        print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}'...")
+        try:
+            import ingestion_service
+            success = ingestion_service.ingest_material(
+                content=request.raw_text,
+                topic_name=request.topic_name,
+                week_number=str(request.week_number)
+            )
+            if success:
+                return ace_pb2.IngestResponse(success=True, message="Material successfully ingested and embedded.")
+            else:
+                return ace_pb2.IngestResponse(success=False, message="Material ingestion failed. Ensure the Topic exists for the given Week in Neo4j.")
+        except Exception as e:
+            print(f"[Python] IngestMaterial Exception: {e}")
+            return ace_pb2.IngestResponse(success=False, message=f"Internal Server Error: {str(e)}")
+    
+    
     
     @staticmethod
     def _create_dynamic_nodes(tx, filename, concepts):
