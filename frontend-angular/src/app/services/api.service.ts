@@ -4,6 +4,31 @@ import { Observable, BehaviorSubject } from 'rxjs'; // Import BehaviorSubject
 
 import { environment } from '../../environments/environment';
 
+export interface SyllabusQuestionPayload {
+  id: string;
+  questionText: string;
+  options: string[];
+  correctOptionIndex: number;
+}
+
+export interface QuizTelemetryQuestion {
+  id: string;
+  selected_option_index: number;
+  correct_option_index: number;
+}
+
+export interface QuizTelemetryPayload {
+  week_number: number;
+  questions: QuizTelemetryQuestion[];
+}
+
+export interface QuizTelemetryResponse {
+  score: number;
+  total_questions: number;
+  percentage: number;
+  confirmed: boolean;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -48,6 +73,17 @@ export class ApiService {
 
   generateAdaptiveQuiz(userId: string, syllabusName: string): Observable<any> {
     return this.http.get(`${this.baseUrl}/quiz/adaptive?user_id=${userId}&syllabus_name=${syllabusName}`);
+  }
+
+  generateQuiz(weekNumber: number, questionCount: number): Observable<SyllabusQuestionPayload[]> {
+    return this.http.post<SyllabusQuestionPayload[]>(`${this.baseUrl}/api/v1/quiz`, {
+      week_number: weekNumber,
+      question_count: questionCount
+    });
+  }
+
+  submitQuizTelemetry(payload: QuizTelemetryPayload): Observable<QuizTelemetryResponse> {
+    return this.http.post<QuizTelemetryResponse>(`${this.baseUrl}/api/v1/quiz/submit`, payload);
   }
 
   updateGraphData(data: any) {

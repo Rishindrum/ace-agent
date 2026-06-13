@@ -5,7 +5,7 @@ import warnings
 
 import ace_pb2 as ace__pb2
 
-GRPC_GENERATED_VERSION = '1.76.0'
+GRPC_GENERATED_VERSION = '1.81.1'
 GRPC_VERSION = grpc.__version__
 _version_not_supported = False
 
@@ -25,7 +25,7 @@ if _version_not_supported:
     )
 
 
-class TutorServiceStub(object):
+class TutorServiceStub:
     """Missing associated documentation comment in .proto file."""
 
     def __init__(self, channel):
@@ -64,9 +64,14 @@ class TutorServiceStub(object):
                 request_serializer=ace__pb2.IngestRequest.SerializeToString,
                 response_deserializer=ace__pb2.IngestResponse.FromString,
                 _registered_method=True)
+        self.GenerateQuiz = channel.unary_unary(
+                '/ace.TutorService/GenerateQuiz',
+                request_serializer=ace__pb2.QuizRequest.SerializeToString,
+                response_deserializer=ace__pb2.QuizResponse.FromString,
+                _registered_method=True)
 
 
-class TutorServiceServicer(object):
+class TutorServiceServicer:
     """Missing associated documentation comment in .proto file."""
 
     def ProcessSyllabus(self, request, context):
@@ -105,6 +110,12 @@ class TutorServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GenerateQuiz(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -138,6 +149,11 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     request_deserializer=ace__pb2.IngestRequest.FromString,
                     response_serializer=ace__pb2.IngestResponse.SerializeToString,
             ),
+            'GenerateQuiz': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateQuiz,
+                    request_deserializer=ace__pb2.QuizRequest.FromString,
+                    response_serializer=ace__pb2.QuizResponse.SerializeToString,
+            ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
             'ace.TutorService', rpc_method_handlers)
@@ -146,7 +162,7 @@ def add_TutorServiceServicer_to_server(servicer, server):
 
 
  # This class is part of an EXPERIMENTAL API.
-class TutorService(object):
+class TutorService:
     """Missing associated documentation comment in .proto file."""
 
     @staticmethod
@@ -301,6 +317,33 @@ class TutorService(object):
             '/ace.TutorService/IngestMaterial',
             ace__pb2.IngestRequest.SerializeToString,
             ace__pb2.IngestResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateQuiz(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GenerateQuiz',
+            ace__pb2.QuizRequest.SerializeToString,
+            ace__pb2.QuizResponse.FromString,
             options,
             channel_credentials,
             insecure,

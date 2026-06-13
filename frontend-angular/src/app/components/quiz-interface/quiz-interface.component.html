@@ -1,7 +1,15 @@
 <div class="quiz-container">
+  <!-- Loading Overlay -->
+  <div *ngIf="isLoading" class="loading-overlay">
+    <div class="loading-spinner-container">
+      <div class="loading-spinner"></div>
+      <p class="loading-text">{{ statusMessage || 'Processing request...' }}</p>
+    </div>
+  </div>
+
   <!-- DASHBOARD / HISTORY VIEW -->
   <div *ngIf="currentView === 'history'" class="history-view">
-    <div class="card-header">
+    <div class="setup-container">
       <div class="user-setup">
         <div class="input-group">
           <label for="userId">Student ID</label>
@@ -12,12 +20,45 @@
           <input type="text" id="syllabusName" [(ngModel)]="syllabusName" placeholder="Upload a syllabus or type name" />
         </div>
       </div>
-      <button class="btn btn-primary" (click)="startQuiz()" [disabled]="isLoading || !syllabusName">
-        <mat-icon>psychology</mat-icon> Start Adaptive Quiz
-      </button>
     </div>
 
-    <div *ngIf="statusMessage" class="status-alert info">
+    <div class="quiz-modes-grid">
+      <!-- Adaptive Quiz Mode -->
+      <div class="mode-card">
+        <div class="mode-icon-container adaptive">
+          <mat-icon>psychology</mat-icon>
+        </div>
+        <h3>Adaptive AI Quiz</h3>
+        <p>Generate a dynamic personalized quiz based on the full syllabus topics to target your weak areas.</p>
+        <button class="btn btn-primary mode-btn" (click)="startQuiz()" [disabled]="isLoading || !syllabusName">
+          Start Adaptive Quiz
+        </button>
+      </div>
+
+      <!-- Weekly Syllabus Quiz Mode -->
+      <div class="mode-card">
+        <div class="mode-icon-container syllabus">
+          <mat-icon>menu_book</mat-icon>
+        </div>
+        <h3>Weekly Syllabus Quiz</h3>
+        <p>Test your knowledge on a specific week's ingested course material chunks.</p>
+        <div class="mode-inputs">
+          <div class="input-group-inline">
+            <label for="weekNumber">Week</label>
+            <input type="number" id="weekNumber" [(ngModel)]="weekNumber" min="1" placeholder="Week #" />
+          </div>
+          <div class="input-group-inline">
+            <label for="questionCount">Questions</label>
+            <input type="number" id="questionCount" [(ngModel)]="questionCount" min="1" max="20" placeholder="Count" />
+          </div>
+        </div>
+        <button class="btn btn-primary mode-btn" (click)="startSyllabusQuiz()" [disabled]="isLoading">
+          Start Week Quiz
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="statusMessage && !isLoading" class="status-alert info">
       {{ statusMessage }}
     </div>
 

@@ -3,6 +3,8 @@ from concurrent import futures
 import time
 import os
 import json
+from pydantic import BaseModel, Field
+from typing import List
 import io
 import pickle
 import numpy as np # <--- The "Google Math" Library
@@ -16,6 +18,16 @@ from google.cloud import storage
 import ace_pb2 as ace_pb2
 import ace_pb2_grpc as ace_pb2_grpc
 import analytical_memory
+
+# Load environment variables from .env if present in the parent directory
+env_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", ".env")
+if os.path.exists(env_path):
+    with open(env_path, "r") as f:
+        for line in f:
+            line = line.strip()
+            if line and not line.startswith("#") and "=" in line:
+                key, val = line.split("=", 1)
+                os.environ[key.strip()] = val.strip()
 
 # Initialize Gemini
 NEO4J_URI = os.getenv("NEO4J_URI")
@@ -153,6 +165,16 @@ class PersistentVectorStore:
 
 # Initialize the store
 vector_store = PersistentVectorStore()
+
+# Pydantic models for structured quiz output definition
+class QuestionModel(BaseModel):
+    id: str = Field(description="Unique identifier for the question (e.g. q1, q2)")
+    question_text: str = Field(description="The multiple choice question text")
+    options: List[str] = Field(description="List of exactly 4 multiple choice options")
+    correct_option_index: int = Field(description="0-based index of the correct option in options list")
+
+class QuizResponseModel(BaseModel):
+    questions: List[QuestionModel] = Field(description="List of questions in the generated quiz")
 
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
@@ -452,6 +474,84 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         except Exception as e:
             print(f"[Python] IngestMaterial Exception: {e}")
             return ace_pb2.IngestResponse(success=False, message=f"Internal Server Error: {str(e)}")
+            
+    def GenerateQuiz(self, request, context):
+        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}'...")
+        try:
+            topic_name = "Unknown"
+            chunks = []
+            
+            # Graph Traversal: Write a Neo4j query that matches (w:Week {number: request.week_number})-[:SCHEDULED_FOR]->(t:Topic)<-[:SOURCE_MATERIAL_FOR]-(m:Material) and retrieves the text chunks from those materials.
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (w:Week {number: $week_number})-[:SCHEDULED_FOR]->(t:Topic)<-[:SOURCE_MATERIAL_FOR]-(m:Material)
+                    RETURN t.name AS topic_name, m.chunks AS chunks
+                    """
+                    result = session.run(query, week_number=request.week_number)
+                    for record in result:
+                        if record.get("topic_name"):
+                            topic_name = record["topic_name"]
+                        rec_chunks = record.get("chunks")
+                        if rec_chunks:
+                            if isinstance(rec_chunks, list):
+                                chunks.extend(rec_chunks)
+                            else:
+                                chunks.append(str(rec_chunks))
+            
+            print(f"[Python] GenerateQuiz: Retrieved topic '{topic_name}' with {len(chunks)} chunks.")
+            
+            # Construct prompt for LLM
+            prompt = f"""
+            You are a helpful teaching assistant.
+            Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topic.
+            
+            Week Number: {request.week_number}
+            Topic Name: {topic_name}
+            
+            Here are the source material text chunks to base the questions on:
+            {chr(10).join(chunks) if chunks else "No specific source material text chunks available. Please generate standard multiple choice questions for this topic."}
+            
+            Generate a set of {request.question_count} questions. For each question, make sure:
+            1. It has exactly 4 options.
+            2. The options are clear and plausible.
+            3. The correct_option_index is a 0-based index pointing to the correct answer in the options list.
+            4. The id is a unique identifier string (e.g. "q1", "q2", etc.).
+            """
+            
+            # LLM Generation: Use the google-genai SDK with gemini-2.5-flash-lite
+            response = client.models.generate_content(
+                model='gemini-2.5-flash-lite',
+                contents=prompt,
+                config={
+                    'response_mime_type': 'application/json',
+                    'response_schema': QuizResponseModel,
+                }
+            )
+            
+            # Parse the returned object
+            quiz_data = response.parsed
+            
+            # Map Pydantic response to compiled gRPC structures
+            grpc_questions = []
+            if quiz_data and hasattr(quiz_data, 'questions'):
+                for q in quiz_data.questions:
+                    grpc_questions.append(
+                        ace_pb2.Question(
+                            id=q.id,
+                            question_text=q.question_text,
+                            options=list(q.options),
+                            correct_option_index=q.correct_option_index
+                        )
+                    )
+            
+            return ace_pb2.QuizResponse(questions=grpc_questions)
+            
+        except Exception as e:
+            print(f"[Python] GenerateQuiz Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to generate quiz: {str(e)}")
+            return ace_pb2.QuizResponse()
     
     
     

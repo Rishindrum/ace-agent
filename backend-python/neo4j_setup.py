@@ -59,7 +59,7 @@ def seed_test_data():
     
     queries = [
         # 1. Create nodes using MERGE for idempotency
-        "MERGE (w:Week {name: 'Week 1'})",
+        "MERGE (w:Week {name: 'Week 1', number: 1})",
         "MERGE (t1:Topic {name: 'Linear Algebra'})",
         "MERGE (t2:Topic {name: 'Calculus'})",
         "MERGE (m:Material {name: 'Matrix_Slides.pdf'})",

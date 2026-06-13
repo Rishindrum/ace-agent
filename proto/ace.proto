@@ -11,6 +11,7 @@ service TutorService {
   rpc GenerateAdaptiveQuiz (AdaptiveQuizRequest) returns (AdaptiveQuizResponse);
   rpc GetQuizScores (GetQuizScoresRequest) returns (GetQuizScoresResponse);
   rpc IngestMaterial (IngestRequest) returns (IngestResponse);
+  rpc GenerateQuiz (QuizRequest) returns (QuizResponse);
 }
 
 message SyllabusRequest {
@@ -84,4 +85,20 @@ message IngestRequest {
 message IngestResponse {
   bool success = 1;
   string message = 2;
+}
+
+message QuizRequest {
+  int32 week_number = 1;
+  int32 question_count = 2;
+}
+
+message Question {
+  string id = 1;
+  string question_text = 2;
+  repeated string options = 3;
+  int32 correct_option_index = 4;
+}
+
+message QuizResponse {
+  repeated Question questions = 1;
 }

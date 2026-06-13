@@ -5,7 +5,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
-import { ApiService } from '../../services/api.service';
+import { ApiService, SyllabusQuestionPayload, QuizTelemetryPayload } from '../../services/api.service';
 
 interface Question {
   question_text: string;
@@ -13,6 +13,7 @@ interface Question {
   correct_option_index: number;
   topic: string;
   explanation: string;
+  selected_option_index?: number;
 }
 
 interface Quiz {
@@ -38,6 +39,8 @@ export class QuizInterfaceComponent implements OnInit {
   Math = Math;
   userId: string = 'demo_student';
   syllabusName: string = '';
+  weekNumber: number = 1;
+  questionCount: number = 5;
   currentView: 'history' | 'quiz' = 'history';
   
   // Quiz State
@@ -115,14 +118,61 @@ export class QuizInterfaceComponent implements OnInit {
     });
   }
 
+  startSyllabusQuiz(): void {
+    if (!this.userId.trim() || !this.weekNumber || !this.questionCount) {
+      this.statusMessage = 'Please fill out all fields.';
+      return;
+    }
+    
+    this.isLoading = true;
+    this.statusMessage = `Generating syllabus quiz for Week ${this.weekNumber} using course materials...`;
+    
+    this.api.generateQuiz(this.weekNumber, this.questionCount).subscribe({
+      next: (questions: SyllabusQuestionPayload[]) => {
+        this.isLoading = false;
+        this.statusMessage = '';
+        if (questions && questions.length > 0) {
+          const mappedQuestions = questions.map(q => ({
+            question_text: q.questionText || 'Question',
+            options: q.options || [],
+            correct_option_index: q.correctOptionIndex !== undefined ? q.correctOptionIndex : 0,
+            topic: `Week ${this.weekNumber}`,
+            explanation: 'Correct answer is marked below.'
+          }));
+
+          this.currentQuiz = {
+            quiz_title: `Syllabus Quiz - Week ${this.weekNumber}`,
+            questions: mappedQuestions
+          };
+          this.currentQuestionIndex = 0;
+          this.selectedOptionIndex = null;
+          this.correctAnswersCount = 0;
+          this.showExplanation = false;
+          this.quizFinished = false;
+          this.currentView = 'quiz';
+        } else {
+          this.statusMessage = 'Failed to generate a valid quiz for this week. Ensure syllabus materials are uploaded/ingested.';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.statusMessage = 'Error generating syllabus quiz: ' + err.message;
+        console.error("Syllabus quiz generation error:", err);
+      }
+    });
+  }
+
   selectOption(idx: number): void {
     if (this.selectedOptionIndex !== null) return; // Already answered
     
     this.selectedOptionIndex = idx;
     this.showExplanation = true;
     
-    if (this.currentQuiz && idx === this.currentQuiz.questions[this.currentQuestionIndex].correct_option_index) {
-      this.correctAnswersCount++;
+    if (this.currentQuiz) {
+      this.currentQuiz.questions[this.currentQuestionIndex].selected_option_index = idx;
+      if (idx === this.currentQuiz.questions[this.currentQuestionIndex].correct_option_index) {
+        this.correctAnswersCount++;
+      }
     }
   }
 
@@ -146,12 +196,35 @@ export class QuizInterfaceComponent implements OnInit {
     const totalQuestions = this.currentQuiz.questions.length;
     const finalScorePercent = Math.round((this.correctAnswersCount / totalQuestions) * 100);
     
-    // For the topic_name, let's use the topic of the first question, or default to syllabus
     const primaryTopic = this.currentQuiz.questions[0]?.topic || this.syllabusName;
     
     this.isLoading = true;
     this.statusMessage = `Submitting score (${finalScorePercent}%) to BigQuery...`;
+
+    // 1. Submit telemetry to the new BigQuery uploader if it's a syllabus quiz
+    if (this.currentQuiz.quiz_title.startsWith('Syllabus Quiz')) {
+      const telemetryQuestions = this.currentQuiz.questions.map((q, index) => ({
+        id: `q-${index}`,
+        selected_option_index: q.selected_option_index !== undefined ? q.selected_option_index : -1,
+        correct_option_index: q.correct_option_index
+      }));
+
+      const telemetryPayload: QuizTelemetryPayload = {
+        week_number: this.weekNumber,
+        questions: telemetryQuestions
+      };
+
+      this.api.submitQuizTelemetry(telemetryPayload).subscribe({
+        next: (telemetryRes) => {
+          console.log("[BigQuery Telemetry] Successfully streamed:", telemetryRes);
+        },
+        error: (err) => {
+          console.error("[BigQuery Telemetry] Failed to stream:", err);
+        }
+      });
+    }
     
+    // 2. Submit to user score history (BigQuery performance list)
     this.api.submitQuizResult(this.userId, primaryTopic, finalScorePercent).subscribe({
       next: () => {
         this.isLoading = false;
