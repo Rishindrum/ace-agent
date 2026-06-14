@@ -13,6 +13,9 @@ from google import genai
 from neo4j import GraphDatabase
 from pypdf import PdfReader
 from google.cloud import storage
+from grpc_health.v1 import health
+from grpc_health.v1 import health_pb2
+from grpc_health.v1 import health_pb2_grpc
 
 # --- IMPORTS ---
 import ace_pb2 as ace_pb2
@@ -606,6 +609,12 @@ def serve():
     
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     ace_pb2_grpc.add_TutorServiceServicer_to_server(TutorService(), server)
+    
+    # Add Health Checking Servicer (Crucial for Cloud Run gRPC startup probes)
+    health_servicer = health.HealthServicer()
+    health_pb2_grpc.add_HealthServicer_to_server(health_servicer, server)
+    health_servicer.set("", health_pb2.HealthCheckResponse.SERVING)
+    health_servicer.set("ace.TutorService", health_pb2.HealthCheckResponse.SERVING)
     
     # 2. BIND TO 0.0.0.0 (Extremely important for Cloud Run)
     bind_addr = f'0.0.0.0:{port}'
