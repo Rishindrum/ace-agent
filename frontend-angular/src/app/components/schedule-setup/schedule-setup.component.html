@@ -1,0 +1,65 @@
+<div class="setup-page-container">
+  <div class="back-nav">
+    <a routerLink="/dashboard" class="back-link">
+      <mat-icon>arrow_back</mat-icon> Back to Dashboard
+    </a>
+  </div>
+
+  <div class="setup-card card">
+    <div class="setup-header">
+      <div class="header-icon">
+        <mat-icon>calendar_month</mat-icon>
+      </div>
+      <h2>Configure Your Study Schedule</h2>
+      <p class="section-desc">Set your study patterns so the AI can automatically schedule optimal topics and calendar notifications.</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #setupForm="ngForm" class="setup-form">
+      <!-- Preferred Study Time -->
+      <div class="form-group">
+        <label for="preferredStudyTime">Preferred Study Time</label>
+        <p class="field-desc">When do you usually focus best during the day?</p>
+        <select id="preferredStudyTime" name="preferredStudyTime" [(ngModel)]="preferredStudyTime" class="form-select">
+          <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
+          <option value="afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
+          <option value="evening">Evening (5:00 PM - 9:00 PM)</option>
+          <option value="night">Night (9:00 PM - 12:00 AM)</option>
+        </select>
+      </div>
+
+      <!-- Days to Avoid -->
+      <div class="form-group">
+        <label>Days to Avoid</label>
+        <p class="field-desc">Select days where you do not want to schedule any AI study sessions.</p>
+        <div class="days-grid">
+          <label *ngFor="let day of days; let idx = index" class="day-checkbox-wrapper">
+            <input 
+              type="checkbox" 
+              [name]="'day-' + idx" 
+              [(ngModel)]="day.selected"
+              class="day-checkbox" 
+            />
+            <span class="day-label">{{ day.name }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <!-- Submit Actions -->
+      <div class="form-actions">
+        <button type="button" routerLink="/dashboard" class="btn btn-outline" [disabled]="isLoading">
+          Cancel
+        </button>
+        <button type="submit" class="btn btn-primary" [disabled]="isLoading">
+          <span *ngIf="!isLoading">Save Preferences</span>
+          <span *ngIf="isLoading">Saving...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

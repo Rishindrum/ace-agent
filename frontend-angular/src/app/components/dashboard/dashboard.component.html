@@ -1,0 +1,78 @@
+<div *ngIf="calendarConnected && !isScheduleConfigured" class="schedule-banner">
+  <div class="banner-content">
+    <mat-icon class="banner-icon">warning</mat-icon>
+    <span class="banner-text">Action Required: Complete your Schedule Setup to enable AI calendar invites.</span>
+  </div>
+  <button class="btn-banner" routerLink="/schedule-setup">Configure Schedule</button>
+</div>
+
+<div class="app-wrapper">
+  <!-- Top Navigation Bar -->
+  <header class="app-header">
+    <div class="logo-area">
+      <div class="logo-icon">
+        <mat-icon>school</mat-icon>
+      </div>
+      <div class="logo-text">
+        <h2>Ace Agent</h2>
+        <span>Interactive AI Study Companion</span>
+      </div>
+    </div>
+    <nav class="tab-nav">
+      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
+        <mat-icon>menu_book</mat-icon> Syllabus & Graph
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+        <mat-icon>forum</mat-icon> AI Tutor
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
+        <mat-icon>assignment_turned_in</mat-icon> Quizzes
+      </button>
+    </nav>
+  </header>
+
+  <!-- Content Workspace -->
+  <main class="app-workspace">
+    <!-- Syllabus & Knowledge Graph Tab -->
+    <div *ngIf="activeTab === 'syllabus'" class="tab-content fade-in">
+      <div class="syllabus-layout">
+        <div class="sidebar-column">
+          <div class="upload-section card">
+            <h3>Syllabus Upload</h3>
+            <p class="section-desc">Upload your course syllabus PDF to extract key topics, concepts, and relationships.</p>
+            <app-upload></app-upload>
+          </div>
+          
+          <div class="ingest-section card">
+            <h3>Material Ingestion</h3>
+            <p class="section-desc">Ingest slides, transcripts, or notes for scheduled course topics.</p>
+            <app-ingest></app-ingest>
+          </div>
+        </div>
+        <div class="graph-section card">
+          <h3>Knowledge Graph</h3>
+          <p class="section-desc">Visual representation of course prerequisites and topic dependencies extracted by Gemini.</p>
+          <app-graph-visualizer></app-graph-visualizer>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Tutor Chat Tab -->
+    <div *ngIf="activeTab === 'tutor'" class="tab-content fade-in tutor-tab">
+      <div class="chat-layout card">
+        <h3>Ask Ace</h3>
+        <p class="section-desc">Ask questions about policies, prerequisites, syllabus content, or educational topics.</p>
+        <app-chat-interface></app-chat-interface>
+      </div>
+    </div>
+
+    <!-- Quiz Tab -->
+    <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
+      <div class="quiz-layout card">
+        <h3>Adaptive Performance Quiz</h3>
+        <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
+        <app-quiz-interface></app-quiz-interface>
+      </div>
+    </div>
+  </main>
+</div>

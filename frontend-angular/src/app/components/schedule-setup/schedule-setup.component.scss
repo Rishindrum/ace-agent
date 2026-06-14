@@ -1,0 +1,234 @@
+$bg-color: #f8fafc;
+$card-bg: #ffffff;
+$primary-gradient: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+$text-main: #1e293b;
+$text-muted: #64748b;
+$border-color: #e2e8f0;
+
+.setup-page-container {
+  max-width: 680px;
+  margin: 40px auto;
+  padding: 0 20px;
+  box-sizing: border-box;
+  font-family: 'Inter', sans-serif;
+}
+
+.back-nav {
+  margin-bottom: 24px;
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: $text-muted;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: color 0.2s ease;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+    }
+
+    &:hover {
+      color: #4f46e5;
+    }
+  }
+}
+
+.setup-card {
+  background-color: $card-bg;
+  border-radius: 16px;
+  border: 1px solid $border-color;
+  padding: 36px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+
+  .setup-header {
+    text-align: center;
+    margin-bottom: 32px;
+
+    .header-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 16px;
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px auto;
+
+      mat-icon {
+        font-size: 32px;
+        width: 32px;
+        height: 32px;
+      }
+    }
+
+    h2 {
+      margin: 0 0 8px 0;
+      font-size: 24px;
+      font-weight: 800;
+      color: $text-main;
+    }
+
+    .section-desc {
+      margin: 0;
+      font-size: 14px;
+      color: $text-muted;
+      line-height: 1.5;
+    }
+  }
+}
+
+.setup-form {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      color: $text-main;
+    }
+
+    .field-desc {
+      margin: 0 0 8px 0;
+      font-size: 12px;
+      color: $text-muted;
+    }
+
+    .form-select {
+      padding: 12px;
+      border-radius: 8px;
+      border: 1px solid $border-color;
+      font-size: 14px;
+      color: $text-main;
+      background-color: white;
+      transition: all 0.2s ease;
+      cursor: pointer;
+
+      &:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+      }
+    }
+  }
+
+  .days-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    gap: 12px;
+  }
+
+  .day-checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 14px;
+    border: 1px solid $border-color;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .day-checkbox {
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      accent-color: #6366f1;
+    }
+
+    .day-label {
+      font-size: 13px;
+      font-weight: 500;
+      color: $text-main;
+      cursor: pointer;
+      user-select: none;
+    }
+  }
+
+  .error-alert {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    background-color: #fdf2f2;
+    border: 1px solid #fecaca;
+    border-radius: 8px;
+    color: #ef4444;
+    font-size: 13px;
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      flex-shrink: 0;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 12px;
+    border-top: 1px solid $border-color;
+    padding-top: 24px;
+  }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+
+  &.btn-primary {
+    background: $primary-gradient;
+    color: white;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);
+
+    &:hover:not(:disabled) {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);
+    }
+
+    &:disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+  }
+
+  &.btn-outline {
+    background: transparent;
+    border: 1.5px solid $border-color;
+    color: $text-muted;
+
+    &:hover {
+      background: #f1f5f9;
+      border-color: #94a3b8;
+      color: $text-main;
+    }
+  }
+}

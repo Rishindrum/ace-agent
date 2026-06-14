@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	pb "ace-agent/backend-go/proto"
+	calendar "ace-agent/backend-go/calendar"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/option"
@@ -552,9 +553,104 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	userID := r.URL.Query().Get("user_id")
+	if userID == "" {
+		userID = "demo_student"
+	}
+
+	loginURL := calendar.GetLoginURL(userID)
+	http.Redirect(w, r, loginURL, http.StatusTemporaryRedirect)
+}
+
+func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+
+	code := r.URL.Query().Get("code")
+	userID := r.URL.Query().Get("state")
+
+	if code == "" {
+		http.Error(w, "Missing code parameter", http.StatusBadRequest)
+		return
+	}
+	if userID == "" {
+		userID = "demo_student"
+	}
+
+	ctx := context.Background()
+	token, err := calendar.OAuthConfig.Exchange(ctx, code)
+	if err != nil {
+		log.Printf("[OAuth] Token exchange failed: %v", err)
+		http.Error(w, "Token exchange failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	refreshToken := token.RefreshToken
+	if refreshToken == "" {
+		log.Println("[OAuth] Warning: Refresh token is empty in callback.")
+	}
+
+	err = calendar.SaveRefreshToken(ctx, userID, refreshToken)
+	if err != nil {
+		log.Printf("[OAuth] Secret Manager storage failed: %v", err)
+		http.Error(w, "Secure storage failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4200"
+	}
+	http.Redirect(w, r, frontendURL+"/dashboard?calendar_connected=true", http.StatusFound)
+}
+
+func schedulePreferencesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		PreferredStudyTime string   `json:"preferred_study_time"`
+		DaysToAvoid        []string `json:"days_to_avoid"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	log.Printf("[Schedule] Received preferences: studyTime=%s, daysToAvoid=%v", req.PreferredStudyTime, req.DaysToAvoid)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"message": "Preferences saved successfully",
+	})
+}
+
 func main() {
 	// Start BigQuery initialization in background
 	go initBigQuery()
+
+	// Initialize Google Calendar OAuth config
+	calendar.InitOAuthConfig()
 
 	tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
     if tutorAddr == "" {
@@ -601,6 +697,9 @@ func main() {
 	mux.HandleFunc("/api/v1/ingest", ingestMaterialHandler)
 	mux.HandleFunc("/api/v1/quiz", generateQuizHandler)
 	mux.HandleFunc("/api/v1/quiz/submit", submitQuizTelemetryHandler)
+	mux.HandleFunc("/api/v1/auth/google/login", googleLoginHandler)
+	mux.HandleFunc("/api/v1/auth/google/callback", googleCallbackHandler)
+	mux.HandleFunc("/api/v1/schedule/preferences", schedulePreferencesHandler)
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {

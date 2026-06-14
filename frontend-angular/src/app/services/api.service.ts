@@ -86,6 +86,13 @@ export class ApiService {
     return this.http.post<QuizTelemetryResponse>(`${this.baseUrl}/api/v1/quiz/submit`, payload);
   }
 
+  saveSchedulePreferences(preferredStudyTime: string, daysToAvoid: string[]): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/schedule/preferences`, {
+      preferred_study_time: preferredStudyTime,
+      days_to_avoid: daysToAvoid
+    });
+  }
+
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);
   }

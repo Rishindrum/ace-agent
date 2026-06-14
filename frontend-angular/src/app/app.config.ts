@@ -1,11 +1,21 @@
 import { ApplicationConfig } from '@angular/core';
 import { provideHttpClient } from '@angular/common/http';
 import { provideAnimations } from '@angular/platform-browser/animations';
+import { provideRouter, Routes } from '@angular/router';
+import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { ScheduleSetupComponent } from './components/schedule-setup/schedule-setup.component';
+
+export const routes: Routes = [
+  { path: 'dashboard', component: DashboardComponent },
+  { path: 'schedule-setup', component: ScheduleSetupComponent },
+  { path: '', redirectTo: '/dashboard', pathMatch: 'full' }
+];
 
 export const appConfig: ApplicationConfig = {
   providers: [
     // We strictly need these two for the API and the UI components
     provideAnimations(),
-    provideHttpClient()
+    provideHttpClient(),
+    provideRouter(routes)
   ]
 };
