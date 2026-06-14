@@ -574,12 +574,19 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := r.URL.Query().Get("user_id")
+	userID := auth.GetUserID(r.Context())
 	if userID == "" {
-		userID = "demo_student"
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
 	}
 
-	loginURL := calendar.GetLoginURL(userID)
+	state := auth.GetToken(r.Context())
+	if state == "" {
+		http.Error(w, "Unauthorized: Token missing", http.StatusUnauthorized)
+		return
+	}
+
+	loginURL := calendar.GetLoginURL(state)
 	http.Redirect(w, r, loginURL, http.StatusTemporaryRedirect)
 }
 
@@ -587,14 +594,15 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 
 	code := r.URL.Query().Get("code")
-	userID := r.URL.Query().Get("state")
-
 	if code == "" {
 		http.Error(w, "Missing code parameter", http.StatusBadRequest)
 		return
 	}
+
+	userID := auth.GetUserID(r.Context())
 	if userID == "" {
-		userID = "demo_student"
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
 	}
 
 	ctx := context.Background()
@@ -807,8 +815,8 @@ func main() {
 	mux.HandleFunc("/api/v1/ingest", auth.JWTMiddleware(ingestMaterialHandler))
 	mux.HandleFunc("/api/v1/quiz", auth.JWTMiddleware(generateQuizHandler))
 	mux.HandleFunc("/api/v1/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
-	mux.HandleFunc("/api/v1/auth/google/login", googleLoginHandler)
-	mux.HandleFunc("/api/v1/auth/google/callback", googleCallbackHandler)
+	mux.HandleFunc("/api/v1/auth/google/login", auth.JWTMiddleware(googleLoginHandler))
+	mux.HandleFunc("/api/v1/auth/google/callback", auth.JWTMiddleware(googleCallbackHandler))
 	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")

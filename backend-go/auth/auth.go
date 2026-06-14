@@ -146,7 +146,10 @@ func ParseToken(tokenStr string) (string, error) {
 
 type contextKey string
 
-const UserIDKey contextKey = "user_id"
+const (
+	UserIDKey contextKey = "user_id"
+	TokenKey  contextKey = "token"
+)
 
 // JWTMiddleware extracts user_id and injects it into request context
 func JWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
@@ -160,13 +163,21 @@ func JWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			return
 		}
 
+		var tokenStr string
 		authHeader := r.Header.Get("Authorization")
-		if len(authHeader) < 8 || authHeader[:7] != "Bearer " {
-			http.Error(w, "Unauthorized: Missing Bearer Token", http.StatusUnauthorized)
+		if len(authHeader) >= 8 && authHeader[:7] == "Bearer " {
+			tokenStr = authHeader[7:]
+		} else if qToken := r.URL.Query().Get("token"); qToken != "" {
+			tokenStr = qToken
+		} else if qState := r.URL.Query().Get("state"); qState != "" {
+			tokenStr = qState
+		}
+
+		if tokenStr == "" {
+			http.Error(w, "Unauthorized: Missing Token", http.StatusUnauthorized)
 			return
 		}
 
-		tokenStr := authHeader[7:]
 		userID, err := ParseToken(tokenStr)
 		if err != nil {
 			http.Error(w, "Unauthorized: "+err.Error(), http.StatusUnauthorized)
@@ -174,6 +185,7 @@ func JWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		ctx := context.WithValue(r.Context(), UserIDKey, userID)
+		ctx = context.WithValue(ctx, TokenKey, tokenStr)
 		next(w, r.WithContext(ctx))
 	}
 }
@@ -181,6 +193,16 @@ func JWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 // GetUserID retrieves the user_id from context
 func GetUserID(ctx context.Context) string {
 	if val := ctx.Value(UserIDKey); val != nil {
+		if str, ok := val.(string); ok {
+			return str
+		}
+	}
+	return ""
+}
+
+// GetToken retrieves the token from context
+func GetToken(ctx context.Context) string {
+	if val := ctx.Value(TokenKey); val != nil {
 		if str, ok := val.(string); ok {
 			return str
 		}

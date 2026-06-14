@@ -66,7 +66,7 @@ func SaveRefreshToken(ctx context.Context, userID string, refreshToken string) e
 
 	// Project ID is ace-agent-demo
 	projectID := "ace-agent-demo"
-	secretID := fmt.Sprintf("refresh-token-%s", userID)
+	secretID := fmt.Sprintf("ace-refresh-token-%s", userID)
 
 	// Build the parent resource path
 	parent := fmt.Sprintf("projects/%s", projectID)
