@@ -56,24 +56,25 @@ def resolve_topic(raw_text: str, topic_name: str) -> str:
     
     return topic_name.strip()
 
-def ingest_material(content: str, topic_name: str, week_number: int) -> bool:
+def ingest_material(content: str, topic_name: str, week_number: int, user_id: str) -> bool:
     """
     Ingests text content for a specific topic and week:
     1. Resolves the topic name to a standardized string using Gemini.
     2. Chunks the text content.
     3. Computes and appends the vector embeddings to the NumPy vector store.
-    4. Merges the Week and Topic nodes in Neo4j, ensuring they are connected.
+    4. Merges the Week and Topic nodes in Neo4j, ensuring they are connected and isolated per user.
     5. Creates a new Material node and links it using a SOURCE_MATERIAL_FOR edge.
     
     Args:
         content: The raw text content to ingest.
         topic_name: Name of the syllabus Topic (e.g., "Linear Algebra").
         week_number: The week number (e.g., 1).
+        user_id: Unique user identifier for database isolation.
         
     Returns:
         bool: True if ingestion was successful, False otherwise.
     """
-    print(f"[IngestionService] Starting ingestion for topic '{topic_name}' under Week '{week_number}'...")
+    print(f"[IngestionService] Starting ingestion for topic '{topic_name}' under Week '{week_number}' for user '{user_id}'...")
     
     # 1. LLM Resolution step to get a standardized topic string
     resolved_topic = resolve_topic(content, topic_name)
@@ -101,15 +102,18 @@ def ingest_material(content: str, topic_name: str, week_number: int) -> bool:
         driver = get_driver()
         material_name = f"Material_{resolved_topic.replace(' ', '_')}_{week_name.replace(' ', '_')}_{int(time.time())}"
         
-        # Cypher: MERGE Week and Topic nodes, connect them, then CREATE Material node
+        # Cypher: MERGE User, Week, Topic nodes, connect them, then CREATE Material node
         query = """
-        MERGE (w:Week {number: $week_number})
+        MERGE (u:User {id: $user_id})
+        MERGE (w:Week {number: $week_number, user_id: $user_id})
         ON CREATE SET w.name = $week_name
         
-        MERGE (t:Topic {name: $topic_name})
+        MERGE (u)-[:HAS_SYLLABUS]->(w)
+        
+        MERGE (t:Topic {name: $topic_name, user_id: $user_id})
         MERGE (w)-[:SCHEDULED_FOR]->(t)
         
-        CREATE (m:Material {name: $material_name})
+        CREATE (m:Material {name: $material_name, user_id: $user_id})
         SET m.content = $content,
             m.chunks = $chunks,
             m.created_at = timestamp()
@@ -121,6 +125,7 @@ def ingest_material(content: str, topic_name: str, week_number: int) -> bool:
         with driver.session() as session:
             result = session.run(
                 query,
+                user_id=user_id,
                 week_name=week_name,
                 week_number=week_num,
                 topic_name=resolved_topic,

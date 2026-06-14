@@ -462,13 +462,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         return ace_pb2.AdaptiveQuizResponse(quiz_json=quiz_json)
 
     def IngestMaterial(self, request, context):
-        print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}'...")
+        print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}' for user '{request.user_id}'...")
         try:
             import ingestion_service
             success = ingestion_service.ingest_material(
                 content=request.raw_text,
                 topic_name=request.topic_name,
-                week_number=str(request.week_number)
+                week_number=str(request.week_number),
+                user_id=request.user_id
             )
             if success:
                 return ace_pb2.IngestResponse(success=True, message="Material successfully ingested and embedded.")
@@ -479,19 +480,19 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.IngestResponse(success=False, message=f"Internal Server Error: {str(e)}")
             
     def GenerateQuiz(self, request, context):
-        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}'...")
+        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}'...")
         try:
             topic_name = "Unknown"
             chunks = []
             
-            # Graph Traversal: Write a Neo4j query that matches (w:Week {number: request.week_number})-[:SCHEDULED_FOR]->(t:Topic)<-[:SOURCE_MATERIAL_FOR]-(m:Material) and retrieves the text chunks from those materials.
+            # Graph Traversal: Write a Neo4j query that matches (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {number: request.week_number}) and retrieves the text chunks from those materials.
             if self.driver:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (w:Week {number: $week_number})-[:SCHEDULED_FOR]->(t:Topic)<-[:SOURCE_MATERIAL_FOR]-(m:Material)
+                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {number: $week_number, user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, week_number=request.week_number)
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
                     for record in result:
                         if record.get("topic_name"):
                             topic_name = record["topic_name"]

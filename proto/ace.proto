@@ -80,6 +80,7 @@ message IngestRequest {
   int32 week_number = 1;
   string topic_name = 2;
   string raw_text = 3;
+  string user_id = 4;
 }
 
 message IngestResponse {
@@ -90,6 +91,7 @@ message IngestResponse {
 message QuizRequest {
   int32 week_number = 1;
   int32 question_count = 2;
+  string user_id = 3;
 }
 
 message Question {

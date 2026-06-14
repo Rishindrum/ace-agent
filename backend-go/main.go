@@ -12,6 +12,7 @@ import (
 
 	pb "ace-agent/backend-go/proto"
 	calendar "ace-agent/backend-go/calendar"
+	auth "ace-agent/backend-go/auth"
 
 	"cloud.google.com/go/bigquery"
 	"google.golang.org/api/option"
@@ -30,6 +31,7 @@ var bqTable *bigquery.Table
 // Telemetry Data Schema
 type QuizAttemptTelemetry struct {
 	AttemptID       string    `bigquery:"attempt_id"`
+	UserID          string    `bigquery:"user_id"`
 	WeekNumber      int       `bigquery:"week_number"`
 	TotalQuestions  int       `bigquery:"total_questions"`
 	CorrectAnswers  int       `bigquery:"correct_answers"`
@@ -41,6 +43,7 @@ type QuizAttemptTelemetry struct {
 func (q *QuizAttemptTelemetry) Save() (map[string]bigquery.Value, string, error) {
 	return map[string]bigquery.Value{
 		"attempt_id":       q.AttemptID,
+		"user_id":          q.UserID,
 		"week_number":      q.WeekNumber,
 		"total_questions":  q.TotalQuestions,
 		"correct_answers":  q.CorrectAnswers,
@@ -91,6 +94,7 @@ func initBigQuery() {
 	// Define table schema
 	schema := bigquery.Schema{
 		{Name: "attempt_id", Type: bigquery.StringFieldType, Required: true},
+		{Name: "user_id", Type: bigquery.StringFieldType, Required: true},
 		{Name: "week_number", Type: bigquery.IntegerFieldType, Required: true},
 		{Name: "total_questions", Type: bigquery.IntegerFieldType, Required: true},
 		{Name: "correct_answers", Type: bigquery.IntegerFieldType, Required: true},
@@ -393,10 +397,13 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := auth.GetUserID(r.Context())
+
 	grpcReq := &pb.IngestRequest{
 		WeekNumber: req.WeekNumber,
 		TopicName:  req.TopicName,
 		RawText:    req.RawText,
+		UserId:     userID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -444,9 +451,12 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	userID := auth.GetUserID(r.Context())
+
 	grpcReq := &pb.QuizRequest{
 		WeekNumber:    req.WeekNumber,
 		QuestionCount: req.QuestionCount,
+		UserId:        userID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -516,11 +526,13 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	userID := auth.GetUserID(r.Context())
 	scorePercentage := (float64(correctAnswers) / float64(totalQuestions)) * 100.0
 	attemptID := uuid.New().String()
 
 	telemetry := &QuizAttemptTelemetry{
 		AttemptID:       attemptID,
+		UserID:          userID,
 		WeekNumber:      req.WeekNumber,
 		TotalQuestions:  totalQuestions,
 		CorrectAnswers:  correctAnswers,
@@ -645,9 +657,105 @@ func schedulePreferencesHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func registerHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	if req.Username == "" || req.Password == "" {
+		http.Error(w, "Username and password are required", http.StatusBadRequest)
+		return
+	}
+
+	userID, err := auth.GlobalUserStore.Register(req.Username, req.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	token, err := auth.GenerateToken(userID)
+	if err != nil {
+		http.Error(w, "Failed to generate token: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"user_id": userID,
+		"token":   token,
+	})
+}
+
+func loginHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		Username string `json:"username"`
+		Password string `json:"password"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userID, err := auth.GlobalUserStore.Login(req.Username, req.Password)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusUnauthorized)
+		return
+	}
+
+	token, err := auth.GenerateToken(userID)
+	if err != nil {
+		http.Error(w, "Failed to generate token: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"user_id": userID,
+		"token":   token,
+	})
+}
+
 func main() {
 	// Start BigQuery initialization in background
 	go initBigQuery()
+
+	// Initialize user database
+	auth.InitUserStore("users.json")
 
 	// Initialize Google Calendar OAuth config
 	calendar.InitOAuthConfig()
@@ -694,12 +802,14 @@ func main() {
 	mux.HandleFunc("/quiz/submit", submitQuizResultHandler)
 	mux.HandleFunc("/quiz/scores", getQuizScoresHandler)
 	mux.HandleFunc("/quiz/adaptive", generateAdaptiveQuizHandler)
-	mux.HandleFunc("/api/v1/ingest", ingestMaterialHandler)
-	mux.HandleFunc("/api/v1/quiz", generateQuizHandler)
-	mux.HandleFunc("/api/v1/quiz/submit", submitQuizTelemetryHandler)
+	mux.HandleFunc("/api/v1/auth/register", registerHandler)
+	mux.HandleFunc("/api/v1/auth/login", loginHandler)
+	mux.HandleFunc("/api/v1/ingest", auth.JWTMiddleware(ingestMaterialHandler))
+	mux.HandleFunc("/api/v1/quiz", auth.JWTMiddleware(generateQuizHandler))
+	mux.HandleFunc("/api/v1/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
 	mux.HandleFunc("/api/v1/auth/google/login", googleLoginHandler)
 	mux.HandleFunc("/api/v1/auth/google/callback", googleCallbackHandler)
-	mux.HandleFunc("/api/v1/schedule/preferences", schedulePreferencesHandler)
+	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
