@@ -93,6 +93,13 @@ export class ApiService {
     });
   }
 
+  saveUserConfig(preferredStudyTimes: string[], weeklyCommitment: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/user/config`, {
+      preferred_study_times: preferredStudyTimes,
+      weekly_commitment: weeklyCommitment
+    });
+  }
+
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);
   }

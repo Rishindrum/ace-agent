@@ -1,0 +1,71 @@
+<div class="login-page-container">
+  <div class="glow-sphere sphere-1"></div>
+  <div class="glow-sphere sphere-2"></div>
+  
+  <div class="auth-card animate-fade-in">
+    <div class="auth-header">
+      <div class="logo-icon-container">
+        <mat-icon class="logo-icon">school</mat-icon>
+      </div>
+      <h1>Ace Agent</h1>
+      <p class="subtitle">{{ isLoginMode ? 'Sign in to access your study portal' : 'Create an account to start learning' }}</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" #authForm="ngForm" class="auth-form">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <div class="input-wrapper">
+          <mat-icon class="input-icon">person</mat-icon>
+          <input 
+            type="text" 
+            id="username" 
+            name="username" 
+            [(ngModel)]="username" 
+            placeholder="Enter username" 
+            required 
+            class="form-input"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="password">Password</label>
+        <div class="input-wrapper">
+          <mat-icon class="input-icon">lock</mat-icon>
+          <input 
+            type="password" 
+            id="password" 
+            name="password" 
+            [(ngModel)]="password" 
+            placeholder="Enter password" 
+            required 
+            class="form-input"
+            [disabled]="isLoading"
+          />
+        </div>
+      </div>
+
+      <div *ngIf="errorMessage" class="error-banner">
+        <mat-icon class="error-icon">error_outline</mat-icon>
+        <span>{{ errorMessage }}</span>
+      </div>
+
+      <button type="submit" class="btn-auth" [disabled]="isLoading">
+        <span *ngIf="!isLoading">{{ isLoginMode ? 'Sign In' : 'Sign Up' }}</span>
+        <span *ngIf="isLoading" class="spinner-container">
+          <span class="spinner"></span> Processing...
+        </span>
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <p>
+        {{ isLoginMode ? "Don't have an account?" : "Already have an account?" }}
+        <button type="button" class="btn-toggle" (click)="toggleMode()" [disabled]="isLoading">
+          {{ isLoginMode ? 'Sign Up' : 'Sign In' }}
+        </button>
+      </p>
+    </div>
+  </div>
+</div>

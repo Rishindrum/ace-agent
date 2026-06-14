@@ -18,17 +18,22 @@
         <span>Interactive AI Study Companion</span>
       </div>
     </div>
-    <nav class="tab-nav">
-      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
-        <mat-icon>menu_book</mat-icon> Syllabus & Graph
+    <div class="header-right">
+      <nav class="tab-nav">
+        <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
+          <mat-icon>menu_book</mat-icon> Syllabus & Graph
+        </button>
+        <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+          <mat-icon>forum</mat-icon> AI Tutor
+        </button>
+        <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
+          <mat-icon>assignment_turned_in</mat-icon> Quizzes
+        </button>
+      </nav>
+      <button class="btn-logout" (click)="logout()">
+        <mat-icon>logout</mat-icon> Logout
       </button>
-      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
-        <mat-icon>forum</mat-icon> AI Tutor
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
-        <mat-icon>assignment_turned_in</mat-icon> Quizzes
-      </button>
-    </nav>
+    </div>
   </header>
 
   <!-- Content Workspace -->

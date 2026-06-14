@@ -11,36 +11,44 @@
         <mat-icon>calendar_month</mat-icon>
       </div>
       <h2>Configure Your Study Schedule</h2>
-      <p class="section-desc">Set your study patterns so the AI can automatically schedule optimal topics and calendar notifications.</p>
+      <p class="section-desc">Set your study preferences so the AI can automatically schedule optimal topics and quizzes.</p>
     </div>
 
     <form (ngSubmit)="onSubmit()" #setupForm="ngForm" class="setup-form">
-      <!-- Preferred Study Time -->
+      <!-- Preferred Study Times -->
       <div class="form-group">
-        <label for="preferredStudyTime">Preferred Study Time</label>
-        <p class="field-desc">When do you usually focus best during the day?</p>
-        <select id="preferredStudyTime" name="preferredStudyTime" [(ngModel)]="preferredStudyTime" class="form-select">
-          <option value="morning">Morning (8:00 AM - 12:00 PM)</option>
-          <option value="afternoon">Afternoon (12:00 PM - 5:00 PM)</option>
-          <option value="evening">Evening (5:00 PM - 9:00 PM)</option>
-          <option value="night">Night (9:00 PM - 12:00 AM)</option>
-        </select>
-      </div>
-
-      <!-- Days to Avoid -->
-      <div class="form-group">
-        <label>Days to Avoid</label>
-        <p class="field-desc">Select days where you do not want to schedule any AI study sessions.</p>
-        <div class="days-grid">
-          <label *ngFor="let day of days; let idx = index" class="day-checkbox-wrapper">
+        <label>Preferred Study Times</label>
+        <p class="field-desc">Select when you usually focus best during the day (select all that apply).</p>
+        <div class="times-grid">
+          <label *ngFor="let time of preferredStudyTimes; let idx = index" class="time-checkbox-wrapper">
             <input 
               type="checkbox" 
-              [name]="'day-' + idx" 
-              [(ngModel)]="day.selected"
-              class="day-checkbox" 
+              [name]="'time-' + idx" 
+              [(ngModel)]="time.selected"
+              class="time-checkbox" 
             />
-            <span class="day-label">{{ day.name }}</span>
+            <span class="time-label">{{ time.name }}</span>
           </label>
+        </div>
+      </div>
+
+      <!-- Weekly Commitment Target -->
+      <div class="form-group">
+        <label for="weeklyCommitment">Weekly Commitment Target</label>
+        <p class="field-desc">How many hours or quizzes do you commit to complete each week?</p>
+        <div class="input-wrapper">
+          <input 
+            type="number" 
+            id="weeklyCommitment" 
+            name="weeklyCommitment" 
+            [(ngModel)]="weeklyCommitment" 
+            min="1" 
+            max="168"
+            required 
+            class="form-input"
+            [disabled]="isLoading"
+          />
+          <span class="input-suffix">per week</span>
         </div>
       </div>
 

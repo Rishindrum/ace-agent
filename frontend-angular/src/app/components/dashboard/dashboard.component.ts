@@ -7,6 +7,7 @@ import { GraphVisualizerComponent } from '../graph-visualizer/graph-visualizer.c
 import { ChatInterfaceComponent } from '../chat-interface/chat-interface.component';
 import { QuizInterfaceComponent } from '../quiz-interface/quiz-interface.component';
 import { IngestComponent } from '../ingest/ingest.component';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -30,12 +31,23 @@ export class DashboardComponent implements OnInit {
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
 
-  constructor(private route: ActivatedRoute, private router: Router) {}
+  constructor(
+    private route: ActivatedRoute, 
+    private router: Router, 
+    private authService: AuthService
+  ) {}
 
   ngOnInit(): void {
+    if (!this.authService.isAuthenticated()) {
+      this.router.navigate(['/login']);
+      return;
+    }
+
     // 1. Check local storage
     this.calendarConnected = localStorage.getItem('calendar_connected') === 'true';
-    this.isScheduleConfigured = localStorage.getItem('isScheduleConfigured') === 'true';
+    this.isScheduleConfigured = 
+      localStorage.getItem('isScheduleConfigured') === 'true' || 
+      localStorage.getItem('is_schedule_configured') === 'true';
 
     // 2. Check query params
     this.route.queryParams.subscribe(params => {
@@ -54,5 +66,10 @@ export class DashboardComponent implements OnInit {
 
   selectTab(tab: 'syllabus' | 'tutor' | 'quiz'): void {
     this.activeTab = tab;
+  }
+
+  logout(): void {
+    this.authService.logout();
+    this.router.navigate(['/login']);
   }
 }

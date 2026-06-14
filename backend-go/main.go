@@ -632,6 +632,41 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, frontendURL+"/dashboard?calendar_connected=true", http.StatusFound)
 }
 
+func userConfigHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		PreferredStudyTimes []string `json:"preferred_study_times"`
+		WeeklyCommitment    int      `json:"weekly_commitment"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	log.Printf("[UserConfig] Saved configuration for user %s: preferredTimes=%v, weeklyCommitment=%d",
+		userID, req.PreferredStudyTimes, req.WeeklyCommitment)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"message": "Configuration saved successfully",
+	})
+}
+
 func schedulePreferencesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
@@ -818,6 +853,7 @@ func main() {
 	mux.HandleFunc("/api/v1/auth/google/login", auth.JWTMiddleware(googleLoginHandler))
 	mux.HandleFunc("/api/v1/auth/google/callback", auth.JWTMiddleware(googleCallbackHandler))
 	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
+	mux.HandleFunc("/api/v1/user/config", auth.JWTMiddleware(userConfigHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
