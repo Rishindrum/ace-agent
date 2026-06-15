@@ -61,6 +61,11 @@ export class QuizInterfaceComponent implements OnInit {
   isLoading: boolean = false;
   statusMessage: string = '';
 
+  // Regeneration State
+  isRegenModalOpen: boolean = false;
+  regenPrompt: string = '';
+  isRegenerating: boolean = false;
+
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
@@ -165,6 +170,60 @@ export class QuizInterfaceComponent implements OnInit {
         this.isLoading = false;
         this.statusMessage = 'Error generating syllabus quiz: ' + err.message;
         console.error("Syllabus quiz generation error:", err);
+      }
+    });
+  }
+
+  openRegenModal(): void {
+    this.regenPrompt = '';
+    this.isRegenModalOpen = true;
+  }
+
+  closeRegenModal(): void {
+    this.isRegenModalOpen = false;
+  }
+
+  submitRegeneration(): void {
+    if (this.isRegenerating) return;
+    this.isRegenerating = true;
+    this.isLoading = true;
+    this.statusMessage = `Steering Gemini and regenerating quiz for Week ${this.weekNumber}...`;
+
+    this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId, true, this.regenPrompt).subscribe({
+      next: (questions: SyllabusQuestionPayload[]) => {
+        this.isLoading = false;
+        this.isRegenerating = false;
+        this.isRegenModalOpen = false;
+        this.statusMessage = '';
+        if (questions && questions.length > 0) {
+          const mappedQuestions = questions.map(q => ({
+            question_text: q.questionText || 'Question',
+            options: q.options || [],
+            correct_option_index: q.correctOptionIndex !== undefined ? q.correctOptionIndex : 0,
+            topic: `Week ${this.weekNumber}`,
+            explanation: 'Correct answer is marked below.'
+          }));
+
+          this.currentQuiz = {
+            quiz_title: `Syllabus Quiz - Week ${this.weekNumber}`,
+            questions: mappedQuestions
+          };
+          this.currentQuestionIndex = 0;
+          this.selectedOptionIndex = null;
+          this.correctAnswersCount = 0;
+          this.showExplanation = false;
+          this.quizFinished = false;
+          this.currentView = 'quiz';
+        } else {
+          this.statusMessage = 'Failed to regenerate a valid quiz. Please try again.';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.isRegenerating = false;
+        this.isRegenModalOpen = false;
+        this.statusMessage = 'Error regenerating quiz: ' + err.message;
+        console.error("Quiz regeneration error:", err);
       }
     });
   }

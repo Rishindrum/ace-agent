@@ -830,14 +830,16 @@ func (x *IngestResponse) GetMessage() string {
 }
 
 type QuizRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
-	QuestionCount int32                  `protobuf:"varint,2,opt,name=question_count,json=questionCount,proto3" json:"question_count,omitempty"`
-	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	WeakTopics    []string               `protobuf:"bytes,4,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
-	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	WeekNumber         int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	QuestionCount      int32                  `protobuf:"varint,2,opt,name=question_count,json=questionCount,proto3" json:"question_count,omitempty"`
+	UserId             string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	Regenerate         bool                   `protobuf:"varint,4,opt,name=regenerate,proto3" json:"regenerate,omitempty"`
+	RegenerationPrompt string                 `protobuf:"bytes,5,opt,name=regeneration_prompt,json=regenerationPrompt,proto3" json:"regeneration_prompt,omitempty"`
+	WeakTopics         []string               `protobuf:"bytes,6,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	ClassId            string                 `protobuf:"bytes,7,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *QuizRequest) Reset() {
@@ -887,6 +889,20 @@ func (x *QuizRequest) GetQuestionCount() int32 {
 func (x *QuizRequest) GetUserId() string {
 	if x != nil {
 		return x.UserId
+	}
+	return ""
+}
+
+func (x *QuizRequest) GetRegenerate() bool {
+	if x != nil {
+		return x.Regenerate
+	}
+	return false
+}
+
+func (x *QuizRequest) GetRegenerationPrompt() string {
+	if x != nil {
+		return x.RegenerationPrompt
 	}
 	return ""
 }
@@ -1146,13 +1162,15 @@ func (x *CramResponse) GetRapidFireQuiz() []*Question {
 }
 
 type LessonRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
-	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
-	WeakTopics    []string               `protobuf:"bytes,3,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
-	ClassId       string                 `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	WeekNumber         int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	UserId             string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	WeakTopics         []string               `protobuf:"bytes,3,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	Regenerate         bool                   `protobuf:"varint,4,opt,name=regenerate,proto3" json:"regenerate,omitempty"`
+	RegenerationPrompt string                 `protobuf:"bytes,5,opt,name=regeneration_prompt,json=regenerationPrompt,proto3" json:"regeneration_prompt,omitempty"`
+	ClassId            string                 `protobuf:"bytes,6,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *LessonRequest) Reset() {
@@ -1204,6 +1222,20 @@ func (x *LessonRequest) GetWeakTopics() []string {
 		return x.WeakTopics
 	}
 	return nil
+}
+
+func (x *LessonRequest) GetRegenerate() bool {
+	if x != nil {
+		return x.Regenerate
+	}
+	return false
+}
+
+func (x *LessonRequest) GetRegenerationPrompt() string {
+	if x != nil {
+		return x.RegenerationPrompt
+	}
+	return ""
 }
 
 func (x *LessonRequest) GetClassId() string {
@@ -1460,15 +1492,19 @@ const file_proto_ace_proto_rawDesc = "" +
 	"class_name\x18\x06 \x01(\tR\tclassName\"D\n" +
 	"\x0eIngestResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\xaa\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xfb\x01\n" +
 	"\vQuizRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12%\n" +
 	"\x0equestion_count\x18\x02 \x01(\x05R\rquestionCount\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x1f\n" +
-	"\vweak_topics\x18\x04 \x03(\tR\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x1e\n" +
+	"\n" +
+	"regenerate\x18\x04 \x01(\bR\n" +
+	"regenerate\x12/\n" +
+	"\x13regeneration_prompt\x18\x05 \x01(\tR\x12regenerationPrompt\x12\x1f\n" +
+	"\vweak_topics\x18\x06 \x03(\tR\n" +
 	"weakTopics\x12\x19\n" +
-	"\bclass_id\x18\x05 \x01(\tR\aclassId\"\x8b\x01\n" +
+	"\bclass_id\x18\a \x01(\tR\aclassId\"\x8b\x01\n" +
 	"\bQuestion\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rquestion_text\x18\x02 \x01(\tR\fquestionText\x12\x18\n" +
@@ -1486,14 +1522,18 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\bclass_id\x18\x05 \x01(\tR\aclassId\"y\n" +
 	"\fCramResponse\x122\n" +
 	"\x15dense_review_markdown\x18\x01 \x01(\tR\x13denseReviewMarkdown\x125\n" +
-	"\x0frapid_fire_quiz\x18\x02 \x03(\v2\r.ace.QuestionR\rrapidFireQuiz\"\x85\x01\n" +
+	"\x0frapid_fire_quiz\x18\x02 \x03(\v2\r.ace.QuestionR\rrapidFireQuiz\"\xd6\x01\n" +
 	"\rLessonRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vweak_topics\x18\x03 \x03(\tR\n" +
-	"weakTopics\x12\x19\n" +
-	"\bclass_id\x18\x04 \x01(\tR\aclassId\"\x9d\x01\n" +
+	"weakTopics\x12\x1e\n" +
+	"\n" +
+	"regenerate\x18\x04 \x01(\bR\n" +
+	"regenerate\x12/\n" +
+	"\x13regeneration_prompt\x18\x05 \x01(\tR\x12regenerationPrompt\x12\x19\n" +
+	"\bclass_id\x18\x06 \x01(\tR\aclassId\"\x9d\x01\n" +
 	"\x0eLessonResponse\x12'\n" +
 	"\x0flesson_markdown\x18\x01 \x01(\tR\x0elessonMarkdown\x12+\n" +
 	"\texercises\x18\x02 \x03(\v2\r.ace.QuestionR\texercises\x125\n" +

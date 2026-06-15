@@ -85,6 +85,12 @@ export class DashboardComponent implements OnInit {
 
 
   ngOnInit(): void {
+    const queryToken = this.route.snapshot.queryParams['token'];
+    const queryUserId = this.route.snapshot.queryParams['user_id'];
+    if (queryToken && queryUserId) {
+      this.authService.setSession(queryToken, queryUserId);
+    }
+
     if (!this.authService.isAuthenticated()) {
       this.router.navigate(['/login']);
       return;

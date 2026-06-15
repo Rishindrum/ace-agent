@@ -53,6 +53,12 @@ export class AuthService {
     );
   }
 
+  setSession(token: string, userId: string): void {
+    localStorage.setItem('token', token);
+    localStorage.setItem('user_id', userId);
+    this.isAuthenticatedSubject.next(true);
+  }
+
   logout(): void {
     localStorage.removeItem('token');
     localStorage.removeItem('user_id');

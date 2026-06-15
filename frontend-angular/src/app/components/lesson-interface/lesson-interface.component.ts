@@ -71,6 +71,11 @@ export class LessonInterfaceComponent implements OnInit {
   scorePercentage: number = 0;
   correctAnswersCount: number = 0;
 
+  // Regeneration State
+  isRegenModalOpen: boolean = false;
+  regenPrompt: string = '';
+  isRegenerating: boolean = false;
+
   constructor(private api: ApiService) {}
 
   ngOnInit(): void {
@@ -131,6 +136,48 @@ export class LessonInterfaceComponent implements OnInit {
         this.statusMessage = '';
         this.errorMessage = 'Error loading lesson: ' + (err.error?.message || err.message || err);
         console.error('Lesson generation error:', err);
+      }
+    });
+  }
+
+  openRegenModal(): void {
+    this.regenPrompt = '';
+    this.isRegenModalOpen = true;
+  }
+
+  closeRegenModal(): void {
+    this.isRegenModalOpen = false;
+  }
+
+  submitRegeneration(): void {
+    if (this.isRegenerating) return;
+    this.isRegenerating = true;
+    this.isLoading = true;
+    this.statusMessage = 'Steering Gemini with instruction and regenerating lesson...';
+    this.errorMessage = '';
+
+    this.api.generateLesson(this.selectedWeek, this.classId, true, this.regenPrompt).subscribe({
+      next: (res: any) => {
+        this.isLoading = false;
+        this.isRegenerating = false;
+        this.isRegenModalOpen = false;
+        this.statusMessage = '';
+        if (res && res.lesson_markdown) {
+          this.lessonMarkdown = res.lesson_markdown;
+          this.exercises = res.exercises || [];
+          this.resetExercises();
+          this.updateStepFromState();
+        } else {
+          this.errorMessage = 'Failed to generate a valid lesson for this week. Make sure syllabus materials are uploaded.';
+        }
+      },
+      error: (err) => {
+        this.isLoading = false;
+        this.isRegenerating = false;
+        this.isRegenModalOpen = false;
+        this.statusMessage = '';
+        this.errorMessage = 'Error regenerating lesson: ' + (err.error?.message || err.message || err);
+        console.error('Lesson regeneration error:', err);
       }
     });
   }

@@ -209,3 +209,32 @@ func GetToken(ctx context.Context) string {
 	}
 	return ""
 }
+
+// GetOrCreateUserByUsername looks up a user by username (email) or registers them if not found.
+func (s *UserStore) GetOrCreateUserByUsername(username string) (string, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	// Look for existing user
+	for _, u := range s.users {
+		if u.Username == username {
+			return u.UserID, nil
+		}
+	}
+
+	// Create new user if not found
+	userID := fmt.Sprintf("u-%d", time.Now().UnixNano())
+	hash, err := bcrypt.GenerateFromPassword([]byte("google-oauth-placeholder-pass"), bcrypt.DefaultCost)
+	if err != nil {
+		return "", err
+	}
+	user := User{
+		UserID:       userID,
+		Username:     username,
+		PasswordHash: string(hash),
+	}
+	s.users[userID] = user
+	s.save()
+	return userID, nil
+}
+

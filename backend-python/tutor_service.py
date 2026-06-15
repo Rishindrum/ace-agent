@@ -646,6 +646,41 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 context.set_details("NO_MATERIALS_FOUND")
                 return ace_pb2.QuizResponse()
             
+            # --- PERSISTENCE: READ STEP ---
+            saved_content = None
+            if not request.regenerate and request.week_number != -1 and self.driver:
+                with self.driver.session() as session:
+                    read_query = """
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: 'quiz', user_id: $user_id, class_id: $class_id})
+                    WHERE w.number = $week_number
+                    RETURN g.questions_json AS questions_json
+                    LIMIT 1
+                    """
+                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number)
+                    record = read_res.single()
+                    if record:
+                        saved_content = {
+                            "questions_json": record.get("questions_json")
+                        }
+
+            if saved_content:
+                print(f"[Python] Returning saved quiz content for week {request.week_number}...")
+                try:
+                    questions_list = json.loads(saved_content["questions_json"])
+                except Exception:
+                    questions_list = []
+                grpc_questions = []
+                for q in questions_list:
+                    grpc_questions.append(
+                        ace_pb2.Question(
+                            id=q.get("id", ""),
+                            question_text=q.get("question_text", ""),
+                            options=list(q.get("options", [])),
+                            correct_option_index=q.get("correct_option_index", 0)
+                        )
+                    )
+                return ace_pb2.QuizResponse(questions=grpc_questions)
+            
             attempts = 0
             max_retries = 3
             correction_instruction = ""
@@ -672,6 +707,10 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 4. The id is a unique identifier string (e.g. "q1", "q2", etc.).
                 """
                 
+                # --- REGENERATION STEP: APPEND PROMPT ---
+                if request.regeneration_prompt:
+                    prompt += f"\n\nUSER REGENERATION INSTRUCTION: Please adapt the generation according to this instruction: '{request.regeneration_prompt}'."
+                
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
 
@@ -691,15 +730,15 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 # Map Pydantic response to compiled gRPC structures
                 grpc_questions = []
                 if quiz_data and hasattr(quiz_data, 'questions'):
-                    for q in quiz_data.questions:
-                        grpc_questions.append(
-                            ace_pb2.Question(
-                                id=q.id,
-                                question_text=q.question_text,
-                                options=list(q.options),
-                                correct_option_index=q.correct_option_index
-                            )
-                        )
+                     for q in quiz_data.questions:
+                         grpc_questions.append(
+                             ace_pb2.Question(
+                                 id=q.id,
+                                 question_text=q.question_text,
+                                 options=list(q.options),
+                                 correct_option_index=q.correct_option_index
+                             )
+                         )
 
                 # Format generated content string for the judge
                 generated_content_str = ""
@@ -710,13 +749,41 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 judge_result = self._evaluate_generation(generated_content_str, context_chunks, "quiz")
                 print(f"[Python] GenerateQuiz attempt {attempts} judge result: {judge_result}")
 
-                # Step 3: If Judge passed, break loop and return
+                # Step 3: If Judge passed, save to DB and return
                 if judge_result.get("passed"):
+                    # --- PERSISTENCE: WRITE STEP ---
+                    if self.driver and topic_names and request.week_number != -1:
+                        primary_topic = topic_names[0]
+                        with self.driver.session() as session:
+                            write_query = """
+                            MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: 'quiz', user_id: $user_id, class_id: $class_id})
+                            SET g.questions_json = $questions_json,
+                                g.updated_at = timestamp()
+                            """
+                            questions_list = []
+                            for q in grpc_questions:
+                                questions_list.append({
+                                    "id": q.id,
+                                    "question_text": q.question_text,
+                                    "options": list(q.options),
+                                    "correct_option_index": q.correct_option_index
+                                })
+                            session.run(
+                                write_query,
+                                topic_name=primary_topic,
+                                user_id=request.user_id,
+                                class_id=class_id,
+                                questions_json=json.dumps(questions_list)
+                            )
+                            print(f"[Python] Saved quiz content in Neo4j attached to topic '{primary_topic}'")
+                    
                     return ace_pb2.QuizResponse(questions=grpc_questions)
                 
                 # Step 4: If passed: false, append reasoning to next prompt
                 reasoning = judge_result.get("reasoning", "outside information included")
                 correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this."
+
 
             print(f"[Python] GenerateQuiz failed all {max_retries} attempts. Returning error.")
             context.set_code(grpc.StatusCode.INTERNAL)
@@ -1010,6 +1077,46 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 
             is_insufficient, _, _ = self._check_sufficiency(request.user_id, class_id, request.week_number)
             
+            # --- PERSISTENCE: READ STEP ---
+            saved_content = None
+            if not request.regenerate and self.driver:
+                with self.driver.session() as session:
+                    read_query = """
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: 'lesson', user_id: $user_id, class_id: $class_id})
+                    WHERE w.number = $week_number
+                    RETURN g.lesson_markdown AS lesson_markdown, g.exercises_json AS exercises_json
+                    LIMIT 1
+                    """
+                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number)
+                    record = read_res.single()
+                    if record:
+                        saved_content = {
+                            "lesson_markdown": record.get("lesson_markdown"),
+                            "exercises_json": record.get("exercises_json")
+                        }
+
+            if saved_content:
+                print(f"[Python] Returning saved lesson content for week {request.week_number}...")
+                try:
+                    exercises_list = json.loads(saved_content["exercises_json"])
+                except Exception:
+                    exercises_list = []
+                grpc_exercises = []
+                for e in exercises_list:
+                    grpc_exercises.append(
+                        ace_pb2.Question(
+                            id=e.get("id", ""),
+                            question_text=e.get("question_text", ""),
+                            options=list(e.get("options", [])),
+                            correct_option_index=e.get("correct_option_index", 0)
+                        )
+                    )
+                return ace_pb2.LessonResponse(
+                    lesson_markdown=saved_content["lesson_markdown"],
+                    exercises=grpc_exercises,
+                    insufficient_materials=is_insufficient
+                )
+            
             attempts = 0
             max_retries = 3
             correction_instruction = ""
@@ -1035,6 +1142,10 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
                 4. The id for each question should be a unique identifier string (e.g. "ex1", "ex2", "ex3").
                 """
+                
+                # --- REGENERATION STEP: APPEND PROMPT ---
+                if request.regeneration_prompt:
+                    prompt += f"\n\nUSER REGENERATION INSTRUCTION: Please adapt the generation according to this instruction: '{request.regeneration_prompt}'."
                 
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
@@ -1070,6 +1181,36 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                                 correct_option_index=e.correct_option_index
                             )
                         )
+                    
+                    # --- PERSISTENCE: WRITE STEP ---
+                    if self.driver and topic_names:
+                        primary_topic = topic_names[0]
+                        with self.driver.session() as session:
+                            write_query = """
+                            MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: 'lesson', user_id: $user_id, class_id: $class_id})
+                            SET g.lesson_markdown = $lesson_markdown,
+                                g.exercises_json = $exercises_json,
+                                g.updated_at = timestamp()
+                            """
+                            exercises_list = []
+                            for e in lesson_data.exercises:
+                                exercises_list.append({
+                                    "id": e.id,
+                                    "question_text": e.question_text,
+                                    "options": list(e.options),
+                                    "correct_option_index": e.correct_option_index
+                                })
+                            session.run(
+                                write_query,
+                                topic_name=primary_topic,
+                                user_id=request.user_id,
+                                class_id=class_id,
+                                lesson_markdown=lesson_data.lesson_markdown,
+                                exercises_json=json.dumps(exercises_list)
+                            )
+                            print(f"[Python] Saved lesson content in Neo4j attached to topic '{primary_topic}'")
+                    
                     return ace_pb2.LessonResponse(
                         lesson_markdown=lesson_data.lesson_markdown,
                         exercises=grpc_exercises,
@@ -1083,6 +1224,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Failed to generate factually accurate lesson and exercises after 3 attempts.")
             return ace_pb2.LessonResponse(insufficient_materials=is_insufficient)
+
             
         except Exception as e:
             print(f"[Python] GenerateLessonAndExercises Exception: {e}")

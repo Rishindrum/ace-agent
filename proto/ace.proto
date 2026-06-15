@@ -107,8 +107,10 @@ message QuizRequest {
   int32 week_number = 1;
   int32 question_count = 2;
   string user_id = 3;
-  repeated string weak_topics = 4;
-  string class_id = 5;
+  bool regenerate = 4;
+  string regeneration_prompt = 5;
+  repeated string weak_topics = 6;
+  string class_id = 7;
 }
 
 message Question {
@@ -139,7 +141,9 @@ message LessonRequest {
   int32 week_number = 1;
   string user_id = 2;
   repeated string weak_topics = 3;
-  string class_id = 4;
+  bool regenerate = 4;
+  string regeneration_prompt = 5;
+  string class_id = 6;
 }
 
 message LessonResponse {

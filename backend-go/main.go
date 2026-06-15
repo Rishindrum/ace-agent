@@ -521,9 +521,11 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		WeekNumber    int32  `json:"week_number"`
-		QuestionCount int32  `json:"question_count"`
-		ClassID       string `json:"class_id"`
+		WeekNumber         int32  `json:"week_number"`
+		QuestionCount      int32  `json:"question_count"`
+		ClassID            string `json:"class_id"`
+		Regenerate         bool   `json:"regenerate"`
+		RegenerationPrompt string `json:"regeneration_prompt"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -588,11 +590,13 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	grpcReq := &pb.QuizRequest{
-		WeekNumber:    targetWeek,
-		QuestionCount: req.QuestionCount,
-		UserId:        userID,
-		WeakTopics:    weakTopics,
-		ClassId:       classID,
+		WeekNumber:         targetWeek,
+		QuestionCount:      req.QuestionCount,
+		UserId:             userID,
+		WeakTopics:         weakTopics,
+		ClassId:            classID,
+		Regenerate:         req.Regenerate,
+		RegenerationPrompt: req.RegenerationPrompt,
 	}
 
 	resp, err := tutorClient.GenerateQuiz(ctx, grpcReq)
@@ -1105,16 +1109,20 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := auth.GetUserID(r.Context())
-	if userID == "" {
-		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
-		return
+	var tokenStr string
+	authHeader := r.Header.Get("Authorization")
+	if len(authHeader) >= 8 && authHeader[:7] == "Bearer " {
+		tokenStr = authHeader[7:]
+	} else if qToken := r.URL.Query().Get("token"); qToken != "" {
+		tokenStr = qToken
 	}
 
-	state := auth.GetToken(r.Context())
-	if state == "" {
-		http.Error(w, "Unauthorized: Token missing", http.StatusUnauthorized)
-		return
+	state := "login"
+	if tokenStr != "" {
+		userID, err := auth.ParseToken(tokenStr)
+		if err == nil && userID != "" {
+			state = tokenStr
+		}
 	}
 
 	loginURL := calendar.GetLoginURL(state)
@@ -1130,11 +1138,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	userID := auth.GetUserID(r.Context())
-	if userID == "" {
-		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
-		return
-	}
+	state := r.URL.Query().Get("state")
 
 	ctx := context.Background()
 	token, err := calendar.OAuthConfig.Exchange(ctx, code)
@@ -1149,17 +1153,75 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 		log.Println("[OAuth] Warning: Refresh token is empty in callback.")
 	}
 
-	err = calendar.SaveRefreshToken(ctx, userID, refreshToken)
-	if err != nil {
-		log.Printf("[OAuth] Secret Manager storage failed: %v", err)
-		http.Error(w, "Secure storage failed: "+err.Error(), http.StatusInternalServerError)
-		return
-	}
-
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {
 		frontendURL = "http://localhost:4200"
 	}
+
+	if state == "login" || state == "" {
+		client := calendar.OAuthConfig.Client(ctx, token)
+		resp, err := client.Get("https://www.googleapis.com/oauth2/v2/userinfo")
+		if err != nil {
+			log.Printf("[OAuth] Failed to get user info: %v", err)
+			http.Error(w, "Failed to get user info: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+		defer resp.Body.Close()
+
+		var userInfo struct {
+			Email string `json:"email"`
+			Name  string `json:"name"`
+		}
+		if err := json.NewDecoder(resp.Body).Decode(&userInfo); err != nil {
+			log.Printf("[OAuth] Failed to decode user info: %v", err)
+			http.Error(w, "Failed to decode user info: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if userInfo.Email == "" {
+			http.Error(w, "Google OAuth did not return email", http.StatusBadRequest)
+			return
+		}
+
+		userID, err := auth.GlobalUserStore.GetOrCreateUserByUsername(userInfo.Email)
+		if err != nil {
+			log.Printf("[OAuth] Failed to get or create user: %v", err)
+			http.Error(w, "Failed to manage user account: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		jwtToken, err := auth.GenerateToken(userID)
+		if err != nil {
+			log.Printf("[OAuth] Failed to generate token: %v", err)
+			http.Error(w, "Failed to generate session token: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if refreshToken != "" {
+			_ = calendar.SaveRefreshToken(ctx, userID, refreshToken)
+		}
+
+		redirectURL := fmt.Sprintf("%s/dashboard?token=%s&user_id=%s&calendar_connected=true", frontendURL, jwtToken, userID)
+		http.Redirect(w, r, redirectURL, http.StatusFound)
+		return
+	}
+
+	userID, err := auth.ParseToken(state)
+	if err != nil {
+		log.Printf("[OAuth] Invalid state token: %v", err)
+		http.Error(w, "Unauthorized: Invalid state token", http.StatusUnauthorized)
+		return
+	}
+
+	if refreshToken != "" {
+		err = calendar.SaveRefreshToken(ctx, userID, refreshToken)
+		if err != nil {
+			log.Printf("[OAuth] Secret Manager storage failed: %v", err)
+			http.Error(w, "Secure storage failed: "+err.Error(), http.StatusInternalServerError)
+			return
+		}
+	}
+
 	http.Redirect(w, r, frontendURL+"/dashboard?calendar_connected=true", http.StatusFound)
 }
 
@@ -1477,8 +1539,8 @@ func main() {
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
 	mux.HandleFunc("/api/v1/study/cram", auth.JWTMiddleware(cramSessionHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/cram", auth.JWTMiddleware(cramSessionHandler))
-	mux.HandleFunc("/api/v1/auth/google/login", auth.JWTMiddleware(googleLoginHandler))
-	mux.HandleFunc("/api/v1/auth/google/callback", auth.JWTMiddleware(googleCallbackHandler))
+	mux.HandleFunc("/api/v1/auth/google/login", googleLoginHandler)
+	mux.HandleFunc("/api/v1/auth/google/callback", googleCallbackHandler)
 	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
 	mux.HandleFunc("/api/v1/user/config", auth.JWTMiddleware(userConfigHandler))
 	mux.HandleFunc("/api/v1/user/schedule-settings", auth.JWTMiddleware(userScheduleSettingsHandler))
@@ -1672,8 +1734,10 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		WeekNumber int32  `json:"week_number"`
-		ClassID    string `json:"class_id"`
+		WeekNumber         int32  `json:"week_number"`
+		ClassID            string `json:"class_id"`
+		Regenerate         bool   `json:"regenerate"`
+		RegenerationPrompt string `json:"regeneration_prompt"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1721,10 +1785,12 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Call python gRPC client
 	grpcReq := &pb.LessonRequest{
-		WeekNumber: req.WeekNumber,
-		UserId:     userID,
-		WeakTopics: weakTopics,
-		ClassId:    classID,
+		WeekNumber:         req.WeekNumber,
+		UserId:             userID,
+		WeakTopics:         weakTopics,
+		ClassId:            classID,
+		Regenerate:         req.Regenerate,
+		RegenerationPrompt: req.RegenerationPrompt,
 	}
 
 	resp, err := tutorClient.GenerateLessonAndExercises(ctx, grpcReq)

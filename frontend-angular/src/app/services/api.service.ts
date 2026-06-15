@@ -77,11 +77,13 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/quiz/adaptive?user_id=${userId}&syllabus_name=${syllabusName}`);
   }
 
-  generateQuiz(weekNumber: number, questionCount: number, classId?: string): Observable<SyllabusQuestionPayload[]> {
+  generateQuiz(weekNumber: number, questionCount: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string): Observable<SyllabusQuestionPayload[]> {
     const cid = classId || 'default_class';
     return this.http.post<SyllabusQuestionPayload[]>(`${this.baseUrl}/api/v1/classes/${cid}/study/quiz`, {
       week_number: weekNumber,
-      question_count: questionCount
+      question_count: questionCount,
+      regenerate: regenerate || false,
+      regeneration_prompt: regenerationPrompt || ''
     });
   }
 
@@ -140,10 +142,12 @@ export class ApiService {
     });
   }
 
-  generateLesson(weekNumber: number, classId?: string): Observable<any> {
+  generateLesson(weekNumber: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string): Observable<any> {
     const cid = classId || 'default_class';
     return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/lesson`, {
-      week_number: weekNumber
+      week_number: weekNumber,
+      regenerate: regenerate || false,
+      regeneration_prompt: regenerationPrompt || ''
     });
   }
 
