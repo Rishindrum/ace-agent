@@ -746,6 +746,7 @@ type QuizRequest struct {
 	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
 	QuestionCount int32                  `protobuf:"varint,2,opt,name=question_count,json=questionCount,proto3" json:"question_count,omitempty"`
 	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	WeakTopics    []string               `protobuf:"bytes,4,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -799,6 +800,13 @@ func (x *QuizRequest) GetUserId() string {
 		return x.UserId
 	}
 	return ""
+}
+
+func (x *QuizRequest) GetWeakTopics() []string {
+	if x != nil {
+		return x.WeakTopics
+	}
+	return nil
 }
 
 type Question struct {
@@ -967,12 +975,14 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\auser_id\x18\x04 \x01(\tR\x06userId\"D\n" +
 	"\x0eIngestResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"n\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\x8f\x01\n" +
 	"\vQuizRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12%\n" +
 	"\x0equestion_count\x18\x02 \x01(\x05R\rquestionCount\x12\x17\n" +
-	"\auser_id\x18\x03 \x01(\tR\x06userId\"\x8b\x01\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x1f\n" +
+	"\vweak_topics\x18\x04 \x03(\tR\n" +
+	"weakTopics\"\x8b\x01\n" +
 	"\bQuestion\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rquestion_text\x18\x02 \x01(\tR\fquestionText\x12\x18\n" +

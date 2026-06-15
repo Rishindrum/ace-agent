@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package ace;
 
-option go_package = "pb/proto";
+option go_package = "ace-agent/backend-go/proto";
 
 service TutorService {
   rpc ProcessSyllabus (SyllabusRequest) returns (SyllabusResponse);
@@ -92,6 +92,7 @@ message QuizRequest {
   int32 week_number = 1;
   int32 question_count = 2;
   string user_id = 3;
+  repeated string weak_topics = 4;
 }
 
 message Question {

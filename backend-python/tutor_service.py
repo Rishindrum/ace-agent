@@ -480,22 +480,25 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.IngestResponse(success=False, message=f"Internal Server Error: {str(e)}")
             
     def GenerateQuiz(self, request, context):
-        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}'...")
+        weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
+        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', weak topics {weak_topics_list}...")
         try:
-            topic_name = "Unknown"
+            topic_names = []
             chunks = []
             
-            # Graph Traversal: Write a Neo4j query that matches (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {number: request.week_number}) and retrieves the text chunks from those materials.
+            # Graph Traversal: Pull matching failed/weak topics along with the current week's scheduled topics.
             if self.driver:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {number: $week_number, user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    WHERE (w.number = $week_number) OR (t.name IN $weak_topics)
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id, weak_topics=weak_topics_list)
                     for record in result:
-                        if record.get("topic_name"):
-                            topic_name = record["topic_name"]
+                        tname = record.get("topic_name")
+                        if tname and tname not in topic_names:
+                            topic_names.append(tname)
                         rec_chunks = record.get("chunks")
                         if rec_chunks:
                             if isinstance(rec_chunks, list):
@@ -503,15 +506,16 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             else:
                                 chunks.append(str(rec_chunks))
             
-            print(f"[Python] GenerateQuiz: Retrieved topic '{topic_name}' with {len(chunks)} chunks.")
+            topics_str = ", ".join(topic_names) if topic_names else "Unknown"
+            print(f"[Python] GenerateQuiz: Retrieved topics '{topics_str}' with {len(chunks)} chunks.")
             
             # Construct prompt for LLM
             prompt = f"""
             You are a helpful teaching assistant.
-            Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topic.
+            Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topics.
             
             Week Number: {request.week_number}
-            Topic Name: {topic_name}
+            Topics: {topics_str}
             
             Here are the source material text chunks to base the questions on:
             {chr(10).join(chunks) if chunks else "No specific source material text chunks available. Please generate standard multiple choice questions for this topic."}

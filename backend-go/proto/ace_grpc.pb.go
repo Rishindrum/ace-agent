@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v3.20.3
-// source: ace.proto
+// source: proto/ace.proto
 
 package proto
 
@@ -345,5 +345,5 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "ace.proto",
+	Metadata: "proto/ace.proto",
 }

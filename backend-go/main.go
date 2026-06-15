@@ -15,6 +15,7 @@ import (
 	auth "ace-agent/backend-go/auth"
 
 	"cloud.google.com/go/bigquery"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
@@ -452,15 +453,22 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := auth.GetUserID(r.Context())
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	// Extract historically weak topics from BigQuery
+	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID)
+	if err != nil {
+		log.Printf("[GenerateQuiz] Warning: Failed to fetch weak topics from BigQuery: %v", err)
+		weakTopics = []string{}
+	}
 
 	grpcReq := &pb.QuizRequest{
 		WeekNumber:    req.WeekNumber,
 		QuestionCount: req.QuestionCount,
 		UserId:        userID,
+		WeakTopics:    weakTopics,
 	}
-
-	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-	defer cancel()
 
 	resp, err := tutorClient.GenerateQuiz(ctx, grpcReq)
 	if err != nil {
@@ -481,6 +489,171 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(questions)
+}
+
+func getWeakTopicsFromBigQuery(ctx context.Context, userID string) ([]string, error) {
+	if bqClient == nil {
+		return nil, fmt.Errorf("BigQuery client is nil")
+	}
+	queryStr := fmt.Sprintf("SELECT DISTINCT week_number FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND score_percentage < 70", userID)
+	q := bqClient.Query(queryStr)
+	it, err := q.Read(ctx)
+	if err != nil {
+		return nil, err
+	}
+	var weakTopics []string
+	for {
+		var row struct {
+			WeekNumber int64 `bigquery:"week_number"`
+		}
+		err := it.Next(&row)
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, err
+		}
+		weakTopics = append(weakTopics, fmt.Sprintf("Week %d Topic", row.WeekNumber))
+	}
+	return weakTopics, nil
+}
+
+func hasCompletedQuizToday(ctx context.Context, userID string) (bool, error) {
+	if bqClient == nil {
+		return false, fmt.Errorf("BigQuery client is nil")
+	}
+	now := time.Now()
+	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
+	
+	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND timestamp >= TIMESTAMP('%s')", userID, todayStart)
+	q := bqClient.Query(queryStr)
+	it, err := q.Read(ctx)
+	if err != nil {
+		return false, err
+	}
+	
+	var row struct {
+		Count int64 `bigquery:"count"`
+	}
+	err = it.Next(&row)
+	if err != nil {
+		return false, err
+	}
+	return row.Count > 0, nil
+}
+
+func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	var req struct {
+		PreferredDays []int `json:"preferred_days"`
+		DailyPace     int   `json:"daily_pace"`
+		CurrentStreak int   `json:"current_streak"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	err := auth.GlobalScheduleStore.SaveSchedule(userID, req.PreferredDays, req.DailyPace, req.CurrentStreak)
+	if err != nil {
+		http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "success",
+		"message": "Schedule settings saved successfully",
+	})
+}
+
+func startBackgroundWorker() {
+	ticker := time.NewTicker(24 * time.Hour)
+	go func() {
+		// Run a check immediately on startup
+		runDailySchedulerCheck()
+		for range ticker.C {
+			runDailySchedulerCheck()
+		}
+	}()
+}
+
+func runDailySchedulerCheck() {
+	ctx := context.Background()
+	log.Println("[SchedulerWorker] Running daily schedule checks...")
+
+	schedules := auth.GlobalScheduleStore.GetAllSchedules()
+	todayWeekday := int(time.Now().Weekday())
+
+	for _, sched := range schedules {
+		isScheduledToday := false
+		for _, day := range sched.PreferredDays {
+			if day == todayWeekday {
+				isScheduledToday = true
+				break
+			}
+		}
+
+		if !isScheduledToday {
+			continue
+		}
+
+		log.Printf("[SchedulerWorker] User %s is scheduled to study today. Checking completion...", sched.UserID)
+
+		completed, err := hasCompletedQuizToday(ctx, sched.UserID)
+		if err != nil {
+			log.Printf("[SchedulerWorker] Warning: Failed to check BQ quiz completion for user %s: %v. Proceeding assuming not completed.", sched.UserID, err)
+			completed = false
+		}
+
+		if completed {
+			log.Printf("[SchedulerWorker] User %s has already completed their study session today. Skipping.", sched.UserID)
+			continue
+		}
+
+		log.Printf("[SchedulerWorker] User %s has NOT completed a session today. Scheduling Google Calendar event...", sched.UserID)
+
+		weakTopics, err := getWeakTopicsFromBigQuery(ctx, sched.UserID)
+		if err != nil {
+			log.Printf("[SchedulerWorker] Warning: Failed to fetch weak topics for user %s: %v.", sched.UserID, err)
+			weakTopics = []string{}
+		}
+
+		newTopics := []string{"Week 1 Core Concepts"}
+		preferredTime := "afternoon" // default
+
+		frontendURL := os.Getenv("FRONTEND_URL")
+		if frontendURL == "" {
+			frontendURL = "http://localhost:4200"
+		}
+		dashboardURL := frontendURL + "/dashboard"
+
+		err = calendar.ScheduleStudySession(ctx, sched.UserID, preferredTime, newTopics, weakTopics, dashboardURL)
+		if err != nil {
+			log.Printf("[SchedulerWorker] Error: Failed to schedule study session for user %s: %v", sched.UserID, err)
+		} else {
+			log.Printf("[SchedulerWorker] Successfully scheduled proactive study session for user %s", sched.UserID)
+		}
+	}
 }
 
 func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
@@ -799,6 +972,10 @@ func main() {
 
 	// Initialize user database
 	auth.InitUserStore("users.json")
+	auth.InitScheduleStore("schedules.json")
+
+	// Start daily background worker loop
+	startBackgroundWorker()
 
 	// Initialize Google Calendar OAuth config
 	calendar.InitOAuthConfig()
@@ -854,6 +1031,7 @@ func main() {
 	mux.HandleFunc("/api/v1/auth/google/callback", auth.JWTMiddleware(googleCallbackHandler))
 	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
 	mux.HandleFunc("/api/v1/user/config", auth.JWTMiddleware(userConfigHandler))
+	mux.HandleFunc("/api/v1/user/schedule-settings", auth.JWTMiddleware(userScheduleSettingsHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
