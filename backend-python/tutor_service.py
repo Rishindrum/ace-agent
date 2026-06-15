@@ -288,7 +288,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         Text: {full_text[:5000]}
         """
 
-        # 3. EXTRACT GRAPH (Only if Neo4j is alive)
+        # 3. EXTRACT GRAPH (If Neo4j is alive)
         concepts = []
         if self.driver:
             print("[Python] Extraction Graph with Gemini...")
