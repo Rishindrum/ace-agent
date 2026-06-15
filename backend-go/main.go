@@ -1471,7 +1471,39 @@ func cramSessionHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(jsonResponse)
 }
 
+func loadEnv() {
+	files := []string{".env", "../.env"}
+	for _, fp := range files {
+		content, err := os.ReadFile(fp)
+		if err != nil {
+			continue
+		}
+		lines := strings.Split(string(content), "\n")
+		for _, line := range lines {
+			line = strings.TrimSpace(line)
+			if line == "" || strings.HasPrefix(line, "#") {
+				continue
+			}
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				key := strings.TrimSpace(parts[0])
+				val := strings.TrimSpace(parts[1])
+				if len(val) >= 2 && val[0] == '"' && val[len(val)-1] == '"' {
+					val = val[1 : len(val)-1]
+				}
+				if len(val) >= 2 && val[0] == '\'' && val[len(val)-1] == '\'' {
+					val = val[1 : len(val)-1]
+				}
+				os.Setenv(key, val)
+			}
+		}
+		log.Printf("[Env] Loaded environment from %s", fp)
+		break
+	}
+}
+
 func main() {
+	loadEnv()
 	// Start BigQuery initialization in background
 	go initBigQuery()
 
