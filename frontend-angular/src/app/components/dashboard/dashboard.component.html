@@ -155,7 +155,12 @@
 
     <!-- Lesson Tab -->
     <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
-      <app-lesson-interface [selectedWeek]="selectedTimelineWeek" (exerciseCompleted)="loadDailyState()"></app-lesson-interface>
+      <app-lesson-interface 
+        [selectedWeek]="selectedTimelineWeek" 
+        [dailyState]="dailyState"
+        (exerciseCompleted)="loadDailyState()"
+        (startQuiz)="selectTab('quiz')"
+      ></app-lesson-interface>
     </div>
 
     <!-- Quiz Tab -->

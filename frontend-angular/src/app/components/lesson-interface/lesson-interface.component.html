@@ -11,89 +11,185 @@
     <button class="btn btn-outline" (click)="loadLesson()">Retry</button>
   </div>
 
-  <!-- Lesson Content & Exercises -->
+  <!-- Lesson Content & Step Flow -->
   <div *ngIf="!isLoading && lessonMarkdown" class="lesson-content-container fade-in">
-    <div class="lesson-header card">
-      <div class="lesson-meta">
-        <mat-icon class="header-icon">chrome_reader_mode</mat-icon>
-        <h2>Week {{ selectedWeek }} Study Lesson</h2>
+    
+    <!-- Top Step Progress Navigation Indicator -->
+    <div class="step-navigation-bar card">
+      <div class="step-tab" [class.active]="currentStep === 1" [class.completed]="dailyState.lesson_completed || currentStep > 1" (click)="goToStep(1)">
+        <div class="step-icon">
+          <mat-icon *ngIf="dailyState.lesson_completed || currentStep > 1">check</mat-icon>
+          <span *ngIf="!(dailyState.lesson_completed || currentStep > 1)">1</span>
+        </div>
+        <div class="step-info">
+          <span class="step-title">Step 1</span>
+          <span class="step-desc">Read Study Lesson</span>
+        </div>
       </div>
-      <button class="btn btn-outline btn-refresh" (click)="loadLesson()">
-        <mat-icon>refresh</mat-icon> Regenerate Lesson
-      </button>
+      
+      <div class="step-connector" [class.filled]="currentStep > 1"></div>
+      
+      <div class="step-tab" [class.active]="currentStep === 2" [class.completed]="dailyState.exercises_completed || currentStep > 2" [class.disabled]="!canGoToStep2()" (click)="canGoToStep2() ? goToStep(2) : null">
+        <div class="step-icon">
+          <mat-icon *ngIf="dailyState.exercises_completed || currentStep > 2">check</mat-icon>
+          <span *ngIf="!(dailyState.exercises_completed || currentStep > 2)">2</span>
+        </div>
+        <div class="step-info">
+          <span class="step-title">Step 2</span>
+          <span class="step-desc">Practice Exercises</span>
+        </div>
+      </div>
+      
+      <div class="step-connector" [class.filled]="currentStep > 2"></div>
+      
+      <div class="step-tab" [class.active]="currentStep === 3" [class.completed]="dailyState.quiz_unlocked" [class.disabled]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? goToStep(3) : null">
+        <div class="step-icon">
+          <mat-icon *ngIf="dailyState.quiz_unlocked">lock_open</mat-icon>
+          <mat-icon *ngIf="!dailyState.quiz_unlocked">lock</mat-icon>
+        </div>
+        <div class="step-info">
+          <span class="step-title">Step 3</span>
+          <span class="step-desc">Unlock Official Quiz</span>
+        </div>
+      </div>
     </div>
 
+    <!-- Main Content Panels -->
     <div class="lesson-body-split">
-      <!-- Left Column: Lesson Content -->
+      
+      <!-- Left Column: Lesson Content (Visible in Step 1 and Step 2 and Step 3) -->
       <div class="lesson-text-panel card scrollable-y">
+        <div class="lesson-panel-header">
+          <mat-icon class="panel-icon">chrome_reader_mode</mat-icon>
+          <h2>Week {{ selectedWeek }} Study Lesson</h2>
+        </div>
         <div class="markdown-body" [innerHTML]="renderMarkdown(lessonMarkdown)"></div>
       </div>
 
-      <!-- Right Column: Exercises Gating -->
-      <div class="exercises-panel card">
-        <div class="exercises-header">
-          <h3>Practice Exercises</h3>
-          <p class="desc">Solve the following questions to unlock this week's quiz.</p>
+      <!-- Right Column: Interactive Step State Panel -->
+      <div class="step-action-panel">
+        
+        <!-- STEP 1 View: Reading Lesson -->
+        <div *ngIf="currentStep === 1" class="step-card card fade-in">
+          <div class="step-card-header">
+            <div class="step-badge-current">Step 1 of 3</div>
+            <h3>Study Lesson Materials</h3>
+          </div>
+          <div class="step-card-body">
+            <p class="instruction-text">Review the comprehensive lesson text on the left. It explains all weekly topics and has been customized to address your weak topics.</p>
+            <div class="checklist-bullet">
+              <mat-icon class="bullet-icon done">check_circle</mat-icon>
+              <span>Ingested course content summarized</span>
+            </div>
+            <div class="checklist-bullet">
+              <mat-icon class="bullet-icon done">check_circle</mat-icon>
+              <span>Personalized weak topics addressed</span>
+            </div>
+            <div class="checklist-bullet">
+              <mat-icon class="bullet-icon pending">hourglass_empty</mat-icon>
+              <span>Read the materials to verify formulas and concepts</span>
+            </div>
+          </div>
+          <div class="step-card-footer">
+            <button class="btn btn-primary btn-block btn-proceed" (click)="proceedToPractice()">
+              <span>Proceed to Practice</span>
+              <mat-icon>arrow_forward</mat-icon>
+            </button>
+          </div>
         </div>
 
-        <div class="exercises-list scrollable-y">
-          <div *ngFor="let ex of exercises; let exIdx = index" class="exercise-item">
-            <h4 class="ex-question">{{ exIdx + 1 }}. {{ ex.question_text }}</h4>
-            
-            <div class="ex-options-grid">
+        <!-- STEP 2 View: Practice Exercises -->
+        <div *ngIf="currentStep === 2" class="step-card card fade-in">
+          <div class="step-card-header">
+            <div class="step-badge-current">Step 2 of 3</div>
+            <h3>Practice Exercises</h3>
+            <p class="desc">Answer the 3 exercises below. Instant feedback is provided locally.</p>
+          </div>
+          
+          <div class="exercises-list scrollable-y">
+            <div *ngFor="let ex of exercises; let exIdx = index" class="exercise-item">
+              <h4 class="ex-question">{{ exIdx + 1 }}. {{ ex.question_text }}</h4>
+              
+              <div class="ex-options-grid">
+                <button 
+                  *ngFor="let option of ex.options; let optIdx = index"
+                  class="ex-option-button"
+                  [class.selected]="ex.selected_option_index === optIdx"
+                  [class.correct]="(ex.selected_option_index !== undefined && optIdx === ex.correct_option_index) || (exerciseAnswersSubmitted && optIdx === ex.correct_option_index)"
+                  [class.wrong]="ex.selected_option_index === optIdx && optIdx !== ex.correct_option_index"
+                  (click)="selectOption(exIdx, optIdx)"
+                  [disabled]="ex.selected_option_index !== undefined"
+                >
+                  <span class="option-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
+                  <span class="option-text">{{ option }}</span>
+                </button>
+              </div>
+
+              <!-- Instant Local Explanation -->
+              <div *ngIf="ex.selected_option_index !== undefined" class="explanation-box fade-in" 
+                   [class.correct-box]="ex.selected_option_index === ex.correct_option_index"
+                   [class.wrong-box]="ex.selected_option_index !== ex.correct_option_index">
+                <div class="exp-status">
+                  <mat-icon *ngIf="ex.selected_option_index === ex.correct_option_index">check_circle</mat-icon>
+                  <mat-icon *ngIf="ex.selected_option_index !== ex.correct_option_index">cancel</mat-icon>
+                  <span>{{ ex.selected_option_index === ex.correct_option_index ? 'Correct!' : 'Incorrect' }}</span>
+                </div>
+                <p class="exp-text">{{ ex.explanation }}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="exercises-footer">
+            <div *ngIf="!exerciseAnswersSubmitted" class="submit-actions">
               <button 
-                *ngFor="let option of ex.options; let optIdx = index"
-                class="ex-option-button"
-                [class.selected]="ex.selected_option_index === optIdx"
-                [class.correct]="exerciseAnswersSubmitted && optIdx === ex.correct_option_index"
-                [class.wrong]="exerciseAnswersSubmitted && ex.selected_option_index === optIdx && optIdx !== ex.correct_option_index"
-                (click)="selectOption(exIdx, optIdx)"
-                [disabled]="exerciseAnswersSubmitted"
+                class="btn btn-primary btn-block" 
+                [disabled]="!allExercisesAnswered()" 
+                (click)="submitAnswers()"
               >
-                <span class="option-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
-                <span class="option-text">{{ option }}</span>
+                Submit Practice Answers
               </button>
             </div>
 
-            <!-- Explanation -->
-            <div *ngIf="exerciseAnswersSubmitted" class="explanation-box fade-in" 
-                 [class.correct-box]="ex.selected_option_index === ex.correct_option_index"
-                 [class.wrong-box]="ex.selected_option_index !== ex.correct_option_index">
-              <div class="exp-status">
-                <mat-icon *ngIf="ex.selected_option_index === ex.correct_option_index">check_circle</mat-icon>
-                <mat-icon *ngIf="ex.selected_option_index !== ex.correct_option_index">cancel</mat-icon>
-                <span>{{ ex.selected_option_index === ex.correct_option_index ? 'Correct!' : 'Incorrect' }}</span>
+            <div *ngIf="exerciseAnswersSubmitted" class="result-box fade-in" [class.passed]="exercisePassed" [class.failed]="!exercisePassed">
+              <mat-icon class="result-icon">{{ exercisePassed ? 'verified' : 'highlight_off' }}</mat-icon>
+              <div class="result-text">
+                <h4>{{ exercisePassed ? 'Practice Passed!' : 'Practice Failed' }}</h4>
+                <p>Score: {{ correctAnswersCount }}/{{ exercises.length }} ({{ scorePercentage }}%)</p>
+                <p class="note">{{ exercisePassed ? 'Daily Quiz is now unlocked!' : 'Score at least 60% to pass. Try again.' }}</p>
               </div>
-              <p class="exp-text">{{ ex.explanation }}</p>
+              
+              <button *ngIf="!exercisePassed" class="btn btn-primary" (click)="resetExercises()">
+                Try Again
+              </button>
             </div>
           </div>
         </div>
 
-        <!-- Submit actions / results -->
-        <div class="exercises-footer">
-          <div *ngIf="!exerciseAnswersSubmitted" class="submit-actions">
-            <button 
-              class="btn btn-primary btn-block" 
-              [disabled]="!allExercisesAnswered()" 
-              (click)="submitAnswers()"
-            >
-              Submit Practice Answers
-            </button>
+        <!-- STEP 3 View: Unlock Quiz -->
+        <div *ngIf="currentStep === 3" class="step-card card fade-in quiz-unlocked-card">
+          <div class="unlocked-icon-container">
+            <mat-icon class="huge-unlocked-icon animate-bounce">lock_open</mat-icon>
           </div>
-
-          <div *ngIf="exerciseAnswersSubmitted" class="result-box fade-in" [class.passed]="exercisePassed" [class.failed]="!exercisePassed">
-            <mat-icon class="result-icon">{{ exercisePassed ? 'verified' : 'highlight_off' }}</mat-icon>
-            <div class="result-text">
-              <h4>{{ exercisePassed ? 'Exercises Passed!' : 'Practice Passed' }}</h4>
-              <p>Score: {{ correctAnswersCount }}/{{ exercises.length }} ({{ scorePercentage }}%)</p>
-              <p class="note">{{ exercisePassed ? 'Daily Quiz is now unlocked!' : 'Score at least 60% to pass. Try again.' }}</p>
-            </div>
-            
-            <button *ngIf="!exercisePassed" class="btn btn-primary" (click)="resetExercises()">
-              Try Again
+          <div class="step-card-header text-center">
+            <div class="step-badge-current">Step 3 of 3</div>
+            <h3>Weekly Quiz Unlocked!</h3>
+          </div>
+          <div class="step-card-body text-center">
+            <p class="unlocked-text">Congratulations! You have completed the study lesson and solved the practice exercises successfully.</p>
+            <p class="unlocked-subtext">You are now ready to take the official adaptive performance quiz. Taking the quiz will record your score to Google BigQuery and advance your study streak!</p>
+          </div>
+          <div class="step-card-footer">
+            <button class="btn btn-primary btn-block btn-start-quiz" (click)="startQuiz.emit()">
+              <mat-icon>assignment_turned_in</mat-icon>
+              <span>Start Official Quiz</span>
+            </button>
+            <button class="btn btn-outline btn-block mt-10" (click)="goToStep(1)">
+              <mat-icon>menu_book</mat-icon>
+              <span>Review Lesson Content</span>
             </button>
           </div>
         </div>
+
       </div>
     </div>
   </div>

@@ -119,7 +119,18 @@ export class DashboardComponent implements OnInit {
 
   selectTimelineWeek(week: number) {
     this.selectedTimelineWeek = week;
-    this.activeTab = 'lesson';
+    this.api.getDailySessionState().subscribe({
+      next: (state) => {
+        if (state) {
+          this.dailyState = state;
+        }
+        this.activeTab = 'lesson';
+      },
+      error: (err) => {
+        console.warn('Could not load daily session state on Study click:', err);
+        this.activeTab = 'lesson';
+      }
+    });
   }
 
   selectTab(tab: 'syllabus' | 'lesson' | 'tutor' | 'quiz'): void {

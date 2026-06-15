@@ -38,6 +38,22 @@ export class LessonInterfaceComponent implements OnInit {
   }
 
   @Output() exerciseCompleted = new EventEmitter<void>();
+  @Output() startQuiz = new EventEmitter<void>();
+
+  private _dailyState: any = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
+
+  @Input() set dailyState(value: any) {
+    if (value) {
+      this._dailyState = value;
+      this.updateStepFromState();
+    }
+  }
+
+  get dailyState(): any {
+    return this._dailyState;
+  }
+
+  currentStep: number = 1;
 
   isLoading: boolean = false;
   statusMessage: string = '';
@@ -60,6 +76,34 @@ export class LessonInterfaceComponent implements OnInit {
     this.loadLesson();
   }
 
+  updateStepFromState(): void {
+    if (this._dailyState.quiz_unlocked || this._dailyState.exercises_completed) {
+      this.currentStep = 3;
+    } else if (this._dailyState.lesson_completed) {
+      if (this.currentStep < 2) {
+        this.currentStep = 2;
+      }
+    } else {
+      this.currentStep = 1;
+    }
+  }
+
+  canGoToStep2(): boolean {
+    return this._dailyState.lesson_completed || this.currentStep >= 2;
+  }
+
+  goToStep(step: number): void {
+    if (step === 2 && !this.canGoToStep2()) return;
+    if (step === 3 && !this._dailyState.quiz_unlocked) return;
+    this.currentStep = step;
+  }
+
+  proceedToPractice(): void {
+    this.currentStep = 2;
+    this._dailyState.lesson_completed = true;
+    this.exerciseCompleted.emit(); // notify parent that lesson is read
+  }
+
   loadLesson(): void {
     this.isLoading = true;
     this.statusMessage = 'Generating interactive lesson with Gemini...';
@@ -75,6 +119,7 @@ export class LessonInterfaceComponent implements OnInit {
         if (res && res.lesson_markdown) {
           this.lessonMarkdown = res.lesson_markdown;
           this.exercises = res.exercises || [];
+          this.updateStepFromState();
         } else {
           this.errorMessage = 'Failed to generate a valid lesson for this week. Make sure syllabus materials are uploaded.';
         }
@@ -90,6 +135,7 @@ export class LessonInterfaceComponent implements OnInit {
 
   selectOption(exerciseIdx: number, optionIdx: number): void {
     if (this.exerciseAnswersSubmitted) return;
+    if (this.exercises[exerciseIdx].selected_option_index !== undefined) return;
     this.exercises[exerciseIdx].selected_option_index = optionIdx;
   }
 
@@ -122,6 +168,9 @@ export class LessonInterfaceComponent implements OnInit {
         ).length;
 
         if (this.exercisePassed) {
+          this._dailyState.exercises_completed = true;
+          this._dailyState.quiz_unlocked = true;
+          this.currentStep = 3;
           this.exerciseCompleted.emit();
         }
       },
@@ -136,7 +185,9 @@ export class LessonInterfaceComponent implements OnInit {
 
   resetExercises(): void {
     this.exerciseAnswersSubmitted = false;
-    this.exercises.forEach(e => delete e.selected_option_index);
+    this.exercises.forEach(e => {
+      e.selected_option_index = undefined;
+    });
   }
 
   renderMarkdown(md: string): string {
