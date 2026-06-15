@@ -1,0 +1,123 @@
+<div class="cram-modal-overlay fade-in">
+  <div class="cram-modal-content card">
+    <div class="cram-modal-header">
+      <div class="header-icon-title">
+        <mat-icon class="modal-icon">offline_bolt</mat-icon>
+        <h2>Exam Cram Mode</h2>
+      </div>
+      <button class="btn-close" (click)="closeCramModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="cram-modal-body">
+      <!-- Cram Setup Form -->
+      <div *ngIf="!cramData && !isCramLoading" class="cram-setup-form">
+        <p class="modal-desc font-accent">Select a range of weeks to generate a compressed study guide and a 10-15 question rapid-fire review quiz focusing on historically weak areas.</p>
+        
+        <div class="range-inputs">
+          <div class="form-group select-wrapper">
+            <label for="cramStart">Start Week</label>
+            <select id="cramStart" [(ngModel)]="cramStartWeek" class="form-input">
+              <option *ngFor="let w of weeks" [value]="w">Week {{ w }}</option>
+            </select>
+          </div>
+          <div class="form-group select-wrapper">
+            <label for="cramEnd">End Week</label>
+            <select id="cramEnd" [(ngModel)]="cramEndWeek" class="form-input">
+              <option *ngFor="let w of weeks" [value]="w">Week {{ w }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="cramError" class="error-alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ cramError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-outline" (click)="closeCramModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="startCramSession()">Generate Cram Guide</button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isCramLoading" class="cram-loading-state">
+        <div class="spinner"></div>
+        <p>Synthesizing course materials and generating study guide...</p>
+      </div>
+
+      <!-- Cram Session Workspace -->
+      <div *ngIf="cramData" class="cram-session-workspace">
+        <div class="cram-split-layout">
+          <!-- Left Study Guide Panel -->
+          <div class="cram-guide-panel scrollable-y">
+            <h3>Dense Review Sheet</h3>
+            <div class="markdown-body" [innerHTML]="renderMarkdown(cramData.dense_review_markdown)"></div>
+          </div>
+          
+          <!-- Right Quiz Panel -->
+          <div class="cram-quiz-panel scrollable-y">
+            <div class="quiz-panel-header">
+              <h3>Rapid-Fire Review Quiz</h3>
+              <p class="desc">Answer all questions below and click Grade Quiz at the bottom.</p>
+            </div>
+
+            <!-- Quiz Results Banner -->
+            <div *ngIf="cramGraded" class="cram-result-banner fade-in" [class.passed]="cramCorrectAnswersCount >= (cramData.rapid_fire_quiz.length * 0.6)" [class.failed]="cramCorrectAnswersCount < (cramData.rapid_fire_quiz.length * 0.6)">
+              <mat-icon class="result-icon">{{ cramCorrectAnswersCount >= (cramData.rapid_fire_quiz.length * 0.6) ? 'emoji_events' : 'error_outline' }}</mat-icon>
+              <div class="result-info">
+                <h4>Exam Review Graded!</h4>
+                <p>Final Score: <strong>{{ cramCorrectAnswersCount }}</strong> / {{ cramData.rapid_fire_quiz.length }} correct ({{ (cramCorrectAnswersCount / cramData.rapid_fire_quiz.length * 100) | number:'1.0-0' }}%)</p>
+              </div>
+              <button class="btn btn-outline btn-sm" (click)="resetCramQuiz()">Retry</button>
+            </div>
+
+            <div class="cram-questions-list">
+              <div *ngFor="let q of cramData.rapid_fire_quiz; let qIdx = index" class="cram-question-card">
+                <h4 class="cram-q-text">{{ qIdx + 1 }}. {{ q.question_text }}</h4>
+                
+                <div class="cram-options-grid">
+                  <button 
+                    *ngFor="let option of q.options; let optIdx = index"
+                    class="cram-option-button"
+                    [class.selected]="q.selected_option_index === optIdx"
+                    [class.correct]="cramGraded && optIdx === q.correct_option_index"
+                    [class.wrong]="cramGraded && q.selected_option_index === optIdx && optIdx !== q.correct_option_index"
+                    (click)="selectCramQuestionOption(qIdx, optIdx)"
+                    [disabled]="cramGraded"
+                  >
+                    <span class="option-label-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
+                    <span class="option-text-lbl">{{ option }}</span>
+                  </button>
+                </div>
+
+                <!-- Explanation shown when graded -->
+                <div *ngIf="cramGraded && q.selected_option_index !== undefined" class="cram-explanation-block fade-in"
+                     [class.correct-status]="q.selected_option_index === q.correct_option_index"
+                     [class.wrong-status]="q.selected_option_index !== q.correct_option_index">
+                  <div class="explanation-status">
+                    <mat-icon>{{ q.selected_option_index === q.correct_option_index ? 'check_circle' : 'cancel' }}</mat-icon>
+                    <span>{{ q.selected_option_index === q.correct_option_index ? 'Correct!' : 'Incorrect' }}</span>
+                  </div>
+                  <p class="explanation-details">{{ q.explanation || 'Correct option is marked in green.' }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Grade action -->
+            <div *ngIf="!cramGraded" class="cram-quiz-footer">
+              <button 
+                class="btn btn-primary btn-block" 
+                [disabled]="!allCramQuestionsAnswered()" 
+                (click)="gradeCramQuiz()"
+              >
+                Grade Cram Quiz
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

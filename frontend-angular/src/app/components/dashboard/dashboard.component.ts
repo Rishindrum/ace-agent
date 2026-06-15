@@ -9,6 +9,7 @@ import { ChatInterfaceComponent } from '../chat-interface/chat-interface.compone
 import { QuizInterfaceComponent } from '../quiz-interface/quiz-interface.component';
 import { IngestComponent } from '../ingest/ingest.component';
 import { LessonInterfaceComponent } from '../lesson-interface/lesson-interface.component';
+import { CramExamComponent } from '../cram-exam/cram-exam.component';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 
@@ -25,7 +26,8 @@ import { ApiService } from '../../services/api.service';
     ChatInterfaceComponent,
     QuizInterfaceComponent,
     IngestComponent,
-    LessonInterfaceComponent
+    LessonInterfaceComponent,
+    CramExamComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.scss']
@@ -46,18 +48,8 @@ export class DashboardComponent implements OnInit {
   weeks: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   selectedTimelineWeek: number = 1;
 
-  // Cram Mode UI
+  // Cram Mode UI State
   isCramModalOpen: boolean = false;
-  cramStartWeek: number = 1;
-  cramEndWeek: number = 4;
-  isCramLoading: boolean = false;
-  cramData: any = null;
-  cramError: string = '';
-  currentCramQuestionIndex: number = 0;
-  selectedCramOptionIndex: number | null = null;
-  cramCorrectAnswersCount: number = 0;
-  showCramExplanation: boolean = false;
-  cramFinished: boolean = false;
 
   constructor(
     private route: ActivatedRoute, 
@@ -158,78 +150,9 @@ export class DashboardComponent implements OnInit {
   // Cram Modal Actions
   openCramModal() {
     this.isCramModalOpen = true;
-    this.cramData = null;
-    this.cramError = '';
-    this.cramFinished = false;
   }
 
   closeCramModal() {
     this.isCramModalOpen = false;
-  }
-
-  startCramSession() {
-    if (this.cramStartWeek > this.cramEndWeek) {
-      this.cramError = 'Start week must be less than or equal to end week.';
-      return;
-    }
-    this.isCramLoading = true;
-    this.cramError = '';
-    this.cramData = null;
-
-    this.api.generateCramSession(this.cramStartWeek, this.cramEndWeek).subscribe({
-      next: (res) => {
-        this.isCramLoading = false;
-        if (res && res.dense_review_markdown) {
-          this.cramData = res;
-          this.currentCramQuestionIndex = 0;
-          this.selectedCramOptionIndex = null;
-          this.cramCorrectAnswersCount = 0;
-          this.showCramExplanation = false;
-          this.cramFinished = false;
-        } else {
-          this.cramError = 'Failed to generate cram session guide.';
-        }
-      },
-      error: (err) => {
-        this.isCramLoading = false;
-        this.cramError = 'Error generating cram session: ' + (err.error?.message || err.message || err);
-      }
-    });
-  }
-
-  selectCramOption(idx: number) {
-    if (this.selectedCramOptionIndex !== null) return;
-    this.selectedCramOptionIndex = idx;
-    this.showCramExplanation = true;
-    const currentQ = this.cramData.rapid_fire_quiz[this.currentCramQuestionIndex];
-    if (idx === currentQ.correct_option_index) {
-      this.cramCorrectAnswersCount++;
-    }
-  }
-
-  nextCramQuestion() {
-    this.selectedCramOptionIndex = null;
-    this.showCramExplanation = false;
-    if (this.currentCramQuestionIndex < this.cramData.rapid_fire_quiz.length - 1) {
-      this.currentCramQuestionIndex++;
-    } else {
-      this.cramFinished = true;
-    }
-  }
-
-  renderMarkdown(md: string): string {
-    if (!md) return '';
-    let html = md
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/^### (.*$)/gim, '<h3>$1</h3>')
-      .replace(/^## (.*$)/gim, '<h2>$1</h2>')
-      .replace(/^# (.*$)/gim, '<h1>$1</h1>')
-      .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-      .replace(/\*(.*?)\*/g, '<em>$1</em>')
-      .replace(/^\s*\-\s*(.*$)/gim, '<li>$1</li>')
-      .replace(/\n/g, '<br/>');
-    return html;
   }
 }

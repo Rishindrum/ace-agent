@@ -1236,3 +1236,216 @@ $border-color: #e2e8f0;
     }
   }
 }
+
+/* Multi-question layout for Exam Cram Mode */
+.cram-questions-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-top: 16px;
+  margin-bottom: 24px;
+}
+
+.cram-question-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #f1f5f9;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+
+  .cram-q-text {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.5;
+    margin: 0;
+  }
+  
+  .cram-options-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cram-option-button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    text-align: left;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+
+    .option-label-badge {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      background: #f1f5f9;
+      font-weight: 700;
+      color: #475569;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .option-text-lbl {
+      font-size: 14px;
+      color: #334155;
+      font-weight: 500;
+    }
+
+    &:hover:not(:disabled) {
+      background: #f8fafc;
+      border-color: #94a3b8;
+    }
+
+    &.selected {
+      border-color: #6366f1;
+      background: #f5f3ff;
+      .option-label-badge {
+        background: #e0e7ff;
+        color: #4338ca;
+      }
+    }
+
+    &.correct {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      .option-label-badge {
+        background: #dcfce7;
+        color: #15803d;
+      }
+    }
+
+    &.wrong {
+      border-color: #ef4444;
+      background: #fef2f2;
+      .option-label-badge {
+        background: #fee2e2;
+        color: #b91c1c;
+      }
+    }
+  }
+
+  .cram-explanation-block {
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    border-left: 4px solid #cbd5e1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    .explanation-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+
+      mat-icon {
+        font-size: 18px;
+        width: 18px;
+        height: 18px;
+      }
+    }
+
+    .explanation-details {
+      margin: 0;
+      font-size: 13px;
+      color: #475569;
+      line-height: 1.4;
+    }
+
+    &.correct-status {
+      border-left-color: #22c55e;
+      .explanation-status {
+        color: #15803d;
+        mat-icon { color: #22c55e; }
+      }
+    }
+
+    &.wrong-status {
+      border-left-color: #ef4444;
+      .explanation-status {
+        color: #b91c1c;
+        mat-icon { color: #ef4444; }
+      }
+    }
+  }
+}
+
+.cram-result-banner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  border-radius: 12px;
+  border: 1px solid;
+  margin-top: 10px;
+  margin-bottom: 20px;
+
+  .result-icon {
+    font-size: 32px;
+    width: 32px;
+    height: 32px;
+  }
+
+  .result-info {
+    flex-grow: 1;
+    h4 {
+      margin: 0 0 4px 0;
+      font-size: 15px;
+      font-weight: 700;
+    }
+    p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.9;
+    }
+  }
+
+  &.passed {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+    color: #15803d;
+    .result-icon { color: #22c55e; }
+  }
+
+  &.failed {
+    background: #fef2f2;
+    border-color: #fca5a5;
+    color: #b91c1c;
+    .result-icon { color: #ef4444; }
+  }
+  
+  .btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+    border: 1px solid #cbd5e1;
+    background: white;
+    color: #475569;
+    cursor: pointer;
+    
+    &:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+  }
+}
+
+.cram-quiz-footer {
+  border-top: 1px solid #f1f5f9;
+  padding-top: 16px;
+  margin-top: 12px;
+}
