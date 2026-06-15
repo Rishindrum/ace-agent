@@ -6,7 +6,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
 import { GraphVisualizerComponent } from '../graph-visualizer/graph-visualizer.component';
 import { ChatInterfaceComponent } from '../chat-interface/chat-interface.component';
-import { QuizInterfaceComponent } from '../quiz-interface/quiz-interface.component';
 import { IngestComponent } from '../ingest/ingest.component';
 import { LessonInterfaceComponent } from '../lesson-interface/lesson-interface.component';
 import { CramExamComponent } from '../cram-exam/cram-exam.component';
@@ -24,7 +23,6 @@ import { IngestService } from '../../services/ingest.service';
     FormsModule,
     GraphVisualizerComponent,
     ChatInterfaceComponent,
-    QuizInterfaceComponent,
     IngestComponent,
     LessonInterfaceComponent,
     CramExamComponent
@@ -34,10 +32,25 @@ import { IngestService } from '../../services/ingest.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  activeTab: 'syllabus' | 'lesson' | 'tutor' | 'quiz' = 'syllabus';
+  activeTab: 'syllabus' | 'lesson' | 'tutor' = 'syllabus';
   
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
+
+  // Streak Settings Modal State
+  isStreakSettingsModalOpen: boolean = false;
+  streakSettingsStartDate: string = '';
+  streakSettingsPace: number = 45;
+  streakSettingsStreak: number = 0;
+  streakSettingsDays = [
+    { name: 'Sun', value: 0, selected: false },
+    { name: 'Mon', value: 1, selected: false },
+    { name: 'Tue', value: 2, selected: false },
+    { name: 'Wed', value: 3, selected: false },
+    { name: 'Thu', value: 4, selected: false },
+    { name: 'Fri', value: 5, selected: false },
+    { name: 'Sat', value: 6, selected: false }
+  ];
 
   // Multi-Class Management
   classes: any[] = [];
@@ -198,7 +211,7 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  selectTab(tab: 'syllabus' | 'lesson' | 'tutor' | 'quiz'): void {
+  selectTab(tab: 'syllabus' | 'lesson' | 'tutor'): void {
     this.activeTab = tab;
   }
 
@@ -421,6 +434,64 @@ export class DashboardComponent implements OnInit {
         this.isIngestingMaterial = false;
         this.ingestSuccess = false;
         this.ingestMessage = 'Ingestion failed: ' + (err.error?.message || err.message || err);
+      }
+    });
+  }
+
+  openStreakSettingsModal(): void {
+    if (!this.selectedClass) return;
+    this.isStreakSettingsModalOpen = true;
+    this.streakSettingsStartDate = this.selectedClass.course_start_date || new Date().toISOString().split('T')[0];
+    this.streakSettingsPace = 45;
+    this.streakSettingsStreak = this.selectedClass.class_streak || this.selectedClass.current_streak || 0;
+    
+    this.api.getUserScheduleSettings(this.selectedClass.class_id).subscribe({
+      next: (sched) => {
+        if (sched) {
+          if (sched.course_start_date) this.streakSettingsStartDate = sched.course_start_date;
+          if (sched.daily_pace) this.streakSettingsPace = sched.daily_pace;
+          if (sched.current_streak) this.streakSettingsStreak = sched.current_streak;
+          if (sched.preferred_days && Array.isArray(sched.preferred_days)) {
+            this.streakSettingsDays.forEach(d => {
+              d.selected = sched.preferred_days.includes(d.value);
+            });
+          }
+        }
+      },
+      error: (err) => {
+        console.warn('Could not load existing schedule settings for modal:', err);
+      }
+    });
+  }
+
+  closeStreakSettingsModal(): void {
+    this.isStreakSettingsModalOpen = false;
+  }
+
+  saveStreakSettings(): void {
+    const selectedDays = this.streakSettingsDays.filter(d => d.selected).map(d => d.value);
+    if (selectedDays.length === 0) {
+      alert('Please select at least one preferred study day.');
+      return;
+    }
+    const classId = this.selectedClass ? this.selectedClass.class_id : 'default_class';
+    const className = this.selectedClass ? this.selectedClass.class_name : 'Default Class';
+
+    this.api.saveUserScheduleSettings(
+      selectedDays,
+      this.streakSettingsPace,
+      this.streakSettingsStreak,
+      this.streakSettingsStartDate,
+      classId,
+      className
+    ).subscribe({
+      next: (res) => {
+        this.isStreakSettingsModalOpen = false;
+        this.loadClasses();
+        alert('Streak settings saved successfully!');
+      },
+      error: (err) => {
+        alert('Failed to save settings: ' + (err.error?.message || err.message || err));
       }
     });
   }

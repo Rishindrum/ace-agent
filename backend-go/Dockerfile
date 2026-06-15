@@ -12,6 +12,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o ace-gateway main.go
 
 # --- Final Stage (Small Image) ---
 FROM alpine:latest
+RUN apk --no-cache add ca-certificates
 WORKDIR /root/
 COPY --from=builder /app/ace-gateway .
 

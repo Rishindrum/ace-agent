@@ -171,29 +171,119 @@
           </div>
         </div>
 
-        <!-- STEP 3 View: Unlock Quiz -->
+        <!-- STEP 3 View: Unlock and Take Quiz -->
         <div *ngIf="currentStep === 3" class="step-card card fade-in quiz-unlocked-card">
-          <div class="unlocked-icon-container">
-            <mat-icon class="huge-unlocked-icon animate-bounce">lock_open</mat-icon>
+          
+          <!-- 3a. Quiz Not Started & Not Finished -->
+          <div *ngIf="!isQuizActive && !quizFinished && !quizLoading" class="quiz-intro-state text-center">
+            <div class="unlocked-icon-container">
+              <mat-icon class="huge-unlocked-icon animate-bounce">lock_open</mat-icon>
+            </div>
+            <div class="step-card-header text-center">
+              <div class="step-badge-current">Step 3 of 3</div>
+              <h3>Launch Official Quiz</h3>
+            </div>
+            <div class="step-card-body text-center">
+              <p class="unlocked-text">Orbit Established! You are clear to start your Week {{ selectedWeek }} quiz.</p>
+              <p class="unlocked-subtext">This quiz contains exactly 10 questions customized to your target topics. Submitting your answers will save analytics to BigQuery and extend your streak!</p>
+            </div>
+            <div class="step-card-footer">
+              <button class="btn btn-primary btn-block btn-start-quiz" (click)="startIntegratedQuiz()">
+                <mat-icon>rocket_launch</mat-icon>
+                <span>Launch Quiz (10 Questions)</span>
+              </button>
+              <button class="btn btn-outline btn-block mt-10" (click)="goToStep(1)">
+                <mat-icon>menu_book</mat-icon>
+                <span>Review Lesson Content</span>
+              </button>
+            </div>
           </div>
-          <div class="step-card-header text-center">
-            <div class="step-badge-current">Step 3 of 3</div>
-            <h3>Weekly Quiz Unlocked!</h3>
+
+          <!-- 3b. Quiz Loading State -->
+          <div *ngIf="quizLoading" class="quiz-loading-state text-center">
+            <div class="orbit-spinner">
+              <div class="planet"></div>
+              <div class="satellite"></div>
+            </div>
+            <h3>Generating Quiz Orbit...</h3>
+            <p>{{ quizStatusMessage }}</p>
           </div>
-          <div class="step-card-body text-center">
-            <p class="unlocked-text">Congratulations! You have completed the study lesson and solved the practice exercises successfully.</p>
-            <p class="unlocked-subtext">You are now ready to take the official adaptive performance quiz. Taking the quiz will record your score to Google BigQuery and advance your study streak!</p>
+
+          <!-- 3c. Quiz Active (Taking the Quiz) -->
+          <div *ngIf="isQuizActive && !quizFinished && !quizLoading" class="quiz-active-state">
+            <div class="step-card-header">
+              <div class="step-badge-current">Week {{ selectedWeek }} Official Quiz</div>
+              <h3>Testing Orbit Knowledge</h3>
+              <p class="desc">Select your answers for all 10 questions. Telemetry will be gathered upon submission.</p>
+            </div>
+            
+            <div class="quiz-questions-list scrollable-y">
+              <div *ngFor="let q of quizQuestions; let qIdx = index" class="quiz-question-item">
+                <h4 class="quiz-q-text">{{ qIdx + 1 }}. {{ q.question_text }}</h4>
+                
+                <div class="quiz-options-grid">
+                  <button 
+                    *ngFor="let option of q.options; let optIdx = index"
+                    class="quiz-option-button"
+                    [class.selected]="quizSelectedAnswers[qIdx] === optIdx"
+                    (click)="selectQuizOption(qIdx, optIdx)"
+                  >
+                    <span class="option-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
+                    <span class="option-text">{{ option }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-active-footer">
+              <button class="btn btn-outline" (click)="cancelQuiz()">
+                Cancel
+              </button>
+              <button 
+                class="btn btn-primary" 
+                [disabled]="!allQuizAnswered()" 
+                (click)="submitQuizAnswers()"
+              >
+                Submit Quiz Telemetry
+              </button>
+            </div>
           </div>
-          <div class="step-card-footer">
-            <button class="btn btn-primary btn-block btn-start-quiz" (click)="startQuiz.emit()">
-              <mat-icon>assignment_turned_in</mat-icon>
-              <span>Start Official Quiz</span>
-            </button>
-            <button class="btn btn-outline btn-block mt-10" (click)="goToStep(1)">
-              <mat-icon>menu_book</mat-icon>
-              <span>Review Lesson Content</span>
-            </button>
+
+          <!-- 3d. Quiz Finished (Results Screen) -->
+          <div *ngIf="quizFinished" class="quiz-finished-state text-center fade-in">
+            <div class="finished-stars-container">
+              <mat-icon class="huge-finished-icon text-glow">stars</mat-icon>
+            </div>
+            
+            <div class="step-card-header text-center">
+              <div class="step-badge-current">Mission Accomplished</div>
+              <h3>Quiz Evaluation Complete</h3>
+            </div>
+            
+            <div class="quiz-score-display">
+              <div class="score-circle" [class.excellent]="quizPercentage >= 70" [class.needs-work]="quizPercentage < 70">
+                <span class="percentage">{{ quizPercentage }}%</span>
+                <span class="details">{{ quizScore }} / {{ quizTotal }} Correct</span>
+              </div>
+            </div>
+
+            <div class="step-card-body text-center">
+              <p class="streak-fire-title">
+                <mat-icon class="fire-icon animated-fire">local_fire_department</mat-icon>
+                <span>Study Streak Maintained!</span>
+              </p>
+              <p class="unlocked-subtext" *ngIf="quizPercentage >= 70">Superb exploration! Your telemetry data has been written to the ship's BigQuery archives.</p>
+              <p class="unlocked-subtext" *ngIf="quizPercentage < 70">Review the topics on your next study pass. Telemetry recorded successfully.</p>
+            </div>
+
+            <div class="step-card-footer">
+              <button class="btn btn-primary btn-block" (click)="finishStudySession()">
+                <mat-icon>done_all</mat-icon>
+                <span>Complete Study Session</span>
+              </button>
+            </div>
           </div>
+
         </div>
 
       </div>

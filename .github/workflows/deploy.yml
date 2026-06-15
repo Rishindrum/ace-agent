@@ -41,7 +41,7 @@ jobs:
           service: backend-python
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-python:latest
           region: us-central1
-          flags: --update-env-vars=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},NEO4J_URI=${{ secrets.NEO4J_URI }},NEO4J_PASSWORD=${{ secrets.NEO4J_PASSWORD }},NEO4J_USER=${{ secrets.NEO4J_USER }},PYTHONUNBUFFERED=1
+          flags: --update-env-vars=GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }},NEO4J_URI=${{ secrets.NEO4J_URI }},NEO4J_PASSWORD=${{ secrets.NEO4J_PASSWORD }},NEO4J_USER=${{ secrets.NEO4J_USER }},PYTHONUNBUFFERED=1,GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }},GCS_BUCKET_NAME=ace-agent-brain-bucket-${{ secrets.GCP_PROJECT_ID }}
 
       # 4. Build & Push Go (The Gateway)
       - name: Build and Push Go
@@ -62,7 +62,7 @@ jobs:
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-go:latest
           region: us-central1
           # Use env_vars to explicitly pass the URL captured in Step 5 and the Google OAuth secrets
-          flags: --update-env-vars=PYTHON_SERVICE_URL=${{ env.PYTHON_URL }},TUTOR_SERVICE_ADDR=backend-python:443,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},OAUTH_REDIRECT_URL=${{ secrets.OAUTH_REDIRECT_URL }},FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+          flags: --update-env-vars=PYTHON_SERVICE_URL=${{ env.PYTHON_URL }},TUTOR_SERVICE_ADDR=backend-python:443,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},OAUTH_REDIRECT_URL=${{ secrets.OAUTH_REDIRECT_URL }},FRONTEND_URL=${{ secrets.FRONTEND_URL }},GCP_PROJECT_ID=${{ secrets.GCP_PROJECT_ID }},GCS_BUCKET_NAME=ace-agent-brain-bucket-${{ secrets.GCP_PROJECT_ID }}
       
       # 7. Get Go Gateway URL
       - name: Get Go URL

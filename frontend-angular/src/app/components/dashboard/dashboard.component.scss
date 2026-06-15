@@ -2464,4 +2464,172 @@ $border-color: #e2e8f0;
   }
 }
 
+/* Space Theme/Cosmic overrides for Header and widgets */
+.app-header {
+  background-color: #0b0f19 !important;
+  border-bottom: 1px solid rgba(99, 102, 241, 0.25) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;
+  color: #f1f5f9 !important;
+
+  .logo-area {
+    .logo-icon {
+      background: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%) !important;
+      border: 1px solid rgba(99, 102, 241, 0.4);
+      
+      .logo-cosmic {
+        color: #38bdf8;
+        filter: drop-shadow(0 0 8px #38bdf8);
+        animation: slow-rotate 10s linear infinite;
+      }
+    }
+
+    .logo-text h2 {
+      background: linear-gradient(135deg, #38bdf8 0%, #6366f1 100%) !important;
+      -webkit-background-clip: text !important;
+      -webkit-text-fill-color: transparent !important;
+      font-weight: 800;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2));
+    }
+
+    .logo-text span {
+      color: #94a3b8 !important;
+    }
+  }
+
+  .tab-nav {
+    .nav-tab {
+      color: #94a3b8;
+      border: 1px solid transparent;
+      margin: 0 2px;
+      
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+        color: #ffffff;
+      }
+
+      &.active {
+        background: rgba(99, 102, 241, 0.15) !important;
+        border: 1px solid rgba(99, 102, 241, 0.4);
+        color: #38bdf8 !important;
+        box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);
+      }
+    }
+  }
+
+  .global-streak-header-widget {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    .streak-icon {
+      color: #a855f7;
+      filter: drop-shadow(0 0 6px #a855f7);
+    }
+
+    .streak-text {
+      display: flex;
+      flex-direction: column;
+      
+      .streak-value {
+        font-size: 13px;
+        font-weight: 800;
+        color: #f1f5f9;
+        line-height: 1.2;
+      }
+      .streak-label {
+        font-size: 10px;
+        color: #94a3b8;
+      }
+    }
+  }
+}
+
+@keyframes slow-rotate {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Cosmic Header status & widgets styling */
+.header-status-area {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 8px;
+}
+
+.header-status-widget {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 12px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  height: 38px;
+  box-sizing: border-box;
+
+  .fire-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+
+  .planet-icon {
+    color: #38bdf8;
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+    filter: drop-shadow(0 0 6px #38bdf8);
+    animation: pulse-cosmic 2s infinite alternate;
+  }
+
+  .widget-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+    .widget-val {
+      font-size: 12px;
+      font-weight: 700;
+      color: #f8fafc;
+      line-height: 1.2;
+    }
+    
+    .widget-lbl {
+      font-size: 9px;
+      color: #94a3b8;
+      font-weight: 500;
+      letter-spacing: 0.2px;
+    }
+  }
+}
+
+@keyframes pulse-cosmic {
+  0% { transform: scale(0.95); opacity: 0.8; }
+  100% { transform: scale(1.05); opacity: 1; filter: drop-shadow(0 0 10px #38bdf8); }
+}
+
+/* Modal styling for cosmic */
+.cosmic-modal {
+  .form-group label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #38bdf8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .cosmic-checkbox-label {
+    &:hover {
+      background: rgba(99, 102, 241, 0.15) !important;
+      border-color: rgba(99, 102, 241, 0.4) !important;
+      color: white;
+    }
+  }
+}
+
 

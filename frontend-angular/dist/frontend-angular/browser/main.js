@@ -76080,1096 +76080,6 @@ var MatCardModule = class _MatCardModule {
   }], null, null);
 })();
 
-// src/app/components/quiz-interface/quiz-interface.component.ts
-var _c08 = (a0, a1, a2) => ({ "pass-high": a0, "pass-med": a1, "pass-low": a2 });
-var _c15 = (a0, a1, a2) => ({ "selected": a0, "correct": a1, "incorrect": a2 });
-var _c25 = (a0, a1) => ({ "correct-bg": a0, "incorrect-bg": a1 });
-function QuizInterfaceComponent_div_1_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 5)(1, "div", 6);
-    \u0275\u0275element(2, "div", 7);
-    \u0275\u0275elementStart(3, "p", 8);
-    \u0275\u0275text(4);
-    \u0275\u0275elementEnd()()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(ctx_r0.statusMessage || "Processing request...");
-  }
-}
-function QuizInterfaceComponent_div_2_div_41_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 33);
-    \u0275\u0275text(1);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r0.statusMessage, " ");
-  }
-}
-function QuizInterfaceComponent_div_2_div_45_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 34);
-    \u0275\u0275element(1, "mat-progress-bar", 35);
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_2_div_46_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 36)(1, "mat-icon", 37);
-    \u0275\u0275text(2, "history_edu");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "p");
-    \u0275\u0275text(4, "No quiz scores recorded yet for ");
-    \u0275\u0275elementStart(5, "strong");
-    \u0275\u0275text(6);
-    \u0275\u0275elementEnd();
-    \u0275\u0275text(7, ".");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(8, "p", 38);
-    \u0275\u0275text(9, "Scores will stream to Google BigQuery and show up here once you complete a quiz.");
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance(6);
-    \u0275\u0275textInterpolate(ctx_r0.userId);
-  }
-}
-function QuizInterfaceComponent_div_2_div_47_div_1_span_10_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 48);
-    \u0275\u0275text(1, "Mastered");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_2_div_47_div_1_span_11_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 48);
-    \u0275\u0275text(1, "Reviewing");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_2_div_47_div_1_span_12_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 48);
-    \u0275\u0275text(1, "Weak Area");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_2_div_47_div_1_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 41)(1, "div", 42)(2, "span", 43);
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "span", 44);
-    \u0275\u0275text(5);
-    \u0275\u0275pipe(6, "date");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "div", 45)(8, "span", 46);
-    \u0275\u0275text(9);
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(10, QuizInterfaceComponent_div_2_div_47_div_1_span_10_Template, 2, 0, "span", 47)(11, QuizInterfaceComponent_div_2_div_47_div_1_span_11_Template, 2, 0, "span", 47)(12, QuizInterfaceComponent_div_2_div_47_div_1_span_12_Template, 2, 0, "span", 47);
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const record_r3 = ctx.$implicit;
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction3(10, _c08, record_r3.score >= 80, record_r3.score >= 50 && record_r3.score < 80, record_r3.score < 50));
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(record_r3.topic_name);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(\u0275\u0275pipeBind2(6, 7, record_r3.timestamp, "short"));
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate1("", record_r3.score, "%");
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", record_r3.score >= 80);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", record_r3.score >= 50 && record_r3.score < 80);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", record_r3.score < 50);
-  }
-}
-function QuizInterfaceComponent_div_2_div_47_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 39);
-    \u0275\u0275template(1, QuizInterfaceComponent_div_2_div_47_div_1_Template, 13, 14, "div", 40);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngForOf", ctx_r0.quizHistory);
-  }
-}
-function QuizInterfaceComponent_div_2_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r2 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 9)(1, "div", 10)(2, "div", 11)(3, "div", 12)(4, "label", 13);
-    \u0275\u0275text(5, "Student ID");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "input", 14);
-    \u0275\u0275twoWayListener("ngModelChange", function QuizInterfaceComponent_div_2_Template_input_ngModelChange_6_listener($event) {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r0.userId, $event) || (ctx_r0.userId = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275listener("change", function QuizInterfaceComponent_div_2_Template_input_change_6_listener() {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.loadHistory());
-    });
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "div", 12)(8, "label", 15);
-    \u0275\u0275text(9, "Syllabus / Course");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(10, "input", 16);
-    \u0275\u0275twoWayListener("ngModelChange", function QuizInterfaceComponent_div_2_Template_input_ngModelChange_10_listener($event) {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r0.syllabusName, $event) || (ctx_r0.syllabusName = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275elementEnd()()()();
-    \u0275\u0275elementStart(11, "div", 17)(12, "div", 18)(13, "div", 19)(14, "mat-icon");
-    \u0275\u0275text(15, "psychology");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(16, "h3");
-    \u0275\u0275text(17, "Adaptive AI Quiz");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(18, "p");
-    \u0275\u0275text(19, "Generate a dynamic personalized quiz based on the full syllabus topics to target your weak areas.");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(20, "button", 20);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_2_Template_button_click_20_listener() {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.startQuiz());
-    });
-    \u0275\u0275text(21, " Start Adaptive Quiz ");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(22, "div", 18)(23, "div", 21)(24, "mat-icon");
-    \u0275\u0275text(25, "menu_book");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(26, "h3");
-    \u0275\u0275text(27, "Weekly Syllabus Quiz");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(28, "p");
-    \u0275\u0275text(29, "Test your knowledge on a specific week's ingested course material chunks.");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(30, "div", 22)(31, "div", 23)(32, "label", 24);
-    \u0275\u0275text(33, "Week");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(34, "input", 25);
-    \u0275\u0275twoWayListener("ngModelChange", function QuizInterfaceComponent_div_2_Template_input_ngModelChange_34_listener($event) {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r0.weekNumber, $event) || (ctx_r0.weekNumber = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(35, "div", 23)(36, "label", 26);
-    \u0275\u0275text(37, "Questions");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(38, "input", 27);
-    \u0275\u0275twoWayListener("ngModelChange", function QuizInterfaceComponent_div_2_Template_input_ngModelChange_38_listener($event) {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r0.questionCount, $event) || (ctx_r0.questionCount = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(39, "button", 20);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_2_Template_button_click_39_listener() {
-      \u0275\u0275restoreView(_r2);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.startSyllabusQuiz());
-    });
-    \u0275\u0275text(40, " Start Week Quiz ");
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275template(41, QuizInterfaceComponent_div_2_div_41_Template, 2, 1, "div", 28);
-    \u0275\u0275elementStart(42, "div", 29)(43, "h4");
-    \u0275\u0275text(44, "Performance Dashboard (BigQuery)");
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(45, QuizInterfaceComponent_div_2_div_45_Template, 2, 0, "div", 30)(46, QuizInterfaceComponent_div_2_div_46_Template, 10, 1, "div", 31)(47, QuizInterfaceComponent_div_2_div_47_Template, 2, 1, "div", 32);
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance(6);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r0.userId);
-    \u0275\u0275advance(4);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r0.syllabusName);
-    \u0275\u0275advance(10);
-    \u0275\u0275property("disabled", ctx_r0.isLoading || !ctx_r0.syllabusName);
-    \u0275\u0275advance(14);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r0.weekNumber);
-    \u0275\u0275advance(4);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r0.questionCount);
-    \u0275\u0275advance();
-    \u0275\u0275property("disabled", ctx_r0.isLoading);
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngIf", ctx_r0.statusMessage && !ctx_r0.isLoading);
-    \u0275\u0275advance(4);
-    \u0275\u0275property("ngIf", ctx_r0.isLoading && ctx_r0.quizHistory.length === 0);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.quizHistory.length === 0 && !ctx_r0.isLoading);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.quizHistory.length > 0);
-  }
-}
-function QuizInterfaceComponent_div_3_button_5_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r5 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 56);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_3_button_5_Template_button_click_0_listener() {
-      \u0275\u0275restoreView(_r5);
-      const ctx_r0 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r0.openRegenModal());
-    });
-    \u0275\u0275elementStart(1, "mat-icon", 57);
-    \u0275\u0275text(2, "edit");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "span");
-    \u0275\u0275text(4, "Edit / Regenerate");
-    \u0275\u0275elementEnd()();
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_button_14_mat_icon_5_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-icon", 70);
-    \u0275\u0275text(1, "check_circle");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_button_14_mat_icon_6_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-icon", 70);
-    \u0275\u0275text(1, "cancel");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_button_14_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r6 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 66);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_3_div_8_button_14_Template_button_click_0_listener() {
-      const idx_r7 = \u0275\u0275restoreView(_r6).index;
-      const ctx_r0 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r0.selectOption(idx_r7));
-    });
-    \u0275\u0275elementStart(1, "span", 67);
-    \u0275\u0275text(2);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "span", 68);
-    \u0275\u0275text(4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(5, QuizInterfaceComponent_div_3_div_8_button_14_mat_icon_5_Template, 2, 0, "mat-icon", 69)(6, QuizInterfaceComponent_div_3_div_8_button_14_mat_icon_6_Template, 2, 0, "mat-icon", 69);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const option_r8 = ctx.$implicit;
-    const idx_r7 = ctx.index;
-    const ctx_r0 = \u0275\u0275nextContext(3);
-    \u0275\u0275property("disabled", ctx_r0.selectedOptionIndex !== null)("ngClass", \u0275\u0275pureFunction3(6, _c15, ctx_r0.selectedOptionIndex === idx_r7, ctx_r0.selectedOptionIndex !== null && idx_r7 === ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index, ctx_r0.selectedOptionIndex === idx_r7 && idx_r7 !== ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index));
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(idx_r7 + 1);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(option_r8);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.selectedOptionIndex !== null && idx_r7 === ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.selectedOptionIndex === idx_r7 && idx_r7 !== ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index);
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_div_15_mat_icon_2_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-icon");
-    \u0275\u0275text(1, "check");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_div_15_mat_icon_3_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "mat-icon");
-    \u0275\u0275text(1, "close");
-    \u0275\u0275elementEnd();
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_div_15_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r9 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 71)(1, "p", 72);
-    \u0275\u0275template(2, QuizInterfaceComponent_div_3_div_8_div_15_mat_icon_2_Template, 2, 0, "mat-icon", 54)(3, QuizInterfaceComponent_div_3_div_8_div_15_mat_icon_3_Template, 2, 0, "mat-icon", 54);
-    \u0275\u0275text(4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p", 73);
-    \u0275\u0275text(6);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "button", 74);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_3_div_8_div_15_Template_button_click_7_listener() {
-      \u0275\u0275restoreView(_r9);
-      const ctx_r0 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r0.nextQuestion());
-    });
-    \u0275\u0275text(8);
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(3);
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction2(6, _c25, ctx_r0.selectedOptionIndex === ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index, ctx_r0.selectedOptionIndex !== ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index));
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngIf", ctx_r0.selectedOptionIndex === ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.selectedOptionIndex !== ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index);
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r0.selectedOptionIndex === ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].correct_option_index ? "Correct!" : "Incorrect", " ");
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].explanation);
-    \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate1(" ", ctx_r0.currentQuestionIndex === ctx_r0.currentQuiz.questions.length - 1 ? "Finish Quiz" : "Next Question", " ");
-  }
-}
-function QuizInterfaceComponent_div_3_div_8_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div")(1, "div", 58)(2, "div", 59)(3, "span");
-    \u0275\u0275text(4);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "span");
-    \u0275\u0275text(6, "Topic: ");
-    \u0275\u0275elementStart(7, "strong");
-    \u0275\u0275text(8);
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275element(9, "mat-progress-bar", 60);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(10, "div", 61)(11, "p", 62);
-    \u0275\u0275text(12);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(13, "div", 63);
-    \u0275\u0275template(14, QuizInterfaceComponent_div_3_div_8_button_14_Template, 7, 10, "button", 64);
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(15, QuizInterfaceComponent_div_3_div_8_div_15_Template, 9, 9, "div", 65);
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate2("Question ", ctx_r0.currentQuestionIndex + 1, " of ", ctx_r0.currentQuiz.questions.length, "");
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate(ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].topic);
-    \u0275\u0275advance();
-    \u0275\u0275property("value", ctx_r0.currentQuestionIndex / ctx_r0.currentQuiz.questions.length * 100);
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].question_text);
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngForOf", ctx_r0.currentQuiz.questions[ctx_r0.currentQuestionIndex].options);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.showExplanation);
-  }
-}
-function QuizInterfaceComponent_div_3_div_9_div_16_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 82);
-    \u0275\u0275text(1);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(3);
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate1(" ", ctx_r0.statusMessage, " ");
-  }
-}
-function QuizInterfaceComponent_div_3_div_9_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r10 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 75)(1, "mat-icon", 76);
-    \u0275\u0275text(2, "workspace_premium");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "h2");
-    \u0275\u0275text(4, "Quiz Completed!");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p", 77);
-    \u0275\u0275text(6, "You scored ");
-    \u0275\u0275elementStart(7, "strong");
-    \u0275\u0275text(8);
-    \u0275\u0275elementEnd();
-    \u0275\u0275text(9, " out of ");
-    \u0275\u0275elementStart(10, "strong");
-    \u0275\u0275text(11);
-    \u0275\u0275elementEnd();
-    \u0275\u0275text(12, " correct answers.");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(13, "div", 78)(14, "span", 79);
-    \u0275\u0275text(15);
-    \u0275\u0275elementEnd()();
-    \u0275\u0275template(16, QuizInterfaceComponent_div_3_div_9_div_16_Template, 2, 1, "div", 80);
-    \u0275\u0275elementStart(17, "button", 81);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_3_div_9_Template_button_click_17_listener() {
-      \u0275\u0275restoreView(_r10);
-      const ctx_r0 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r0.exitQuiz());
-    });
-    \u0275\u0275text(18, " Back to Dashboard ");
-    \u0275\u0275elementEnd()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance(8);
-    \u0275\u0275textInterpolate(ctx_r0.correctAnswersCount);
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(ctx_r0.currentQuiz.questions.length);
-    \u0275\u0275advance(4);
-    \u0275\u0275textInterpolate1("", ctx_r0.Math.round(ctx_r0.correctAnswersCount / ctx_r0.currentQuiz.questions.length * 100), "%");
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.statusMessage);
-    \u0275\u0275advance();
-    \u0275\u0275property("disabled", ctx_r0.isLoading);
-  }
-}
-function QuizInterfaceComponent_div_3_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r4 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 49)(1, "div", 50)(2, "h3");
-    \u0275\u0275text(3);
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "div", 51);
-    \u0275\u0275template(5, QuizInterfaceComponent_div_3_button_5_Template, 5, 0, "button", 52);
-    \u0275\u0275elementStart(6, "button", 53);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_3_Template_button_click_6_listener() {
-      \u0275\u0275restoreView(_r4);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.exitQuiz());
-    });
-    \u0275\u0275text(7, "Exit");
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275template(8, QuizInterfaceComponent_div_3_div_8_Template, 16, 7, "div", 54)(9, QuizInterfaceComponent_div_3_div_9_Template, 19, 5, "div", 55);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance(3);
-    \u0275\u0275textInterpolate(ctx_r0.currentQuiz.quiz_title);
-    \u0275\u0275advance(2);
-    \u0275\u0275property("ngIf", !ctx_r0.quizFinished);
-    \u0275\u0275advance(3);
-    \u0275\u0275property("ngIf", !ctx_r0.quizFinished);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r0.quizFinished);
-  }
-}
-function QuizInterfaceComponent_div_4_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r11 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 83)(1, "div", 84)(2, "div", 85)(3, "div", 86)(4, "mat-icon", 87);
-    \u0275\u0275text(5, "edit");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "span");
-    \u0275\u0275text(7, "Adjust Quiz Content");
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "button", 88);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_4_Template_button_click_8_listener() {
-      \u0275\u0275restoreView(_r11);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.closeRegenModal());
-    });
-    \u0275\u0275elementStart(9, "mat-icon");
-    \u0275\u0275text(10, "close");
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "div", 89)(12, "p", 90);
-    \u0275\u0275text(13, " How should Gemini modify this quiz? You can steer it to be simpler, cover specific details more deeply, or adjust the question styles. ");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 91)(15, "label", 92);
-    \u0275\u0275text(16, "Instructions for AI");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(17, "textarea", 93);
-    \u0275\u0275twoWayListener("ngModelChange", function QuizInterfaceComponent_div_4_Template_textarea_ngModelChange_17_listener($event) {
-      \u0275\u0275restoreView(_r11);
-      const ctx_r0 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r0.regenPrompt, $event) || (ctx_r0.regenPrompt = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(18, "div", 94)(19, "button", 95);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_4_Template_button_click_19_listener() {
-      \u0275\u0275restoreView(_r11);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.closeRegenModal());
-    });
-    \u0275\u0275text(20, "Cancel");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "button", 96);
-    \u0275\u0275listener("click", function QuizInterfaceComponent_div_4_Template_button_click_21_listener() {
-      \u0275\u0275restoreView(_r11);
-      const ctx_r0 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r0.submitRegeneration());
-    });
-    \u0275\u0275elementStart(22, "mat-icon", 57);
-    \u0275\u0275text(23, "sync");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "span");
-    \u0275\u0275text(25, "Regenerate Content");
-    \u0275\u0275elementEnd()()()()();
-  }
-  if (rf & 2) {
-    const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275advance(8);
-    \u0275\u0275property("disabled", ctx_r0.isRegenerating);
-    \u0275\u0275advance(9);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r0.regenPrompt);
-    \u0275\u0275property("disabled", ctx_r0.isRegenerating);
-    \u0275\u0275advance(2);
-    \u0275\u0275property("disabled", ctx_r0.isRegenerating);
-    \u0275\u0275advance(2);
-    \u0275\u0275property("disabled", ctx_r0.isRegenerating || !ctx_r0.regenPrompt.trim());
-  }
-}
-var QuizInterfaceComponent = class _QuizInterfaceComponent {
-  api;
-  Math = Math;
-  userId = "demo_student";
-  syllabusName = "";
-  classId = "default_class";
-  set selectedWeek(value) {
-    if (value) {
-      this.weekNumber = value;
-    }
-  }
-  weekNumber = 1;
-  questionCount = 5;
-  currentView = "history";
-  // Quiz State
-  quizHistory = [];
-  currentQuiz = null;
-  currentQuestionIndex = 0;
-  selectedOptionIndex = null;
-  correctAnswersCount = 0;
-  showExplanation = false;
-  quizFinished = false;
-  isLoading = false;
-  statusMessage = "";
-  // Regeneration State
-  isRegenModalOpen = false;
-  regenPrompt = "";
-  isRegenerating = false;
-  constructor(api) {
-    this.api = api;
-  }
-  ngOnInit() {
-    this.api.activeSyllabus.subscribe((name) => {
-      this.syllabusName = name;
-    });
-    this.loadHistory();
-  }
-  loadHistory() {
-    if (!this.userId.trim())
-      return;
-    this.isLoading = true;
-    this.api.getQuizScores(this.userId).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        if (res && res.scores) {
-          this.quizHistory = res.scores;
-        } else {
-          this.quizHistory = [];
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        console.error("Error loading scores:", err);
-      }
-    });
-  }
-  startQuiz() {
-    if (!this.userId.trim() || !this.syllabusName.trim()) {
-      this.statusMessage = "Please upload a syllabus or enter a syllabus name first.";
-      return;
-    }
-    this.isLoading = true;
-    this.statusMessage = "Generating adaptive quiz with Gemini...";
-    this.api.generateAdaptiveQuiz(this.userId, this.syllabusName).subscribe({
-      next: (quizData) => {
-        this.isLoading = false;
-        this.statusMessage = "";
-        if (quizData && quizData.questions && quizData.questions.length > 0) {
-          this.currentQuiz = quizData;
-          this.currentQuestionIndex = 0;
-          this.selectedOptionIndex = null;
-          this.correctAnswersCount = 0;
-          this.showExplanation = false;
-          this.quizFinished = false;
-          this.currentView = "quiz";
-        } else {
-          this.statusMessage = "Failed to generate a valid quiz. Please try again.";
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.statusMessage = "Error generating quiz: " + err.message;
-        console.error("Quiz generation error:", err);
-      }
-    });
-  }
-  startSyllabusQuiz() {
-    if (!this.userId.trim() || !this.weekNumber || !this.questionCount) {
-      this.statusMessage = "Please fill out all fields.";
-      return;
-    }
-    this.isLoading = true;
-    this.statusMessage = `Generating syllabus quiz for Week ${this.weekNumber} using course materials...`;
-    this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        this.statusMessage = "";
-        if (res && res.code === "NO_MATERIALS_FOUND") {
-          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
-        } else if (res && res.length > 0) {
-          const mappedQuestions = res.map((q) => ({
-            question_text: q.questionText || "Question",
-            options: q.options || [],
-            correct_option_index: q.correctOptionIndex !== void 0 ? q.correctOptionIndex : 0,
-            topic: `Week ${this.weekNumber}`,
-            explanation: "Correct answer is marked below."
-          }));
-          this.currentQuiz = {
-            quiz_title: `Syllabus Quiz - Week ${this.weekNumber}`,
-            questions: mappedQuestions
-          };
-          this.currentQuestionIndex = 0;
-          this.selectedOptionIndex = null;
-          this.correctAnswersCount = 0;
-          this.showExplanation = false;
-          this.quizFinished = false;
-          this.currentView = "quiz";
-        } else {
-          this.statusMessage = "Failed to generate a valid quiz for this week. Ensure syllabus materials are uploaded/ingested.";
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        if (err.status === 404 || err.error?.code === "NO_MATERIALS_FOUND") {
-          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
-        } else {
-          this.statusMessage = "Error generating syllabus quiz: " + (err.error?.message || err.message || err);
-        }
-        console.error("Syllabus quiz generation error:", err);
-      }
-    });
-  }
-  openRegenModal() {
-    this.regenPrompt = "";
-    this.isRegenModalOpen = true;
-  }
-  closeRegenModal() {
-    this.isRegenModalOpen = false;
-  }
-  submitRegeneration() {
-    if (this.isRegenerating)
-      return;
-    this.isRegenerating = true;
-    this.isLoading = true;
-    this.statusMessage = `Steering Gemini and regenerating quiz for Week ${this.weekNumber}...`;
-    this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId, true, this.regenPrompt).subscribe({
-      next: (res) => {
-        this.isLoading = false;
-        this.isRegenerating = false;
-        this.isRegenModalOpen = false;
-        this.statusMessage = "";
-        if (res && res.code === "NO_MATERIALS_FOUND") {
-          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
-        } else if (res && res.length > 0) {
-          const mappedQuestions = res.map((q) => ({
-            question_text: q.questionText || "Question",
-            options: q.options || [],
-            correct_option_index: q.correctOptionIndex !== void 0 ? q.correctOptionIndex : 0,
-            topic: `Week ${this.weekNumber}`,
-            explanation: "Correct answer is marked below."
-          }));
-          this.currentQuiz = {
-            quiz_title: `Syllabus Quiz - Week ${this.weekNumber}`,
-            questions: mappedQuestions
-          };
-          this.currentQuestionIndex = 0;
-          this.selectedOptionIndex = null;
-          this.correctAnswersCount = 0;
-          this.showExplanation = false;
-          this.quizFinished = false;
-          this.currentView = "quiz";
-        } else {
-          this.statusMessage = "Failed to regenerate a valid quiz. Please try again.";
-        }
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.isRegenerating = false;
-        this.isRegenModalOpen = false;
-        if (err.status === 404 || err.error?.code === "NO_MATERIALS_FOUND") {
-          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
-        } else {
-          this.statusMessage = "Error regenerating quiz: " + (err.error?.message || err.message || err);
-        }
-        console.error("Quiz regeneration error:", err);
-      }
-    });
-  }
-  selectOption(idx) {
-    if (this.selectedOptionIndex !== null)
-      return;
-    this.selectedOptionIndex = idx;
-    this.showExplanation = true;
-    if (this.currentQuiz) {
-      this.currentQuiz.questions[this.currentQuestionIndex].selected_option_index = idx;
-      if (idx === this.currentQuiz.questions[this.currentQuestionIndex].correct_option_index) {
-        this.correctAnswersCount++;
-      }
-    }
-  }
-  nextQuestion() {
-    if (!this.currentQuiz)
-      return;
-    this.selectedOptionIndex = null;
-    this.showExplanation = false;
-    if (this.currentQuestionIndex < this.currentQuiz.questions.length - 1) {
-      this.currentQuestionIndex++;
-    } else {
-      this.finishQuiz();
-    }
-  }
-  finishQuiz() {
-    this.quizFinished = true;
-    if (!this.currentQuiz)
-      return;
-    const totalQuestions = this.currentQuiz.questions.length;
-    const finalScorePercent = Math.round(this.correctAnswersCount / totalQuestions * 100);
-    const primaryTopic = this.currentQuiz.questions[0]?.topic || this.syllabusName;
-    this.isLoading = true;
-    this.statusMessage = `Submitting score (${finalScorePercent}%) to BigQuery...`;
-    if (this.currentQuiz.quiz_title.startsWith("Syllabus Quiz")) {
-      const telemetryQuestions = this.currentQuiz.questions.map((q, index2) => ({
-        id: `q-${index2}`,
-        selected_option_index: q.selected_option_index !== void 0 ? q.selected_option_index : -1,
-        correct_option_index: q.correct_option_index
-      }));
-      const telemetryPayload = {
-        week_number: this.weekNumber,
-        questions: telemetryQuestions
-      };
-      this.api.submitQuizTelemetry(telemetryPayload, this.classId).subscribe({
-        next: (telemetryRes) => {
-          console.log("[BigQuery Telemetry] Successfully streamed:", telemetryRes);
-        },
-        error: (err) => {
-          console.error("[BigQuery Telemetry] Failed to stream:", err);
-        }
-      });
-    }
-    this.api.submitQuizResult(this.userId, primaryTopic, finalScorePercent).subscribe({
-      next: () => {
-        this.isLoading = false;
-        this.statusMessage = "Score submitted successfully!";
-        this.loadHistory();
-      },
-      error: (err) => {
-        this.isLoading = false;
-        this.statusMessage = "Failed to submit score: " + err.message;
-        console.error("Score submission failed:", err);
-        this.loadHistory();
-      }
-    });
-  }
-  exitQuiz() {
-    this.currentView = "history";
-    this.currentQuiz = null;
-  }
-  static \u0275fac = function QuizInterfaceComponent_Factory(__ngFactoryType__) {
-    return new (__ngFactoryType__ || _QuizInterfaceComponent)(\u0275\u0275directiveInject(ApiService));
-  };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _QuizInterfaceComponent, selectors: [["app-quiz-interface"]], inputs: { classId: "classId", selectedWeek: "selectedWeek" }, decls: 5, vars: 4, consts: [[1, "quiz-container"], ["class", "loading-overlay", 4, "ngIf"], ["class", "history-view", 4, "ngIf"], ["class", "quiz-taking-view", 4, "ngIf"], ["class", "modal-overlay fade-in", "style", "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;", 4, "ngIf"], [1, "loading-overlay"], [1, "loading-spinner-container"], [1, "loading-spinner"], [1, "loading-text"], [1, "history-view"], [1, "setup-container"], [1, "user-setup"], [1, "input-group"], ["for", "userId"], ["type", "text", "id", "userId", "placeholder", "Enter Student ID", 3, "ngModelChange", "change", "ngModel"], ["for", "syllabusName"], ["type", "text", "id", "syllabusName", "placeholder", "Upload a syllabus or type name", 3, "ngModelChange", "ngModel"], [1, "quiz-modes-grid"], [1, "mode-card"], [1, "mode-icon-container", "adaptive"], [1, "btn", "btn-primary", "mode-btn", 3, "click", "disabled"], [1, "mode-icon-container", "syllabus"], [1, "mode-inputs"], [1, "input-group-inline"], ["for", "weekNumber"], ["type", "number", "id", "weekNumber", "min", "1", "placeholder", "Week #", 3, "ngModelChange", "ngModel"], ["for", "questionCount"], ["type", "number", "id", "questionCount", "min", "1", "max", "20", "placeholder", "Count", 3, "ngModelChange", "ngModel"], ["class", "status-alert info", 4, "ngIf"], [1, "scores-section"], ["class", "spinner-placeholder", 4, "ngIf"], ["class", "no-history", 4, "ngIf"], ["class", "scores-grid", 4, "ngIf"], [1, "status-alert", "info"], [1, "spinner-placeholder"], ["mode", "indeterminate"], [1, "no-history"], [1, "huge-icon"], [1, "subtitle"], [1, "scores-grid"], ["class", "score-card", 3, "ngClass", 4, "ngFor", "ngForOf"], [1, "score-card", 3, "ngClass"], [1, "card-details"], [1, "topic"], [1, "date"], [1, "card-score"], [1, "score-num"], ["class", "badge", 4, "ngIf"], [1, "badge"], [1, "quiz-taking-view"], [1, "quiz-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center"], [2, "display", "flex", "gap", "10px", "align-items", "center"], ["class", "btn btn-outline btn-regen", "style", "display: flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #475569;", 3, "click", 4, "ngIf"], [1, "btn", "btn-outline", 3, "click"], [4, "ngIf"], ["class", "quiz-finished-card", 4, "ngIf"], [1, "btn", "btn-outline", "btn-regen", 2, "display", "flex", "align-items", "center", "gap", "4px", "padding", "8px 12px", "font-size", "13px", "font-weight", "600", "cursor", "pointer", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "white", "color", "#475569", 3, "click"], [2, "font-size", "16px", "width", "16px", "height", "16px"], [1, "progress-bar-container"], [1, "progress-info"], ["mode", "determinate", 3, "value"], [1, "question-card"], [1, "question-text"], [1, "options-list"], ["class", "option-btn", 3, "disabled", "ngClass", "click", 4, "ngFor", "ngForOf"], ["class", "explanation-box", 3, "ngClass", 4, "ngIf"], [1, "option-btn", 3, "click", "disabled", "ngClass"], [1, "option-indicator"], [1, "option-text"], ["class", "option-icon", 4, "ngIf"], [1, "option-icon"], [1, "explanation-box", 3, "ngClass"], [1, "explanation-title"], [1, "explanation-text"], [1, "btn", "btn-primary", "next-btn", 3, "click"], [1, "quiz-finished-card"], [1, "huge-icon", "summary-icon"], [1, "score-summary"], [1, "score-circle"], [1, "percent"], ["class", "status-alert", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click", "disabled"], [1, "status-alert"], [1, "modal-overlay", "fade-in", 2, "position", "fixed", "top", "0", "left", "0", "width", "100vw", "height", "100vh", "background", "rgba(15, 23, 42, 0.65)", "backdrop-filter", "blur(5px)", "display", "flex", "justify-content", "center", "align-items", "center", "z-index", "2000", "padding", "20px", "box-sizing", "border-box"], [1, "modal-card", "card", "scale-up", 2, "width", "100%", "max-width", "500px", "background", "white", "border-radius", "12px", "padding", "24px", "box-shadow", "0 20px 25px -5px rgba(0,0,0,0.15)", "box-sizing", "border-box", "display", "flex", "flex-direction", "column", "gap", "16px"], [1, "modal-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center", "border-bottom", "1px solid #e2e8f0", "padding-bottom", "12px"], [1, "modal-title-container", 2, "display", "flex", "align-items", "center", "gap", "8px", "font-weight", "800", "font-size", "18px", "color", "#0f172a"], [2, "color", "#6366f1"], [1, "btn-modal-close", 2, "background", "transparent", "border", "none", "cursor", "pointer", "color", "#94a3b8", 3, "click", "disabled"], [1, "modal-body", 2, "display", "flex", "flex-direction", "column", "gap", "14px"], [1, "modal-desc", 2, "font-size", "13px", "color", "#64748b", "margin", "0", "line-height", "1.5"], [1, "form-group", 2, "display", "flex", "flex-direction", "column", "gap", "6px"], ["for", "regenPrompt", 2, "font-size", "11px", "font-weight", "700", "color", "#475569", "text-transform", "uppercase"], ["id", "regenPrompt", "placeholder", "e.g. Make it simpler, add more focus on practice formulas...", "rows", "4", "required", "", 2, "padding", "10px", "border", "1px solid #cbd5e1", "border-radius", "6px", "font-size", "13px", "resize", "vertical", "outline", "none", "width", "100%", "box-sizing", "border-box", 3, "ngModelChange", "ngModel", "disabled"], [1, "modal-actions", 2, "display", "flex", "justify-content", "flex-end", "gap", "12px", "border-top", "1px solid #e2e8f0", "padding-top", "12px"], [1, "btn", "btn-secondary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "#f1f5f9", "color", "#475569", "cursor", "pointer", "font-weight", "600", 3, "click", "disabled"], [1, "btn", "btn-primary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "none", "background", "#4f46e5", "color", "white", "cursor", "pointer", "font-weight", "700", "display", "inline-flex", "align-items", "center", "gap", "6px", 3, "click", "disabled"]], template: function QuizInterfaceComponent_Template(rf, ctx) {
-    if (rf & 1) {
-      \u0275\u0275elementStart(0, "div", 0);
-      \u0275\u0275template(1, QuizInterfaceComponent_div_1_Template, 5, 1, "div", 1)(2, QuizInterfaceComponent_div_2_Template, 48, 10, "div", 2)(3, QuizInterfaceComponent_div_3_Template, 10, 4, "div", 3)(4, QuizInterfaceComponent_div_4_Template, 26, 5, "div", 4);
-      \u0275\u0275elementEnd();
-    }
-    if (rf & 2) {
-      \u0275\u0275advance();
-      \u0275\u0275property("ngIf", ctx.isLoading);
-      \u0275\u0275advance();
-      \u0275\u0275property("ngIf", ctx.currentView === "history");
-      \u0275\u0275advance();
-      \u0275\u0275property("ngIf", ctx.currentView === "quiz" && ctx.currentQuiz);
-      \u0275\u0275advance();
-      \u0275\u0275property("ngIf", ctx.isRegenModalOpen);
-    }
-  }, dependencies: [
-    CommonModule,
-    NgClass,
-    NgForOf,
-    NgIf,
-    DatePipe,
-    FormsModule,
-    DefaultValueAccessor,
-    NumberValueAccessor,
-    NgControlStatus,
-    RequiredValidator,
-    MinValidator,
-    MaxValidator,
-    NgModel,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule,
-    MatIcon,
-    MatProgressBarModule,
-    MatProgressBar
-  ], styles: ['\n\n.quiz-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n  color: #2c3e50;\n}\n.setup-container[_ngcontent-%COMP%] {\n  display: flex;\n  background: #f8fafc;\n  padding: 20px;\n  border-radius: 12px;\n  margin-bottom: 24px;\n  border: 1px solid #e2e8f0;\n}\n.setup-container[_ngcontent-%COMP%]   .user-setup[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 15px;\n  flex-wrap: wrap;\n  flex-grow: 1;\n}\n.setup-container[_ngcontent-%COMP%]   .user-setup[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-width: 200px;\n  flex-grow: 1;\n}\n.setup-container[_ngcontent-%COMP%]   .user-setup[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.setup-container[_ngcontent-%COMP%]   .user-setup[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[_ngcontent-%COMP%] {\n  padding: 10px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  color: #1e293b;\n  background: white;\n  transition: all 0.2s ease;\n}\n.setup-container[_ngcontent-%COMP%]   .user-setup[_ngcontent-%COMP%]   .input-group[_ngcontent-%COMP%]   input[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #6366f1;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.quiz-modes-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.mode-card[_ngcontent-%COMP%] {\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 16px;\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);\n}\n.mode-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  border-color: #cbd5e1;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-icon-container[_ngcontent-%COMP%] {\n  width: 60px;\n  height: 60px;\n  border-radius: 12px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin-bottom: 16px;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-icon-container[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-icon-container.adaptive[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-icon-container.syllabus[_ngcontent-%COMP%] {\n  background: rgba(16, 185, 129, 0.1);\n  color: #10b981;\n}\n.mode-card[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 8px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.mode-card[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 14px;\n  line-height: 1.5;\n  color: #64748b;\n  margin: 0 0 20px 0;\n  flex-grow: 1;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-inputs[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 12px;\n  margin-bottom: 20px;\n  width: 100%;\n  justify-content: center;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-inputs[_ngcontent-%COMP%]   .input-group-inline[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  text-align: left;\n  flex: 1;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-inputs[_ngcontent-%COMP%]   .input-group-inline[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-weight: 600;\n  color: #94a3b8;\n  text-transform: uppercase;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-inputs[_ngcontent-%COMP%]   .input-group-inline[_ngcontent-%COMP%]   input[_ngcontent-%COMP%] {\n  padding: 8px 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  font-size: 13px;\n  width: 100%;\n  box-sizing: border-box;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-inputs[_ngcontent-%COMP%]   .input-group-inline[_ngcontent-%COMP%]   input[_ngcontent-%COMP%]:focus {\n  outline: none;\n  border-color: #10b981;\n}\n.mode-card[_ngcontent-%COMP%]   .mode-btn[_ngcontent-%COMP%] {\n  width: 100%;\n  margin-top: auto;\n}\n.loading-overlay[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(255, 255, 255, 0.85);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 100;\n  border-radius: 12px;\n  animation: _ngcontent-%COMP%_fadeIn 0.2s ease-in-out;\n}\n.loading-overlay[_ngcontent-%COMP%]   .loading-spinner-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 16px;\n}\n.loading-overlay[_ngcontent-%COMP%]   .loading-spinner[_ngcontent-%COMP%] {\n  width: 48px;\n  height: 48px;\n  border: 4px solid #f1f5f9;\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s linear infinite;\n}\n.loading-overlay[_ngcontent-%COMP%]   .loading-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 600;\n  color: #4f46e5;\n  margin: 0;\n  text-align: center;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  border: none;\n}\n.btn[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.btn.btn-primary[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);\n}\n.btn.btn-primary[_ngcontent-%COMP%]:hover:not(:disabled) {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);\n}\n.btn.btn-primary[_ngcontent-%COMP%]:active:not(:disabled) {\n  transform: translateY(0);\n}\n.btn.btn-primary[_ngcontent-%COMP%]:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n  box-shadow: none;\n}\n.btn.btn-outline[_ngcontent-%COMP%] {\n  background: transparent;\n  border: 1.5px solid #cbd5e1;\n  color: #475569;\n}\n.btn.btn-outline[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n  border-color: #94a3b8;\n}\n.status-alert[_ngcontent-%COMP%] {\n  padding: 12px 16px;\n  border-radius: 8px;\n  font-size: 14px;\n  margin-bottom: 20px;\n  animation: _ngcontent-%COMP%_fadeIn 0.3s ease;\n}\n.status-alert.info[_ngcontent-%COMP%] {\n  background: #e0f2fe;\n  color: #0369a1;\n  border-left: 4px solid #0284c7;\n}\n.scores-section[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  margin: 0 0 15px 0;\n  color: #1e293b;\n  font-size: 16px;\n  font-weight: 700;\n}\n.scores-section[_ngcontent-%COMP%]   .no-history[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: #f8fafc;\n  border-radius: 12px;\n  border: 2px dashed #cbd5e1;\n}\n.scores-section[_ngcontent-%COMP%]   .no-history[_ngcontent-%COMP%]   .huge-icon[_ngcontent-%COMP%] {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #94a3b8;\n  margin-bottom: 12px;\n}\n.scores-section[_ngcontent-%COMP%]   .no-history[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 6px 0;\n  font-size: 15px;\n  color: #475569;\n}\n.scores-section[_ngcontent-%COMP%]   .no-history[_ngcontent-%COMP%]   p.subtitle[_ngcontent-%COMP%] {\n  font-size: 13px;\n  color: #64748b;\n  max-width: 400px;\n}\n.scores-section[_ngcontent-%COMP%]   .scores-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 15px;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%] {\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  padding: 16px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  transition: all 0.2s ease;\n  position: relative;\n  overflow: hidden;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]::before {\n  content: "";\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 5px;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-high[_ngcontent-%COMP%]::before {\n  background: #10b981;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-high[_ngcontent-%COMP%]   .score-num[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-high[_ngcontent-%COMP%]   .badge[_ngcontent-%COMP%] {\n  background: #d1fae5;\n  color: #065f46;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-med[_ngcontent-%COMP%]::before {\n  background: #f59e0b;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-med[_ngcontent-%COMP%]   .score-num[_ngcontent-%COMP%] {\n  color: #f59e0b;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-med[_ngcontent-%COMP%]   .badge[_ngcontent-%COMP%] {\n  background: #fef3c7;\n  color: #92400e;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-low[_ngcontent-%COMP%]::before {\n  background: #ef4444;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-low[_ngcontent-%COMP%]   .score-num[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card.pass-low[_ngcontent-%COMP%]   .badge[_ngcontent-%COMP%] {\n  background: #fee2e2;\n  color: #991b1b;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-details[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-details[_ngcontent-%COMP%]   .topic[_ngcontent-%COMP%] {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-details[_ngcontent-%COMP%]   .date[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-score[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n  gap: 6px;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-score[_ngcontent-%COMP%]   .score-num[_ngcontent-%COMP%] {\n  font-size: 20px;\n  font-weight: 700;\n}\n.scores-section[_ngcontent-%COMP%]   .score-card[_ngcontent-%COMP%]   .card-score[_ngcontent-%COMP%]   .badge[_ngcontent-%COMP%] {\n  font-size: 10px;\n  font-weight: 700;\n  padding: 2px 8px;\n  border-radius: 9999px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.quiz-taking-view[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .quiz-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .quiz-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0;\n  color: #1e293b;\n  font-size: 18px;\n  font-weight: 700;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .progress-bar-container[_ngcontent-%COMP%] {\n  margin-bottom: 24px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .progress-bar-container[_ngcontent-%COMP%]   .progress-info[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 8px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .progress-bar-container[_ngcontent-%COMP%]   mat-progress-bar[_ngcontent-%COMP%] {\n  border-radius: 4px;\n  height: 6px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .question-text[_ngcontent-%COMP%] {\n  font-size: 16px;\n  line-height: 1.6;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 20px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .options-list[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-bottom: 24px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  padding: 14px 18px;\n  border-radius: 8px;\n  border: 1.5px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%]:hover:not(:disabled) {\n  border-color: #6366f1;\n  background: #f8fafc;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn.selected[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn.correct[_ngcontent-%COMP%] {\n  border-color: #10b981;\n  background: #ecfdf5;\n  color: #065f46;\n  font-weight: 600;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn.correct[_ngcontent-%COMP%]   .option-indicator[_ngcontent-%COMP%] {\n  background: #10b981;\n  color: white;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn.incorrect[_ngcontent-%COMP%] {\n  border-color: #ef4444;\n  background: #fdf2f2;\n  color: #991b1b;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn.incorrect[_ngcontent-%COMP%]   .option-indicator[_ngcontent-%COMP%] {\n  background: #ef4444;\n  color: white;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%]   .option-indicator[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background: #f1f5f9;\n  color: #475569;\n  font-size: 12px;\n  font-weight: 700;\n  margin-right: 14px;\n  flex-shrink: 0;\n  transition: all 0.2s ease;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%]   .option-text[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%]   .option-icon[_ngcontent-%COMP%] {\n  flex-shrink: 0;\n  margin-left: 10px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .question-card[_ngcontent-%COMP%]   .option-btn[_ngcontent-%COMP%]   .option-icon.mat-icon[_ngcontent-%COMP%] {\n  width: 20px;\n  height: 20px;\n  font-size: 20px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box[_ngcontent-%COMP%] {\n  padding: 16px;\n  border-radius: 10px;\n  margin-top: 20px;\n  animation: _ngcontent-%COMP%_slideUp 0.3s ease;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box.correct-bg[_ngcontent-%COMP%] {\n  background: #ecfdf5;\n  border: 1px solid #a7f3d0;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box.correct-bg[_ngcontent-%COMP%]   .explanation-title[_ngcontent-%COMP%] {\n  color: #065f46;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box.incorrect-bg[_ngcontent-%COMP%] {\n  background: #fdf2f2;\n  border: 1px solid #fecaca;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box.incorrect-bg[_ngcontent-%COMP%]   .explanation-title[_ngcontent-%COMP%] {\n  color: #991b1b;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box[_ngcontent-%COMP%]   .explanation-title[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 700;\n  font-size: 15px;\n  margin: 0 0 8px 0;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box[_ngcontent-%COMP%]   .explanation-title[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box[_ngcontent-%COMP%]   .explanation-text[_ngcontent-%COMP%] {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #475569;\n  margin: 0 0 16px 0;\n}\n.quiz-taking-view[_ngcontent-%COMP%]   .explanation-box[_ngcontent-%COMP%]   .next-btn[_ngcontent-%COMP%] {\n  float: right;\n}\n.quiz-finished-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n  padding: 40px 20px;\n  animation: _ngcontent-%COMP%_scaleUp 0.4s ease;\n}\n.quiz-finished-card[_ngcontent-%COMP%]   .huge-icon[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 15px;\n}\n.quiz-finished-card[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  color: #1e293b;\n  font-size: 24px;\n  font-weight: 800;\n  margin: 0 0 8px 0;\n}\n.quiz-finished-card[_ngcontent-%COMP%]   .score-summary[_ngcontent-%COMP%] {\n  color: #475569;\n  font-size: 15px;\n  margin: 0 0 24px 0;\n}\n.quiz-finished-card[_ngcontent-%COMP%]   .score-circle[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      135deg,\n      #f5f3ff 0%,\n      #ede9fe 100%);\n  border: 4px solid #ddd6fe;\n  margin-bottom: 30px;\n  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.1);\n}\n.quiz-finished-card[_ngcontent-%COMP%]   .score-circle[_ngcontent-%COMP%]   .percent[_ngcontent-%COMP%] {\n  font-size: 36px;\n  font-weight: 800;\n  color: #6d28d9;\n}\n.quiz-finished-card[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  min-width: 180px;\n}\n@keyframes _ngcontent-%COMP%_fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@keyframes _ngcontent-%COMP%_slideUp {\n  from {\n    opacity: 0;\n    transform: translateY(10px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes _ngcontent-%COMP%_scaleUp {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n/*# sourceMappingURL=quiz-interface.component.css.map */'] });
-};
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(QuizInterfaceComponent, [{
-    type: Component,
-    args: [{ selector: "app-quiz-interface", standalone: true, imports: [
-      CommonModule,
-      FormsModule,
-      MatButtonModule,
-      MatCardModule,
-      MatIconModule,
-      MatProgressBarModule
-    ], template: `<div class="quiz-container">
-  <!-- Loading Overlay -->
-  <div *ngIf="isLoading" class="loading-overlay">
-    <div class="loading-spinner-container">
-      <div class="loading-spinner"></div>
-      <p class="loading-text">{{ statusMessage || 'Processing request...' }}</p>
-    </div>
-  </div>
-
-  <!-- DASHBOARD / HISTORY VIEW -->
-  <div *ngIf="currentView === 'history'" class="history-view">
-    <div class="setup-container">
-      <div class="user-setup">
-        <div class="input-group">
-          <label for="userId">Student ID</label>
-          <input type="text" id="userId" [(ngModel)]="userId" (change)="loadHistory()" placeholder="Enter Student ID" />
-        </div>
-        <div class="input-group">
-          <label for="syllabusName">Syllabus / Course</label>
-          <input type="text" id="syllabusName" [(ngModel)]="syllabusName" placeholder="Upload a syllabus or type name" />
-        </div>
-      </div>
-    </div>
-
-    <div class="quiz-modes-grid">
-      <!-- Adaptive Quiz Mode -->
-      <div class="mode-card">
-        <div class="mode-icon-container adaptive">
-          <mat-icon>psychology</mat-icon>
-        </div>
-        <h3>Adaptive AI Quiz</h3>
-        <p>Generate a dynamic personalized quiz based on the full syllabus topics to target your weak areas.</p>
-        <button class="btn btn-primary mode-btn" (click)="startQuiz()" [disabled]="isLoading || !syllabusName">
-          Start Adaptive Quiz
-        </button>
-      </div>
-
-      <!-- Weekly Syllabus Quiz Mode -->
-      <div class="mode-card">
-        <div class="mode-icon-container syllabus">
-          <mat-icon>menu_book</mat-icon>
-        </div>
-        <h3>Weekly Syllabus Quiz</h3>
-        <p>Test your knowledge on a specific week's ingested course material chunks.</p>
-        <div class="mode-inputs">
-          <div class="input-group-inline">
-            <label for="weekNumber">Week</label>
-            <input type="number" id="weekNumber" [(ngModel)]="weekNumber" min="1" placeholder="Week #" />
-          </div>
-          <div class="input-group-inline">
-            <label for="questionCount">Questions</label>
-            <input type="number" id="questionCount" [(ngModel)]="questionCount" min="1" max="20" placeholder="Count" />
-          </div>
-        </div>
-        <button class="btn btn-primary mode-btn" (click)="startSyllabusQuiz()" [disabled]="isLoading">
-          Start Week Quiz
-        </button>
-      </div>
-    </div>
-
-    <div *ngIf="statusMessage && !isLoading" class="status-alert info">
-      {{ statusMessage }}
-    </div>
-
-    <!-- Score History List -->
-    <div class="scores-section">
-      <h4>Performance Dashboard (BigQuery)</h4>
-      <div *ngIf="isLoading && quizHistory.length === 0" class="spinner-placeholder">
-        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-      </div>
-      
-      <div *ngIf="quizHistory.length === 0 && !isLoading" class="no-history">
-        <mat-icon class="huge-icon">history_edu</mat-icon>
-        <p>No quiz scores recorded yet for <strong>{{ userId }}</strong>.</p>
-        <p class="subtitle">Scores will stream to Google BigQuery and show up here once you complete a quiz.</p>
-      </div>
-
-      <div *ngIf="quizHistory.length > 0" class="scores-grid">
-        <div *ngFor="let record of quizHistory" class="score-card" [ngClass]="{
-          'pass-high': record.score >= 80,
-          'pass-med': record.score >= 50 && record.score < 80,
-          'pass-low': record.score < 50
-        }">
-          <div class="card-details">
-            <span class="topic">{{ record.topic_name }}</span>
-            <span class="date">{{ record.timestamp | date:'short' }}</span>
-          </div>
-          <div class="card-score">
-            <span class="score-num">{{ record.score }}%</span>
-            <span class="badge" *ngIf="record.score >= 80">Mastered</span>
-            <span class="badge" *ngIf="record.score >= 50 && record.score < 80">Reviewing</span>
-            <span class="badge" *ngIf="record.score < 50">Weak Area</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ACTIVE QUIZ TAKING VIEW -->
-  <div *ngIf="currentView === 'quiz' && currentQuiz" class="quiz-taking-view">
-    <div class="quiz-header" style="display: flex; justify-content: space-between; align-items: center;">
-      <h3>{{ currentQuiz.quiz_title }}</h3>
-      <div style="display: flex; gap: 10px; align-items: center;">
-        <button *ngIf="!quizFinished" class="btn btn-outline btn-regen" (click)="openRegenModal()" style="display: flex; align-items: center; gap: 4px; padding: 8px 12px; font-size: 13px; font-weight: 600; cursor: pointer; border-radius: 6px; border: 1px solid #cbd5e1; background: white; color: #475569;">
-          <mat-icon style="font-size: 16px; width: 16px; height: 16px;">edit</mat-icon>
-          <span>Edit / Regenerate</span>
-        </button>
-        <button class="btn btn-outline" (click)="exitQuiz()">Exit</button>
-      </div>
-    </div>
-
-    <div *ngIf="!quizFinished">
-      <div class="progress-bar-container">
-        <div class="progress-info">
-          <span>Question {{ currentQuestionIndex + 1 }} of {{ currentQuiz.questions.length }}</span>
-          <span>Topic: <strong>{{ currentQuiz.questions[currentQuestionIndex].topic }}</strong></span>
-        </div>
-        <mat-progress-bar mode="determinate" [value]="(currentQuestionIndex / currentQuiz.questions.length) * 100"></mat-progress-bar>
-      </div>
-
-      <div class="question-card">
-        <p class="question-text">{{ currentQuiz.questions[currentQuestionIndex].question_text }}</p>
-        
-        <div class="options-list">
-          <button *ngFor="let option of currentQuiz.questions[currentQuestionIndex].options; let idx = index" 
-                  class="option-btn" 
-                  [disabled]="selectedOptionIndex !== null"
-                  [ngClass]="{
-                    'selected': selectedOptionIndex === idx,
-                    'correct': selectedOptionIndex !== null && idx === currentQuiz.questions[currentQuestionIndex].correct_option_index,
-                    'incorrect': selectedOptionIndex === idx && idx !== currentQuiz.questions[currentQuestionIndex].correct_option_index
-                  }"
-                  (click)="selectOption(idx)">
-            <span class="option-indicator">{{ idx + 1 }}</span>
-            <span class="option-text">{{ option }}</span>
-            <mat-icon *ngIf="selectedOptionIndex !== null && idx === currentQuiz.questions[currentQuestionIndex].correct_option_index" class="option-icon">check_circle</mat-icon>
-            <mat-icon *ngIf="selectedOptionIndex === idx && idx !== currentQuiz.questions[currentQuestionIndex].correct_option_index" class="option-icon">cancel</mat-icon>
-          </button>
-        </div>
-
-        <div *ngIf="showExplanation" class="explanation-box" [ngClass]="{
-          'correct-bg': selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index,
-          'incorrect-bg': selectedOptionIndex !== currentQuiz.questions[currentQuestionIndex].correct_option_index
-        }">
-          <p class="explanation-title">
-            <mat-icon *ngIf="selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index">check</mat-icon>
-            <mat-icon *ngIf="selectedOptionIndex !== currentQuiz.questions[currentQuestionIndex].correct_option_index">close</mat-icon>
-            {{ selectedOptionIndex === currentQuiz.questions[currentQuestionIndex].correct_option_index ? 'Correct!' : 'Incorrect' }}
-          </p>
-          <p class="explanation-text">{{ currentQuiz.questions[currentQuestionIndex].explanation }}</p>
-          
-          <button class="btn btn-primary next-btn" (click)="nextQuestion()">
-            {{ currentQuestionIndex === currentQuiz.questions.length - 1 ? 'Finish Quiz' : 'Next Question' }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- QUIZ SUMMARY / RESULT VIEW -->
-    <div *ngIf="quizFinished" class="quiz-finished-card">
-      <mat-icon class="huge-icon summary-icon">workspace_premium</mat-icon>
-      <h2>Quiz Completed!</h2>
-      <p class="score-summary">You scored <strong>{{ correctAnswersCount }}</strong> out of <strong>{{ currentQuiz.questions.length }}</strong> correct answers.</p>
-      
-      <div class="score-circle">
-        <span class="percent">{{ Math.round((correctAnswersCount / currentQuiz.questions.length) * 100) }}%</span>
-      </div>
-
-      <div *ngIf="statusMessage" class="status-alert">
-        {{ statusMessage }}
-      </div>
-
-      <button class="btn btn-primary" (click)="exitQuiz()" [disabled]="isLoading">
-        Back to Dashboard
-      </button>
-    </div>
-  </div>
-
-  <!-- STEERABLE REGENERATION MODAL -->
-  <div *ngIf="isRegenModalOpen" class="modal-overlay fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;">
-    <div class="modal-card card scale-up" style="width: 100%; max-width: 500px; background: white; border-radius: 12px; padding: 24px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.15); box-sizing: border-box; display: flex; flex-direction: column; gap: 16px;">
-      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #e2e8f0; padding-bottom: 12px;">
-        <div class="modal-title-container" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: #0f172a;">
-          <mat-icon style="color: #6366f1;">edit</mat-icon>
-          <span>Adjust Quiz Content</span>
-        </div>
-        <button class="btn-modal-close" (click)="closeRegenModal()" [disabled]="isRegenerating" style="background: transparent; border: none; cursor: pointer; color: #94a3b8;">
-          <mat-icon>close</mat-icon>
-        </button>
-      </div>
-
-      <div class="modal-body" style="display: flex; flex-direction: column; gap: 14px;">
-        <p class="modal-desc" style="font-size: 13px; color: #64748b; margin: 0; line-height: 1.5;">
-          How should Gemini modify this quiz? You can steer it to be simpler, cover specific details more deeply, or adjust the question styles.
-        </p>
-
-        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-          <label for="regenPrompt" style="font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase;">Instructions for AI</label>
-          <textarea 
-            id="regenPrompt" 
-            [(ngModel)]="regenPrompt" 
-            placeholder="e.g. Make it simpler, add more focus on practice formulas..." 
-            rows="4"
-            [disabled]="isRegenerating"
-            style="padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-size: 13px; resize: vertical; outline: none; width: 100%; box-sizing: border-box;"
-            required
-          ></textarea>
-        </div>
-      </div>
-
-      <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid #e2e8f0; padding-top: 12px;">
-        <button class="btn btn-secondary" (click)="closeRegenModal()" [disabled]="isRegenerating" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid #cbd5e1; background: #f1f5f9; color: #475569; cursor: pointer; font-weight: 600;">Cancel</button>
-        <button 
-          class="btn btn-primary" 
-          (click)="submitRegeneration()" 
-          [disabled]="isRegenerating || !regenPrompt.trim()"
-          style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #4f46e5; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px;"
-        >
-          <mat-icon style="font-size: 16px; width: 16px; height: 16px;">sync</mat-icon>
-          <span>Regenerate Content</span>
-        </button>
-      </div>
-    </div>
-  </div>
-</div>
-`, styles: ['/* src/app/components/quiz-interface/quiz-interface.component.scss */\n.quiz-container {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n  color: #2c3e50;\n}\n.setup-container {\n  display: flex;\n  background: #f8fafc;\n  padding: 20px;\n  border-radius: 12px;\n  margin-bottom: 24px;\n  border: 1px solid #e2e8f0;\n}\n.setup-container .user-setup {\n  display: flex;\n  gap: 15px;\n  flex-wrap: wrap;\n  flex-grow: 1;\n}\n.setup-container .user-setup .input-group {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  min-width: 200px;\n  flex-grow: 1;\n}\n.setup-container .user-setup .input-group label {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.setup-container .user-setup .input-group input {\n  padding: 10px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  color: #1e293b;\n  background: white;\n  transition: all 0.2s ease;\n}\n.setup-container .user-setup .input-group input:focus {\n  outline: none;\n  border-color: #6366f1;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.quiz-modes-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.mode-card {\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 16px;\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);\n}\n.mode-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);\n  border-color: #cbd5e1;\n}\n.mode-card .mode-icon-container {\n  width: 60px;\n  height: 60px;\n  border-radius: 12px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  margin-bottom: 16px;\n}\n.mode-card .mode-icon-container mat-icon {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.mode-card .mode-icon-container.adaptive {\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n}\n.mode-card .mode-icon-container.syllabus {\n  background: rgba(16, 185, 129, 0.1);\n  color: #10b981;\n}\n.mode-card h3 {\n  margin: 0 0 8px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.mode-card p {\n  font-size: 14px;\n  line-height: 1.5;\n  color: #64748b;\n  margin: 0 0 20px 0;\n  flex-grow: 1;\n}\n.mode-card .mode-inputs {\n  display: flex;\n  gap: 12px;\n  margin-bottom: 20px;\n  width: 100%;\n  justify-content: center;\n}\n.mode-card .mode-inputs .input-group-inline {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n  text-align: left;\n  flex: 1;\n}\n.mode-card .mode-inputs .input-group-inline label {\n  font-size: 11px;\n  font-weight: 600;\n  color: #94a3b8;\n  text-transform: uppercase;\n}\n.mode-card .mode-inputs .input-group-inline input {\n  padding: 8px 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  font-size: 13px;\n  width: 100%;\n  box-sizing: border-box;\n}\n.mode-card .mode-inputs .input-group-inline input:focus {\n  outline: none;\n  border-color: #10b981;\n}\n.mode-card .mode-btn {\n  width: 100%;\n  margin-top: auto;\n}\n.loading-overlay {\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  bottom: 0;\n  background: rgba(255, 255, 255, 0.85);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 100;\n  border-radius: 12px;\n  animation: fadeIn 0.2s ease-in-out;\n}\n.loading-overlay .loading-spinner-container {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 16px;\n}\n.loading-overlay .loading-spinner {\n  width: 48px;\n  height: 48px;\n  border: 4px solid #f1f5f9;\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n}\n.loading-overlay .loading-text {\n  font-size: 15px;\n  font-weight: 600;\n  color: #4f46e5;\n  margin: 0;\n  text-align: center;\n}\n@keyframes spin {\n  0% {\n    transform: rotate(0deg);\n  }\n  100% {\n    transform: rotate(360deg);\n  }\n}\n.btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  border: none;\n}\n.btn mat-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.btn.btn-primary {\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.25);\n}\n.btn.btn-primary:hover:not(:disabled) {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(79, 70, 229, 0.35);\n}\n.btn.btn-primary:active:not(:disabled) {\n  transform: translateY(0);\n}\n.btn.btn-primary:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n  box-shadow: none;\n}\n.btn.btn-outline {\n  background: transparent;\n  border: 1.5px solid #cbd5e1;\n  color: #475569;\n}\n.btn.btn-outline:hover {\n  background: #f1f5f9;\n  border-color: #94a3b8;\n}\n.status-alert {\n  padding: 12px 16px;\n  border-radius: 8px;\n  font-size: 14px;\n  margin-bottom: 20px;\n  animation: fadeIn 0.3s ease;\n}\n.status-alert.info {\n  background: #e0f2fe;\n  color: #0369a1;\n  border-left: 4px solid #0284c7;\n}\n.scores-section h4 {\n  margin: 0 0 15px 0;\n  color: #1e293b;\n  font-size: 16px;\n  font-weight: 700;\n}\n.scores-section .no-history {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: #f8fafc;\n  border-radius: 12px;\n  border: 2px dashed #cbd5e1;\n}\n.scores-section .no-history .huge-icon {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #94a3b8;\n  margin-bottom: 12px;\n}\n.scores-section .no-history p {\n  margin: 0 0 6px 0;\n  font-size: 15px;\n  color: #475569;\n}\n.scores-section .no-history p.subtitle {\n  font-size: 13px;\n  color: #64748b;\n  max-width: 400px;\n}\n.scores-section .scores-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 15px;\n}\n.scores-section .score-card {\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  padding: 16px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  transition: all 0.2s ease;\n  position: relative;\n  overflow: hidden;\n}\n.scores-section .score-card:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);\n}\n.scores-section .score-card::before {\n  content: "";\n  position: absolute;\n  left: 0;\n  top: 0;\n  bottom: 0;\n  width: 5px;\n}\n.scores-section .score-card.pass-high::before {\n  background: #10b981;\n}\n.scores-section .score-card.pass-high .score-num {\n  color: #10b981;\n}\n.scores-section .score-card.pass-high .badge {\n  background: #d1fae5;\n  color: #065f46;\n}\n.scores-section .score-card.pass-med::before {\n  background: #f59e0b;\n}\n.scores-section .score-card.pass-med .score-num {\n  color: #f59e0b;\n}\n.scores-section .score-card.pass-med .badge {\n  background: #fef3c7;\n  color: #92400e;\n}\n.scores-section .score-card.pass-low::before {\n  background: #ef4444;\n}\n.scores-section .score-card.pass-low .score-num {\n  color: #ef4444;\n}\n.scores-section .score-card.pass-low .badge {\n  background: #fee2e2;\n  color: #991b1b;\n}\n.scores-section .score-card .card-details {\n  display: flex;\n  flex-direction: column;\n  gap: 4px;\n}\n.scores-section .score-card .card-details .topic {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.scores-section .score-card .card-details .date {\n  font-size: 11px;\n  color: #64748b;\n}\n.scores-section .score-card .card-score {\n  display: flex;\n  flex-direction: column;\n  align-items: flex-end;\n  gap: 6px;\n}\n.scores-section .score-card .card-score .score-num {\n  font-size: 20px;\n  font-weight: 700;\n}\n.scores-section .score-card .card-score .badge {\n  font-size: 10px;\n  font-weight: 700;\n  padding: 2px 8px;\n  border-radius: 9999px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.quiz-taking-view {\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.02);\n}\n.quiz-taking-view .quiz-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.quiz-taking-view .quiz-header h3 {\n  margin: 0;\n  color: #1e293b;\n  font-size: 18px;\n  font-weight: 700;\n}\n.quiz-taking-view .progress-bar-container {\n  margin-bottom: 24px;\n}\n.quiz-taking-view .progress-bar-container .progress-info {\n  display: flex;\n  justify-content: space-between;\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 8px;\n}\n.quiz-taking-view .progress-bar-container mat-progress-bar {\n  border-radius: 4px;\n  height: 6px;\n}\n.quiz-taking-view .question-card .question-text {\n  font-size: 16px;\n  line-height: 1.6;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 20px;\n}\n.quiz-taking-view .question-card .options-list {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-bottom: 24px;\n}\n.quiz-taking-view .question-card .option-btn {\n  display: flex;\n  align-items: center;\n  width: 100%;\n  padding: 14px 18px;\n  border-radius: 8px;\n  border: 1.5px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.quiz-taking-view .question-card .option-btn:hover:not(:disabled) {\n  border-color: #6366f1;\n  background: #f8fafc;\n}\n.quiz-taking-view .question-card .option-btn.selected {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.quiz-taking-view .question-card .option-btn.correct {\n  border-color: #10b981;\n  background: #ecfdf5;\n  color: #065f46;\n  font-weight: 600;\n}\n.quiz-taking-view .question-card .option-btn.correct .option-indicator {\n  background: #10b981;\n  color: white;\n}\n.quiz-taking-view .question-card .option-btn.incorrect {\n  border-color: #ef4444;\n  background: #fdf2f2;\n  color: #991b1b;\n}\n.quiz-taking-view .question-card .option-btn.incorrect .option-indicator {\n  background: #ef4444;\n  color: white;\n}\n.quiz-taking-view .question-card .option-btn .option-indicator {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 50%;\n  background: #f1f5f9;\n  color: #475569;\n  font-size: 12px;\n  font-weight: 700;\n  margin-right: 14px;\n  flex-shrink: 0;\n  transition: all 0.2s ease;\n}\n.quiz-taking-view .question-card .option-btn .option-text {\n  flex-grow: 1;\n}\n.quiz-taking-view .question-card .option-btn .option-icon {\n  flex-shrink: 0;\n  margin-left: 10px;\n}\n.quiz-taking-view .question-card .option-btn .option-icon.mat-icon {\n  width: 20px;\n  height: 20px;\n  font-size: 20px;\n}\n.quiz-taking-view .explanation-box {\n  padding: 16px;\n  border-radius: 10px;\n  margin-top: 20px;\n  animation: slideUp 0.3s ease;\n}\n.quiz-taking-view .explanation-box.correct-bg {\n  background: #ecfdf5;\n  border: 1px solid #a7f3d0;\n}\n.quiz-taking-view .explanation-box.correct-bg .explanation-title {\n  color: #065f46;\n}\n.quiz-taking-view .explanation-box.incorrect-bg {\n  background: #fdf2f2;\n  border: 1px solid #fecaca;\n}\n.quiz-taking-view .explanation-box.incorrect-bg .explanation-title {\n  color: #991b1b;\n}\n.quiz-taking-view .explanation-box .explanation-title {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 700;\n  font-size: 15px;\n  margin: 0 0 8px 0;\n}\n.quiz-taking-view .explanation-box .explanation-title mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.quiz-taking-view .explanation-box .explanation-text {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #475569;\n  margin: 0 0 16px 0;\n}\n.quiz-taking-view .explanation-box .next-btn {\n  float: right;\n}\n.quiz-finished-card {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  text-align: center;\n  padding: 40px 20px;\n  animation: scaleUp 0.4s ease;\n}\n.quiz-finished-card .huge-icon {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 15px;\n}\n.quiz-finished-card h2 {\n  color: #1e293b;\n  font-size: 24px;\n  font-weight: 800;\n  margin: 0 0 8px 0;\n}\n.quiz-finished-card .score-summary {\n  color: #475569;\n  font-size: 15px;\n  margin: 0 0 24px 0;\n}\n.quiz-finished-card .score-circle {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background:\n    linear-gradient(\n      135deg,\n      #f5f3ff 0%,\n      #ede9fe 100%);\n  border: 4px solid #ddd6fe;\n  margin-bottom: 30px;\n  box-shadow: 0 8px 20px rgba(124, 58, 237, 0.1);\n}\n.quiz-finished-card .score-circle .percent {\n  font-size: 36px;\n  font-weight: 800;\n  color: #6d28d9;\n}\n.quiz-finished-card button {\n  min-width: 180px;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n@keyframes slideUp {\n  from {\n    opacity: 0;\n    transform: translateY(10px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes scaleUp {\n  from {\n    opacity: 0;\n    transform: scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: scale(1);\n  }\n}\n/*# sourceMappingURL=quiz-interface.component.css.map */\n'] }]
-  }], () => [{ type: ApiService }], { classId: [{
-    type: Input
-  }], selectedWeek: [{
-    type: Input
-  }] });
-})();
-(() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(QuizInterfaceComponent, { className: "QuizInterfaceComponent", filePath: "src/app/components/quiz-interface/quiz-interface.component.ts", lineNumber: 38 });
-})();
-
 // src/app/services/ingest.service.ts
 var IngestService = class _IngestService {
   http;
@@ -77203,7 +76113,7 @@ var IngestService = class _IngestService {
 })();
 
 // src/app/components/ingest/ingest.component.ts
-var _c09 = (a0, a1, a2) => ({ "success": a0, "error": a1, "info": a2 });
+var _c08 = (a0, a1, a2) => ({ "success": a0, "error": a1, "info": a2 });
 function IngestComponent_div_20_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 15);
@@ -77242,7 +76152,7 @@ function IngestComponent_div_21_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r0 = \u0275\u0275nextContext();
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction3(5, _c09, ctx_r0.isSuccess, !ctx_r0.isSuccess && !ctx_r0.isLoading, ctx_r0.isLoading));
+    \u0275\u0275property("ngClass", \u0275\u0275pureFunction3(5, _c08, ctx_r0.isSuccess, !ctx_r0.isSuccess && !ctx_r0.isLoading, ctx_r0.isLoading));
     \u0275\u0275advance();
     \u0275\u0275property("ngIf", ctx_r0.isSuccess);
     \u0275\u0275advance();
@@ -77431,7 +76341,7 @@ var IngestComponent = class _IngestComponent {
 })();
 
 // src/app/components/lesson-interface/lesson-interface.component.ts
-var _c010 = () => ["A", "B", "C", "D"];
+var _c09 = () => ["A", "B", "C", "D"];
 function LessonInterfaceComponent_div_1_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div", 5);
@@ -77581,7 +76491,7 @@ function LessonInterfaceComponent_div_3_div_47_div_9_button_4_Template(rf, ctx) 
     \u0275\u0275classProp("selected", ex_r9.selected_option_index === optIdx_r6)("correct", ex_r9.selected_option_index !== void 0 && optIdx_r6 === ex_r9.correct_option_index || ctx_r0.exerciseAnswersSubmitted && optIdx_r6 === ex_r9.correct_option_index)("wrong", ex_r9.selected_option_index === optIdx_r6 && optIdx_r6 !== ex_r9.correct_option_index);
     \u0275\u0275property("disabled", ex_r9.selected_option_index !== void 0);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(\u0275\u0275pureFunction0(9, _c010)[optIdx_r6]);
+    \u0275\u0275textInterpolate(\u0275\u0275pureFunction0(9, _c09)[optIdx_r6]);
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(option_r8);
   }
@@ -77737,40 +76647,40 @@ function LessonInterfaceComponent_div_3_div_47_Template(rf, ctx) {
     \u0275\u0275property("ngIf", ctx_r0.exerciseAnswersSubmitted);
   }
 }
-function LessonInterfaceComponent_div_3_div_48_Template(rf, ctx) {
+function LessonInterfaceComponent_div_3_div_48_div_1_Template(rf, ctx) {
   if (rf & 1) {
     const _r12 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 64)(1, "div", 65)(2, "mat-icon", 66);
+    \u0275\u0275elementStart(0, "div", 69)(1, "div", 70)(2, "mat-icon", 71);
     \u0275\u0275text(3, "lock_open");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(4, "div", 67)(5, "div", 31);
+    \u0275\u0275elementStart(4, "div", 72)(5, "div", 31);
     \u0275\u0275text(6, "Step 3 of 3");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(7, "h3");
-    \u0275\u0275text(8, "Weekly Quiz Unlocked!");
+    \u0275\u0275text(8, "Launch Official Quiz");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "div", 68)(10, "p", 69);
-    \u0275\u0275text(11, "Congratulations! You have completed the study lesson and solved the practice exercises successfully.");
+    \u0275\u0275elementStart(9, "div", 73)(10, "p", 74);
+    \u0275\u0275text(11);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(12, "p", 70);
-    \u0275\u0275text(13, "You are now ready to take the official adaptive performance quiz. Taking the quiz will record your score to Google BigQuery and advance your study streak!");
+    \u0275\u0275elementStart(12, "p", 75);
+    \u0275\u0275text(13, "This quiz contains exactly 10 questions customized to your target topics. Submitting your answers will save analytics to BigQuery and extend your streak!");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(14, "div", 37)(15, "button", 71);
-    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_Template_button_click_15_listener() {
+    \u0275\u0275elementStart(14, "div", 37)(15, "button", 76);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_1_Template_button_click_15_listener() {
       \u0275\u0275restoreView(_r12);
-      const ctx_r0 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r0.startQuiz.emit());
+      const ctx_r0 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r0.startIntegratedQuiz());
     });
     \u0275\u0275elementStart(16, "mat-icon");
-    \u0275\u0275text(17, "assignment_turned_in");
+    \u0275\u0275text(17, "rocket_launch");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(18, "span");
-    \u0275\u0275text(19, "Start Official Quiz");
+    \u0275\u0275text(19, "Launch Quiz (10 Questions)");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(20, "button", 72);
-    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_Template_button_click_20_listener() {
+    \u0275\u0275elementStart(20, "button", 77);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_1_Template_button_click_20_listener() {
       \u0275\u0275restoreView(_r12);
-      const ctx_r0 = \u0275\u0275nextContext(2);
+      const ctx_r0 = \u0275\u0275nextContext(3);
       return \u0275\u0275resetView(ctx_r0.goToStep(1));
     });
     \u0275\u0275elementStart(21, "mat-icon");
@@ -77779,6 +76689,203 @@ function LessonInterfaceComponent_div_3_div_48_Template(rf, ctx) {
     \u0275\u0275elementStart(23, "span");
     \u0275\u0275text(24, "Review Lesson Content");
     \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(11);
+    \u0275\u0275textInterpolate1("Orbit Established! You are clear to start your Week ", ctx_r0.selectedWeek, " quiz.");
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_2_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 78)(1, "div", 79);
+    \u0275\u0275element(2, "div", 80)(3, "div", 81);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "h3");
+    \u0275\u0275text(5, "Generating Quiz Orbit...");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "p");
+    \u0275\u0275text(7);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(7);
+    \u0275\u0275textInterpolate(ctx_r0.quizStatusMessage);
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_3_div_9_button_4_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r14 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 91);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_3_div_9_button_4_Template_button_click_0_listener() {
+      const optIdx_r15 = \u0275\u0275restoreView(_r14).index;
+      const qIdx_r16 = \u0275\u0275nextContext().index;
+      const ctx_r0 = \u0275\u0275nextContext(4);
+      return \u0275\u0275resetView(ctx_r0.selectQuizOption(qIdx_r16, optIdx_r15));
+    });
+    \u0275\u0275elementStart(1, "span", 51);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "span", 52);
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const option_r17 = ctx.$implicit;
+    const optIdx_r15 = ctx.index;
+    const qIdx_r16 = \u0275\u0275nextContext().index;
+    const ctx_r0 = \u0275\u0275nextContext(4);
+    \u0275\u0275classProp("selected", ctx_r0.quizSelectedAnswers[qIdx_r16] === optIdx_r15);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(\u0275\u0275pureFunction0(4, _c09)[optIdx_r15]);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(option_r17);
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_3_div_9_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 87)(1, "h4", 88);
+    \u0275\u0275text(2);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "div", 89);
+    \u0275\u0275template(4, LessonInterfaceComponent_div_3_div_48_div_3_div_9_button_4_Template, 5, 5, "button", 90);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const q_r18 = ctx.$implicit;
+    const qIdx_r16 = ctx.index;
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate2("", qIdx_r16 + 1, ". ", q_r18.question_text, "");
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngForOf", q_r18.options);
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_3_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r13 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 82)(1, "div", 30)(2, "div", 31);
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "h3");
+    \u0275\u0275text(5, "Testing Orbit Knowledge");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "p", 39);
+    \u0275\u0275text(7, "Select your answers for all 10 questions. Telemetry will be gathered upon submission.");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(8, "div", 83);
+    \u0275\u0275template(9, LessonInterfaceComponent_div_3_div_48_div_3_div_9_Template, 5, 3, "div", 84);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(10, "div", 85)(11, "button", 8);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_3_Template_button_click_11_listener() {
+      \u0275\u0275restoreView(_r13);
+      const ctx_r0 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r0.cancelQuiz());
+    });
+    \u0275\u0275text(12, " Cancel ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(13, "button", 86);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_3_Template_button_click_13_listener() {
+      \u0275\u0275restoreView(_r13);
+      const ctx_r0 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r0.submitQuizAnswers());
+    });
+    \u0275\u0275text(14, " Submit Quiz Telemetry ");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate1("Week ", ctx_r0.selectedWeek, " Official Quiz");
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngForOf", ctx_r0.quizQuestions);
+    \u0275\u0275advance(4);
+    \u0275\u0275property("disabled", !ctx_r0.allQuizAnswered());
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_4_p_21_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "p", 75);
+    \u0275\u0275text(1, "Superb exploration! Your telemetry data has been written to the ship's BigQuery archives.");
+    \u0275\u0275elementEnd();
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_4_p_22_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "p", 75);
+    \u0275\u0275text(1, "Review the topics on your next study pass. Telemetry recorded successfully.");
+    \u0275\u0275elementEnd();
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_div_4_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r19 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 92)(1, "div", 93)(2, "mat-icon", 94);
+    \u0275\u0275text(3, "stars");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(4, "div", 72)(5, "div", 31);
+    \u0275\u0275text(6, "Mission Accomplished");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "h3");
+    \u0275\u0275text(8, "Quiz Evaluation Complete");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(9, "div", 95)(10, "div", 96)(11, "span", 97);
+    \u0275\u0275text(12);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(13, "span", 98);
+    \u0275\u0275text(14);
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(15, "div", 73)(16, "p", 99)(17, "mat-icon", 100);
+    \u0275\u0275text(18, "local_fire_department");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(19, "span");
+    \u0275\u0275text(20, "Study Streak Maintained!");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275template(21, LessonInterfaceComponent_div_3_div_48_div_4_p_21_Template, 2, 0, "p", 101)(22, LessonInterfaceComponent_div_3_div_48_div_4_p_22_Template, 2, 0, "p", 101);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(23, "div", 37)(24, "button", 102);
+    \u0275\u0275listener("click", function LessonInterfaceComponent_div_3_div_48_div_4_Template_button_click_24_listener() {
+      \u0275\u0275restoreView(_r19);
+      const ctx_r0 = \u0275\u0275nextContext(3);
+      return \u0275\u0275resetView(ctx_r0.finishStudySession());
+    });
+    \u0275\u0275elementStart(25, "mat-icon");
+    \u0275\u0275text(26, "done_all");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(27, "span");
+    \u0275\u0275text(28, "Complete Study Session");
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(3);
+    \u0275\u0275advance(10);
+    \u0275\u0275classProp("excellent", ctx_r0.quizPercentage >= 70)("needs-work", ctx_r0.quizPercentage < 70);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate1("", ctx_r0.quizPercentage, "%");
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate2("", ctx_r0.quizScore, " / ", ctx_r0.quizTotal, " Correct");
+    \u0275\u0275advance(7);
+    \u0275\u0275property("ngIf", ctx_r0.quizPercentage >= 70);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.quizPercentage < 70);
+  }
+}
+function LessonInterfaceComponent_div_3_div_48_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 64);
+    \u0275\u0275template(1, LessonInterfaceComponent_div_3_div_48_div_1_Template, 25, 1, "div", 65)(2, LessonInterfaceComponent_div_3_div_48_div_2_Template, 8, 1, "div", 66)(3, LessonInterfaceComponent_div_3_div_48_div_3_Template, 15, 3, "div", 67)(4, LessonInterfaceComponent_div_3_div_48_div_4_Template, 29, 9, "div", 68);
+    \u0275\u0275elementEnd();
+  }
+  if (rf & 2) {
+    const ctx_r0 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", !ctx_r0.isQuizActive && !ctx_r0.quizFinished && !ctx_r0.quizLoading);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.quizLoading);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.isQuizActive && !ctx_r0.quizFinished && !ctx_r0.quizLoading);
+    \u0275\u0275advance();
+    \u0275\u0275property("ngIf", ctx_r0.quizFinished);
   }
 }
 function LessonInterfaceComponent_div_3_Template(rf, ctx) {
@@ -77852,7 +76959,7 @@ function LessonInterfaceComponent_div_3_Template(rf, ctx) {
     \u0275\u0275element(44, "div", 25);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(45, "div", 26);
-    \u0275\u0275template(46, LessonInterfaceComponent_div_3_div_46_Template, 30, 0, "div", 27)(47, LessonInterfaceComponent_div_3_div_47_Template, 13, 3, "div", 27)(48, LessonInterfaceComponent_div_3_div_48_Template, 25, 0, "div", 28);
+    \u0275\u0275template(46, LessonInterfaceComponent_div_3_div_46_Template, 30, 0, "div", 27)(47, LessonInterfaceComponent_div_3_div_47_Template, 13, 3, "div", 27)(48, LessonInterfaceComponent_div_3_div_48_Template, 5, 4, "div", 28);
     \u0275\u0275elementEnd()()();
   }
   if (rf & 2) {
@@ -77893,47 +77000,47 @@ function LessonInterfaceComponent_div_3_Template(rf, ctx) {
 }
 function LessonInterfaceComponent_div_4_Template(rf, ctx) {
   if (rf & 1) {
-    const _r13 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 73)(1, "div", 74)(2, "div", 75)(3, "div", 76)(4, "mat-icon", 77);
+    const _r20 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 103)(1, "div", 104)(2, "div", 105)(3, "div", 106)(4, "mat-icon", 107);
     \u0275\u0275text(5, "edit");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(6, "span");
     \u0275\u0275text(7, "Adjust Lesson Content");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "button", 78);
+    \u0275\u0275elementStart(8, "button", 108);
     \u0275\u0275listener("click", function LessonInterfaceComponent_div_4_Template_button_click_8_listener() {
-      \u0275\u0275restoreView(_r13);
+      \u0275\u0275restoreView(_r20);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.closeRegenModal());
     });
     \u0275\u0275elementStart(9, "mat-icon");
     \u0275\u0275text(10, "close");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "div", 79)(12, "p", 80);
+    \u0275\u0275elementStart(11, "div", 109)(12, "p", 110);
     \u0275\u0275text(13, " How should Gemini modify this lesson and exercises? You can steer it to be simpler, cover specific details more deeply, or add more worked examples. ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 81)(15, "label", 82);
+    \u0275\u0275elementStart(14, "div", 111)(15, "label", 112);
     \u0275\u0275text(16, "Instructions for AI");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(17, "textarea", 83);
+    \u0275\u0275elementStart(17, "textarea", 113);
     \u0275\u0275twoWayListener("ngModelChange", function LessonInterfaceComponent_div_4_Template_textarea_ngModelChange_17_listener($event) {
-      \u0275\u0275restoreView(_r13);
+      \u0275\u0275restoreView(_r20);
       const ctx_r0 = \u0275\u0275nextContext();
       \u0275\u0275twoWayBindingSet(ctx_r0.regenPrompt, $event) || (ctx_r0.regenPrompt = $event);
       return \u0275\u0275resetView($event);
     });
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(18, "div", 84)(19, "button", 85);
+    \u0275\u0275elementStart(18, "div", 114)(19, "button", 115);
     \u0275\u0275listener("click", function LessonInterfaceComponent_div_4_Template_button_click_19_listener() {
-      \u0275\u0275restoreView(_r13);
+      \u0275\u0275restoreView(_r20);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.closeRegenModal());
     });
     \u0275\u0275text(20, "Cancel");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "button", 86);
+    \u0275\u0275elementStart(21, "button", 116);
     \u0275\u0275listener("click", function LessonInterfaceComponent_div_4_Template_button_click_21_listener() {
-      \u0275\u0275restoreView(_r13);
+      \u0275\u0275restoreView(_r20);
       const ctx_r0 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r0.submitRegeneration());
     });
@@ -78162,6 +77269,91 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
       e.selected_option_index = void 0;
     });
   }
+  // Integrated Quiz State
+  isQuizActive = false;
+  quizLoading = false;
+  quizQuestions = [];
+  quizSelectedAnswers = [];
+  quizScore = 0;
+  quizTotal = 0;
+  quizPercentage = 0;
+  quizFinished = false;
+  quizStatusMessage = "";
+  startIntegratedQuiz() {
+    this.isQuizActive = true;
+    this.quizLoading = true;
+    this.quizStatusMessage = "Requesting 10 custom questions from Gemini...";
+    this.api.generateQuiz(this.selectedWeek, 10, this.classId).subscribe({
+      next: (questions) => {
+        this.quizLoading = false;
+        if (questions && questions.length > 0) {
+          this.quizQuestions = questions.map((q) => ({
+            id: q.id || q.questionText || q.question_text || "",
+            question_text: q.questionText || q.question_text || "Question",
+            options: q.options || [],
+            correct_option_index: q.correctOptionIndex !== void 0 ? q.correctOptionIndex : q.correct_option_index !== void 0 ? q.correct_option_index : 0
+          }));
+          this.quizSelectedAnswers = new Array(this.quizQuestions.length).fill(-1);
+        } else {
+          this.isQuizActive = false;
+          alert("Failed to generate a valid quiz. Ensure syllabus materials are uploaded.");
+        }
+      },
+      error: (err) => {
+        this.quizLoading = false;
+        this.isQuizActive = false;
+        alert("Error loading quiz: " + (err.error?.message || err.message || err));
+        console.error("Quiz loading error:", err);
+      }
+    });
+  }
+  selectQuizOption(qIdx, optIdx) {
+    this.quizSelectedAnswers[qIdx] = optIdx;
+  }
+  allQuizAnswered() {
+    return this.quizSelectedAnswers.length > 0 && this.quizSelectedAnswers.every((ans) => ans !== -1);
+  }
+  cancelQuiz() {
+    this.isQuizActive = false;
+    this.quizQuestions = [];
+    this.quizSelectedAnswers = [];
+  }
+  submitQuizAnswers() {
+    this.isLoading = true;
+    this.statusMessage = "Submitting answers and calculating your performance...";
+    const telemetryQuestions = this.quizQuestions.map((q, idx) => ({
+      id: q.id || q.question_text || `q-${idx}`,
+      selected_option_index: this.quizSelectedAnswers[idx],
+      correct_option_index: q.correct_option_index
+    }));
+    const payload = {
+      week_number: this.selectedWeek,
+      questions: telemetryQuestions
+    };
+    this.api.submitQuizTelemetry(payload, this.classId).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.quizFinished = true;
+        this.quizScore = res.score;
+        this.quizTotal = res.total_questions;
+        this.quizPercentage = res.percentage;
+        this.exerciseCompleted.emit();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        alert("Error submitting quiz telemetry: " + (err.error?.message || err.message || err));
+        console.error("Quiz submission error:", err);
+      }
+    });
+  }
+  finishStudySession() {
+    this.isQuizActive = false;
+    this.quizFinished = false;
+    this.quizQuestions = [];
+    this.quizSelectedAnswers = [];
+    this.currentStep = 1;
+    this.exerciseCompleted.emit();
+  }
   renderMarkdown(md) {
     if (!md)
       return "";
@@ -78171,7 +77363,7 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
   static \u0275fac = function LessonInterfaceComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _LessonInterfaceComponent)(\u0275\u0275directiveInject(ApiService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _LessonInterfaceComponent, selectors: [["app-lesson-interface"]], inputs: { selectedWeek: "selectedWeek", classId: "classId", dailyState: "dailyState" }, outputs: { exerciseCompleted: "exerciseCompleted", startQuiz: "startQuiz" }, decls: 5, vars: 4, consts: [[1, "lesson-wrapper"], ["class", "loading-state card", 4, "ngIf"], ["class", "error-alert", 4, "ngIf"], ["class", "lesson-content-container fade-in", 4, "ngIf"], ["class", "modal-overlay fade-in", "style", "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;", 4, "ngIf"], [1, "loading-state", "card"], [1, "spinner"], [1, "error-alert"], [1, "btn", "btn-outline", 3, "click"], [1, "lesson-content-container", "fade-in"], [1, "step-navigation-bar", "card"], [1, "step-tab", 3, "click"], [1, "step-icon"], [4, "ngIf"], [1, "step-info"], [1, "step-title"], [1, "step-desc"], [1, "step-connector"], [1, "lesson-body-split"], [1, "lesson-text-panel", "card", "scrollable-y"], [1, "lesson-panel-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center"], [1, "panel-header-left", 2, "display", "flex", "align-items", "center", "gap", "8px"], [1, "panel-icon"], [1, "btn", "btn-outline", "btn-regen", 2, "display", "flex", "align-items", "center", "gap", "4px", "padding", "8px 12px", "font-size", "13px", "font-weight", "600", "cursor", "pointer", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "white", "color", "#475569", 3, "click"], [2, "font-size", "16px", "width", "16px", "height", "16px"], [1, "markdown-body", 3, "innerHTML"], [1, "step-action-panel"], ["class", "step-card card fade-in", 4, "ngIf"], ["class", "step-card card fade-in quiz-unlocked-card", 4, "ngIf"], [1, "step-card", "card", "fade-in"], [1, "step-card-header"], [1, "step-badge-current"], [1, "step-card-body"], [1, "instruction-text"], [1, "checklist-bullet"], [1, "bullet-icon", "done"], [1, "bullet-icon", "pending"], [1, "step-card-footer"], [1, "btn", "btn-primary", "btn-block", "btn-proceed", 3, "click"], [1, "desc"], [1, "exercises-list", "scrollable-y"], ["class", "exercise-item", 4, "ngFor", "ngForOf"], [1, "exercises-footer"], ["class", "submit-actions", 4, "ngIf"], ["class", "result-box fade-in", 3, "passed", "failed", 4, "ngIf"], [1, "exercise-item"], [1, "ex-question"], [1, "ex-options-grid"], ["class", "ex-option-button", 3, "selected", "correct", "wrong", "disabled", "click", 4, "ngFor", "ngForOf"], ["class", "explanation-box fade-in", 3, "correct-box", "wrong-box", 4, "ngIf"], [1, "ex-option-button", 3, "click", "disabled"], [1, "option-badge"], [1, "option-text"], [1, "explanation-box", "fade-in"], [1, "exp-status"], [1, "exp-text"], [1, "submit-actions"], [1, "btn", "btn-primary", "btn-block", 3, "click", "disabled"], [1, "result-box", "fade-in"], [1, "result-icon"], [1, "result-text"], [1, "note"], ["class", "btn btn-primary", 3, "click", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click"], [1, "step-card", "card", "fade-in", "quiz-unlocked-card"], [1, "unlocked-icon-container"], [1, "huge-unlocked-icon", "animate-bounce"], [1, "step-card-header", "text-center"], [1, "step-card-body", "text-center"], [1, "unlocked-text"], [1, "unlocked-subtext"], [1, "btn", "btn-primary", "btn-block", "btn-start-quiz", 3, "click"], [1, "btn", "btn-outline", "btn-block", "mt-10", 3, "click"], [1, "modal-overlay", "fade-in", 2, "position", "fixed", "top", "0", "left", "0", "width", "100vw", "height", "100vh", "background", "rgba(15, 23, 42, 0.65)", "backdrop-filter", "blur(5px)", "display", "flex", "justify-content", "center", "align-items", "center", "z-index", "2000", "padding", "20px", "box-sizing", "border-box"], [1, "modal-card", "card", "scale-up", 2, "width", "100%", "max-width", "500px", "background", "white", "border-radius", "12px", "padding", "24px", "box-shadow", "0 20px 25px -5px rgba(0,0,0,0.15)", "box-sizing", "border-box", "display", "flex", "flex-direction", "column", "gap", "16px"], [1, "modal-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center", "border-bottom", "1px solid #e2e8f0", "padding-bottom", "12px"], [1, "modal-title-container", 2, "display", "flex", "align-items", "center", "gap", "8px", "font-weight", "800", "font-size", "18px", "color", "#0f172a"], [2, "color", "#6366f1"], [1, "btn-modal-close", 2, "background", "transparent", "border", "none", "cursor", "pointer", "color", "#94a3b8", 3, "click", "disabled"], [1, "modal-body", 2, "display", "flex", "flex-direction", "column", "gap", "14px"], [1, "modal-desc", 2, "font-size", "13px", "color", "#64748b", "margin", "0", "line-height", "1.5"], [1, "form-group", 2, "display", "flex", "flex-direction", "column", "gap", "6px"], ["for", "regenPrompt", 2, "font-size", "11px", "font-weight", "700", "color", "#475569", "text-transform", "uppercase"], ["id", "regenPrompt", "placeholder", "e.g. Make it simpler with more basic step-by-step math examples...", "rows", "4", "required", "", 2, "padding", "10px", "border", "1px solid #cbd5e1", "border-radius", "6px", "font-size", "13px", "resize", "vertical", "outline", "none", "width", "100%", "box-sizing", "border-box", 3, "ngModelChange", "ngModel", "disabled"], [1, "modal-actions", 2, "display", "flex", "justify-content", "flex-end", "gap", "12px", "border-top", "1px solid #e2e8f0", "padding-top", "12px"], [1, "btn", "btn-secondary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "#f1f5f9", "color", "#475569", "cursor", "pointer", "font-weight", "600", 3, "click", "disabled"], [1, "btn", "btn-primary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "none", "background", "#4f46e5", "color", "white", "cursor", "pointer", "font-weight", "700", "display", "inline-flex", "align-items", "center", "gap", "6px", 3, "click", "disabled"]], template: function LessonInterfaceComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _LessonInterfaceComponent, selectors: [["app-lesson-interface"]], inputs: { selectedWeek: "selectedWeek", classId: "classId", dailyState: "dailyState" }, outputs: { exerciseCompleted: "exerciseCompleted", startQuiz: "startQuiz" }, decls: 5, vars: 4, consts: [[1, "lesson-wrapper"], ["class", "loading-state card", 4, "ngIf"], ["class", "error-alert", 4, "ngIf"], ["class", "lesson-content-container fade-in", 4, "ngIf"], ["class", "modal-overlay fade-in", "style", "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.65); backdrop-filter: blur(5px); display: flex; justify-content: center; align-items: center; z-index: 2000; padding: 20px; box-sizing: border-box;", 4, "ngIf"], [1, "loading-state", "card"], [1, "spinner"], [1, "error-alert"], [1, "btn", "btn-outline", 3, "click"], [1, "lesson-content-container", "fade-in"], [1, "step-navigation-bar", "card"], [1, "step-tab", 3, "click"], [1, "step-icon"], [4, "ngIf"], [1, "step-info"], [1, "step-title"], [1, "step-desc"], [1, "step-connector"], [1, "lesson-body-split"], [1, "lesson-text-panel", "card", "scrollable-y"], [1, "lesson-panel-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center"], [1, "panel-header-left", 2, "display", "flex", "align-items", "center", "gap", "8px"], [1, "panel-icon"], [1, "btn", "btn-outline", "btn-regen", 2, "display", "flex", "align-items", "center", "gap", "4px", "padding", "8px 12px", "font-size", "13px", "font-weight", "600", "cursor", "pointer", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "white", "color", "#475569", 3, "click"], [2, "font-size", "16px", "width", "16px", "height", "16px"], [1, "markdown-body", 3, "innerHTML"], [1, "step-action-panel"], ["class", "step-card card fade-in", 4, "ngIf"], ["class", "step-card card fade-in quiz-unlocked-card", 4, "ngIf"], [1, "step-card", "card", "fade-in"], [1, "step-card-header"], [1, "step-badge-current"], [1, "step-card-body"], [1, "instruction-text"], [1, "checklist-bullet"], [1, "bullet-icon", "done"], [1, "bullet-icon", "pending"], [1, "step-card-footer"], [1, "btn", "btn-primary", "btn-block", "btn-proceed", 3, "click"], [1, "desc"], [1, "exercises-list", "scrollable-y"], ["class", "exercise-item", 4, "ngFor", "ngForOf"], [1, "exercises-footer"], ["class", "submit-actions", 4, "ngIf"], ["class", "result-box fade-in", 3, "passed", "failed", 4, "ngIf"], [1, "exercise-item"], [1, "ex-question"], [1, "ex-options-grid"], ["class", "ex-option-button", 3, "selected", "correct", "wrong", "disabled", "click", 4, "ngFor", "ngForOf"], ["class", "explanation-box fade-in", 3, "correct-box", "wrong-box", 4, "ngIf"], [1, "ex-option-button", 3, "click", "disabled"], [1, "option-badge"], [1, "option-text"], [1, "explanation-box", "fade-in"], [1, "exp-status"], [1, "exp-text"], [1, "submit-actions"], [1, "btn", "btn-primary", "btn-block", 3, "click", "disabled"], [1, "result-box", "fade-in"], [1, "result-icon"], [1, "result-text"], [1, "note"], ["class", "btn btn-primary", 3, "click", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click"], [1, "step-card", "card", "fade-in", "quiz-unlocked-card"], ["class", "quiz-intro-state text-center", 4, "ngIf"], ["class", "quiz-loading-state text-center", 4, "ngIf"], ["class", "quiz-active-state", 4, "ngIf"], ["class", "quiz-finished-state text-center fade-in", 4, "ngIf"], [1, "quiz-intro-state", "text-center"], [1, "unlocked-icon-container"], [1, "huge-unlocked-icon", "animate-bounce"], [1, "step-card-header", "text-center"], [1, "step-card-body", "text-center"], [1, "unlocked-text"], [1, "unlocked-subtext"], [1, "btn", "btn-primary", "btn-block", "btn-start-quiz", 3, "click"], [1, "btn", "btn-outline", "btn-block", "mt-10", 3, "click"], [1, "quiz-loading-state", "text-center"], [1, "orbit-spinner"], [1, "planet"], [1, "satellite"], [1, "quiz-active-state"], [1, "quiz-questions-list", "scrollable-y"], ["class", "quiz-question-item", 4, "ngFor", "ngForOf"], [1, "quiz-active-footer"], [1, "btn", "btn-primary", 3, "click", "disabled"], [1, "quiz-question-item"], [1, "quiz-q-text"], [1, "quiz-options-grid"], ["class", "quiz-option-button", 3, "selected", "click", 4, "ngFor", "ngForOf"], [1, "quiz-option-button", 3, "click"], [1, "quiz-finished-state", "text-center", "fade-in"], [1, "finished-stars-container"], [1, "huge-finished-icon", "text-glow"], [1, "quiz-score-display"], [1, "score-circle"], [1, "percentage"], [1, "details"], [1, "streak-fire-title"], [1, "fire-icon", "animated-fire"], ["class", "unlocked-subtext", 4, "ngIf"], [1, "btn", "btn-primary", "btn-block", 3, "click"], [1, "modal-overlay", "fade-in", 2, "position", "fixed", "top", "0", "left", "0", "width", "100vw", "height", "100vh", "background", "rgba(15, 23, 42, 0.65)", "backdrop-filter", "blur(5px)", "display", "flex", "justify-content", "center", "align-items", "center", "z-index", "2000", "padding", "20px", "box-sizing", "border-box"], [1, "modal-card", "card", "scale-up", 2, "width", "100%", "max-width", "500px", "background", "white", "border-radius", "12px", "padding", "24px", "box-shadow", "0 20px 25px -5px rgba(0,0,0,0.15)", "box-sizing", "border-box", "display", "flex", "flex-direction", "column", "gap", "16px"], [1, "modal-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center", "border-bottom", "1px solid #e2e8f0", "padding-bottom", "12px"], [1, "modal-title-container", 2, "display", "flex", "align-items", "center", "gap", "8px", "font-weight", "800", "font-size", "18px", "color", "#0f172a"], [2, "color", "#6366f1"], [1, "btn-modal-close", 2, "background", "transparent", "border", "none", "cursor", "pointer", "color", "#94a3b8", 3, "click", "disabled"], [1, "modal-body", 2, "display", "flex", "flex-direction", "column", "gap", "14px"], [1, "modal-desc", 2, "font-size", "13px", "color", "#64748b", "margin", "0", "line-height", "1.5"], [1, "form-group", 2, "display", "flex", "flex-direction", "column", "gap", "6px"], ["for", "regenPrompt", 2, "font-size", "11px", "font-weight", "700", "color", "#475569", "text-transform", "uppercase"], ["id", "regenPrompt", "placeholder", "e.g. Make it simpler with more basic step-by-step math examples...", "rows", "4", "required", "", 2, "padding", "10px", "border", "1px solid #cbd5e1", "border-radius", "6px", "font-size", "13px", "resize", "vertical", "outline", "none", "width", "100%", "box-sizing", "border-box", 3, "ngModelChange", "ngModel", "disabled"], [1, "modal-actions", 2, "display", "flex", "justify-content", "flex-end", "gap", "12px", "border-top", "1px solid #e2e8f0", "padding-top", "12px"], [1, "btn", "btn-secondary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "1px solid #cbd5e1", "background", "#f1f5f9", "color", "#475569", "cursor", "pointer", "font-weight", "600", 3, "click", "disabled"], [1, "btn", "btn-primary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "none", "background", "#4f46e5", "color", "white", "cursor", "pointer", "font-weight", "700", "display", "inline-flex", "align-items", "center", "gap", "6px", 3, "click", "disabled"]], template: function LessonInterfaceComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "div", 0);
       \u0275\u0275template(1, LessonInterfaceComponent_div_1_Template, 4, 1, "div", 1)(2, LessonInterfaceComponent_div_2_Template, 7, 1, "div", 2)(3, LessonInterfaceComponent_div_3_Template, 49, 31, "div", 3);
@@ -78188,7 +77380,7 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
       \u0275\u0275advance();
       \u0275\u0275property("ngIf", ctx.isRegenModalOpen);
     }
-  }, dependencies: [CommonModule, NgForOf, NgIf, FormsModule, DefaultValueAccessor, NgControlStatus, RequiredValidator, NgModel, MatIconModule, MatIcon], styles: ['\n\n.lesson-wrapper[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n}\n.loading-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: rgba(255, 255, 255, 0.7);\n  backdrop-filter: blur(10px);\n  border-radius: 16px;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);\n}\n.loading-state[_ngcontent-%COMP%]   .spinner[_ngcontent-%COMP%] {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(99, 102, 241, 0.1);\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s linear infinite;\n  margin-bottom: 20px;\n}\n.loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #475569;\n  font-size: 16px;\n  font-weight: 500;\n}\n.error-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 15px;\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n  padding: 16px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.error-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.error-alert[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  font-weight: 500;\n}\n.error-alert[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  padding: 6px 12px;\n  font-size: 13px;\n}\n.lesson-content-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  height: 100%;\n}\n.lesson-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%]   .header-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.lesson-header[_ngcontent-%COMP%]   .btn-refresh[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  color: #64748b;\n  border-color: #cbd5e1;\n  cursor: pointer;\n}\n.lesson-header[_ngcontent-%COMP%]   .btn-refresh[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #6366f1;\n  border-color: #6366f1;\n}\n.lesson-body-split[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 20px;\n  height: calc(100vh - 280px);\n  min-height: 500px;\n}\n@media (max-width: 1024px) {\n  .lesson-body-split[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n    height: auto;\n  }\n}\n.lesson-text-panel[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  overflow-y: auto;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%] {\n  line-height: 1.6;\n  color: #334155;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  color: #0f172a;\n  margin-top: 24px;\n  margin-bottom: 12px;\n  font-weight: 700;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%] {\n  font-size: 22px;\n  border-bottom: 1px solid #e2e8f0;\n  padding-bottom: 8px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 18px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 16px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-bottom: 16px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   ol[_ngcontent-%COMP%] {\n  margin-bottom: 16px;\n  padding-left: 20px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 8px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n  font-weight: 600;\n}\n.exercises-panel[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%] {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%]   .desc[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-list[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow-y: auto;\n  padding-right: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-bottom: 20px;\n}\n.exercise-item[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.exercise-item[_ngcontent-%COMP%]   .ex-question[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 600;\n  color: #1e293b;\n  line-height: 1.4;\n}\n.ex-options-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 10px;\n}\n.ex-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 10px;\n  text-align: left;\n  font-size: 14px;\n  font-weight: 500;\n  color: #475569;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.ex-option-button[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n  color: #1e293b;\n}\n.ex-option-button.selected[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #6366f1;\n}\n.ex-option-button.correct[_ngcontent-%COMP%] {\n  background: rgba(34, 197, 94, 0.1);\n  border-color: #22c55e;\n  color: #15803d;\n  font-weight: 600;\n}\n.ex-option-button.wrong[_ngcontent-%COMP%] {\n  background: rgba(239, 68, 68, 0.1);\n  border-color: #ef4444;\n  color: #b91c1c;\n}\n.ex-option-button[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  font-size: 11px;\n  font-weight: 700;\n  color: #64748b;\n}\n.ex-option-button.selected[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #6366f1;\n  border-color: #6366f1;\n  color: white;\n}\n.ex-option-button.correct[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #22c55e;\n  border-color: #22c55e;\n  color: white;\n}\n.ex-option-button.wrong[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #ef4444;\n  border-color: #ef4444;\n  color: white;\n}\n.ex-option-button[_ngcontent-%COMP%]   .option-text[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.explanation-box[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  font-size: 13px;\n  line-height: 1.4;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 600;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.explanation-box.correct-box[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  color: #166534;\n  border: 1px solid #bbf7d0;\n}\n.explanation-box.correct-box[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.explanation-box.wrong-box[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  color: #991b1b;\n  border: 1px solid #fca5a5;\n}\n.explanation-box.wrong-box[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-text[_ngcontent-%COMP%] {\n  margin: 0;\n}\n.exercises-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.result-box[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: flex-start;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n}\n.result-box[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 16px;\n  font-weight: 700;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 2px 0;\n  font-size: 14px;\n  font-weight: 500;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   .note[_ngcontent-%COMP%] {\n  font-size: 12px;\n  opacity: 0.8;\n  margin: 0;\n}\n.result-box.passed[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #166534;\n}\n.result-box.passed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.result-box.failed[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #991b1b;\n}\n.result-box.failed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.result-box.failed[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  align-self: center;\n}\n.btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 600;\n  border-radius: 10px;\n  border: 1px solid transparent;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-primary[_ngcontent-%COMP%] {\n  background: #6366f1;\n  color: white;\n}\n.btn-primary[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #4f46e5;\n}\n.btn-primary[_ngcontent-%COMP%]:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n}\n.btn-outline[_ngcontent-%COMP%] {\n  background: transparent;\n  border-color: #e2e8f0;\n  color: #475569;\n}\n.btn-outline[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.btn-block[_ngcontent-%COMP%] {\n  display: flex;\n  width: 100%;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.step-navigation-bar[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);\n  margin-bottom: 20px;\n}\n.step-tab[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: all 0.3s ease;\n  padding: 8px 12px;\n  border-radius: 10px;\n}\n.step-tab[_ngcontent-%COMP%]:hover:not(.disabled) {\n  background: #f8fafc;\n}\n.step-tab.active[_ngcontent-%COMP%]   .step-icon[_ngcontent-%COMP%] {\n  background: #6366f1;\n  color: white;\n  border-color: #6366f1;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);\n}\n.step-tab.active[_ngcontent-%COMP%]   .step-info[_ngcontent-%COMP%]   .step-title[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.step-tab.completed[_ngcontent-%COMP%]   .step-icon[_ngcontent-%COMP%] {\n  background: #22c55e;\n  color: white;\n  border-color: #22c55e;\n}\n.step-tab.disabled[_ngcontent-%COMP%] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n.step-icon[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  border: 2px solid #e2e8f0;\n  font-weight: 700;\n  font-size: 14px;\n  color: #64748b;\n  transition: all 0.3s ease;\n  background: white;\n}\n.step-icon[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.step-info[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  text-align: left;\n}\n.step-info[_ngcontent-%COMP%]   .step-title[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 700;\n  color: #0f172a;\n  transition: all 0.3s ease;\n}\n.step-info[_ngcontent-%COMP%]   .step-desc[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n}\n.step-connector[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  height: 2px;\n  background: #e2e8f0;\n  margin: 0 16px;\n  border-radius: 2px;\n  transition: all 0.3s ease;\n}\n.step-connector.filled[_ngcontent-%COMP%] {\n  background: #22c55e;\n}\n.step-action-panel[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\n.step-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  height: 100%;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%] {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   .step-badge-current[_ngcontent-%COMP%] {\n  display: inline-block;\n  padding: 4px 8px;\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n  font-size: 11px;\n  font-weight: 700;\n  border-radius: 6px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   .desc[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .instruction-text[_ngcontent-%COMP%] {\n  font-size: 14px;\n  line-height: 1.6;\n  color: #475569;\n  margin-bottom: 12px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #334155;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon.done[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon.pending[_ngcontent-%COMP%] {\n  color: #94a3b8;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.btn-proceed[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  font-size: 15px;\n}\n.btn-proceed[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n  transition: transform 0.2s ease;\n}\n.btn-proceed[_ngcontent-%COMP%]:hover   mat-icon[_ngcontent-%COMP%] {\n  transform: translateX(4px);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%] {\n  align-items: center;\n  justify-content: center;\n  background:\n    linear-gradient(\n      135deg,\n      #ffffff 0%,\n      rgba(99, 102, 241, 0.02) 100%);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-icon-container[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 80px;\n  height: 80px;\n  background: rgba(34, 197, 94, 0.1);\n  color: #22c55e;\n  border-radius: 50%;\n  margin-bottom: 24px;\n  box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-icon-container[_ngcontent-%COMP%]   .huge-unlocked-icon[_ngcontent-%COMP%] {\n  font-size: 40px;\n  width: 40px;\n  height: 40px;\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-text[_ngcontent-%COMP%] {\n  font-size: 16px;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 12px;\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-subtext[_ngcontent-%COMP%] {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #64748b;\n  max-width: 340px;\n  margin: 0 auto;\n}\n.btn-start-quiz[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  background: #22c55e;\n  border-color: #22c55e;\n  padding: 14px 24px;\n  font-size: 16px;\n  font-weight: 700;\n  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);\n}\n.btn-start-quiz[_ngcontent-%COMP%]:hover {\n  background: #16a34a;\n  border-color: #16a34a;\n  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);\n}\n.lesson-panel-header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.lesson-panel-header[_ngcontent-%COMP%]   .panel-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.lesson-panel-header[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0 !important;\n  font-size: 18px !important;\n  font-weight: 700 !important;\n}\n.mt-10[_ngcontent-%COMP%] {\n  margin-top: 10px;\n}\n@keyframes _ngcontent-%COMP%_bounce {\n  0%, 100% {\n    transform: translateY(0);\n  }\n  50% {\n    transform: translateY(-8px);\n  }\n}\n.animate-bounce[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_bounce 2s infinite;\n}\n/*# sourceMappingURL=lesson-interface.component.css.map */'] });
+  }, dependencies: [CommonModule, NgForOf, NgIf, FormsModule, DefaultValueAccessor, NgControlStatus, RequiredValidator, NgModel, MatIconModule, MatIcon], styles: ['\n\n.lesson-wrapper[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n}\n.loading-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: rgba(255, 255, 255, 0.7);\n  backdrop-filter: blur(10px);\n  border-radius: 16px;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);\n}\n.loading-state[_ngcontent-%COMP%]   .spinner[_ngcontent-%COMP%] {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(99, 102, 241, 0.1);\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s linear infinite;\n  margin-bottom: 20px;\n}\n.loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #475569;\n  font-size: 16px;\n  font-weight: 500;\n}\n.error-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 15px;\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n  padding: 16px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.error-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.error-alert[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  font-weight: 500;\n}\n.error-alert[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  padding: 6px 12px;\n  font-size: 13px;\n}\n.lesson-content-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  height: 100%;\n}\n.lesson-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%]   .header-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.lesson-header[_ngcontent-%COMP%]   .lesson-meta[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.lesson-header[_ngcontent-%COMP%]   .btn-refresh[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  color: #64748b;\n  border-color: #cbd5e1;\n  cursor: pointer;\n}\n.lesson-header[_ngcontent-%COMP%]   .btn-refresh[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #6366f1;\n  border-color: #6366f1;\n}\n.lesson-body-split[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 20px;\n  height: calc(100vh - 280px);\n  min-height: 500px;\n}\n@media (max-width: 1024px) {\n  .lesson-body-split[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n    height: auto;\n  }\n}\n.lesson-text-panel[_ngcontent-%COMP%] {\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  overflow-y: auto;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%] {\n  line-height: 1.6;\n  color: #334155;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  color: #0f172a;\n  margin-top: 24px;\n  margin-bottom: 12px;\n  font-weight: 700;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%] {\n  font-size: 22px;\n  border-bottom: 1px solid #e2e8f0;\n  padding-bottom: 8px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 18px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 16px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin-bottom: 16px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   ul[_ngcontent-%COMP%], \n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   ol[_ngcontent-%COMP%] {\n  margin-bottom: 16px;\n  padding-left: 20px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 8px;\n}\n.lesson-text-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n  font-weight: 600;\n}\n.exercises-panel[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%] {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-header[_ngcontent-%COMP%]   .desc[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.exercises-panel[_ngcontent-%COMP%]   .exercises-list[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow-y: auto;\n  padding-right: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-bottom: 20px;\n}\n.exercise-item[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.exercise-item[_ngcontent-%COMP%]   .ex-question[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 600;\n  color: #1e293b;\n  line-height: 1.4;\n}\n.ex-options-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 10px;\n}\n.ex-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 10px;\n  text-align: left;\n  font-size: 14px;\n  font-weight: 500;\n  color: #475569;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.ex-option-button[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n  color: #1e293b;\n}\n.ex-option-button.selected[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #6366f1;\n}\n.ex-option-button.correct[_ngcontent-%COMP%] {\n  background: rgba(34, 197, 94, 0.1);\n  border-color: #22c55e;\n  color: #15803d;\n  font-weight: 600;\n}\n.ex-option-button.wrong[_ngcontent-%COMP%] {\n  background: rgba(239, 68, 68, 0.1);\n  border-color: #ef4444;\n  color: #b91c1c;\n}\n.ex-option-button[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  font-size: 11px;\n  font-weight: 700;\n  color: #64748b;\n}\n.ex-option-button.selected[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #6366f1;\n  border-color: #6366f1;\n  color: white;\n}\n.ex-option-button.correct[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #22c55e;\n  border-color: #22c55e;\n  color: white;\n}\n.ex-option-button.wrong[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #ef4444;\n  border-color: #ef4444;\n  color: white;\n}\n.ex-option-button[_ngcontent-%COMP%]   .option-text[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.explanation-box[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  font-size: 13px;\n  line-height: 1.4;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 600;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.explanation-box.correct-box[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  color: #166534;\n  border: 1px solid #bbf7d0;\n}\n.explanation-box.correct-box[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.explanation-box.wrong-box[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  color: #991b1b;\n  border: 1px solid #fca5a5;\n}\n.explanation-box.wrong-box[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.explanation-box[_ngcontent-%COMP%]   .exp-text[_ngcontent-%COMP%] {\n  margin: 0;\n}\n.exercises-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.result-box[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: flex-start;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n}\n.result-box[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 16px;\n  font-weight: 700;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 2px 0;\n  font-size: 14px;\n  font-weight: 500;\n}\n.result-box[_ngcontent-%COMP%]   .result-text[_ngcontent-%COMP%]   .note[_ngcontent-%COMP%] {\n  font-size: 12px;\n  opacity: 0.8;\n  margin: 0;\n}\n.result-box.passed[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #166534;\n}\n.result-box.passed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.result-box.failed[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #991b1b;\n}\n.result-box.failed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.result-box.failed[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  align-self: center;\n}\n.btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 600;\n  border-radius: 10px;\n  border: 1px solid transparent;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-primary[_ngcontent-%COMP%] {\n  background: #6366f1;\n  color: white;\n}\n.btn-primary[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #4f46e5;\n}\n.btn-primary[_ngcontent-%COMP%]:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n}\n.btn-outline[_ngcontent-%COMP%] {\n  background: transparent;\n  border-color: #e2e8f0;\n  color: #475569;\n}\n.btn-outline[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.btn-block[_ngcontent-%COMP%] {\n  display: flex;\n  width: 100%;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.step-navigation-bar[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);\n  margin-bottom: 20px;\n}\n.step-tab[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: all 0.3s ease;\n  padding: 8px 12px;\n  border-radius: 10px;\n}\n.step-tab[_ngcontent-%COMP%]:hover:not(.disabled) {\n  background: #f8fafc;\n}\n.step-tab.active[_ngcontent-%COMP%]   .step-icon[_ngcontent-%COMP%] {\n  background: #6366f1;\n  color: white;\n  border-color: #6366f1;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);\n}\n.step-tab.active[_ngcontent-%COMP%]   .step-info[_ngcontent-%COMP%]   .step-title[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.step-tab.completed[_ngcontent-%COMP%]   .step-icon[_ngcontent-%COMP%] {\n  background: #22c55e;\n  color: white;\n  border-color: #22c55e;\n}\n.step-tab.disabled[_ngcontent-%COMP%] {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n.step-icon[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  border: 2px solid #e2e8f0;\n  font-weight: 700;\n  font-size: 14px;\n  color: #64748b;\n  transition: all 0.3s ease;\n  background: white;\n}\n.step-icon[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.step-info[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  text-align: left;\n}\n.step-info[_ngcontent-%COMP%]   .step-title[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 700;\n  color: #0f172a;\n  transition: all 0.3s ease;\n}\n.step-info[_ngcontent-%COMP%]   .step-desc[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n}\n.step-connector[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  height: 2px;\n  background: #e2e8f0;\n  margin: 0 16px;\n  border-radius: 2px;\n  transition: all 0.3s ease;\n}\n.step-connector.filled[_ngcontent-%COMP%] {\n  background: #22c55e;\n}\n.step-action-panel[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\n.step-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  height: 100%;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%] {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   .step-badge-current[_ngcontent-%COMP%] {\n  display: inline-block;\n  padding: 4px 8px;\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n  font-size: 11px;\n  font-weight: 700;\n  border-radius: 6px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-header[_ngcontent-%COMP%]   .desc[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .instruction-text[_ngcontent-%COMP%] {\n  font-size: 14px;\n  line-height: 1.6;\n  color: #475569;\n  margin-bottom: 12px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #334155;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon.done[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-body[_ngcontent-%COMP%]   .checklist-bullet[_ngcontent-%COMP%]   .bullet-icon.pending[_ngcontent-%COMP%] {\n  color: #94a3b8;\n}\n.step-card[_ngcontent-%COMP%]   .step-card-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.btn-proceed[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  font-size: 15px;\n}\n.btn-proceed[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n  transition: transform 0.2s ease;\n}\n.btn-proceed[_ngcontent-%COMP%]:hover   mat-icon[_ngcontent-%COMP%] {\n  transform: translateX(4px);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%] {\n  align-items: center;\n  justify-content: center;\n  background:\n    linear-gradient(\n      135deg,\n      #ffffff 0%,\n      rgba(99, 102, 241, 0.02) 100%);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-icon-container[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 80px;\n  height: 80px;\n  background: rgba(34, 197, 94, 0.1);\n  color: #22c55e;\n  border-radius: 50%;\n  margin-bottom: 24px;\n  box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-icon-container[_ngcontent-%COMP%]   .huge-unlocked-icon[_ngcontent-%COMP%] {\n  font-size: 40px;\n  width: 40px;\n  height: 40px;\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-text[_ngcontent-%COMP%] {\n  font-size: 16px;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 12px;\n}\n.quiz-unlocked-card[_ngcontent-%COMP%]   .unlocked-subtext[_ngcontent-%COMP%] {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #64748b;\n  max-width: 340px;\n  margin: 0 auto;\n}\n.btn-start-quiz[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  background: #22c55e;\n  border-color: #22c55e;\n  padding: 14px 24px;\n  font-size: 16px;\n  font-weight: 700;\n  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);\n}\n.btn-start-quiz[_ngcontent-%COMP%]:hover {\n  background: #16a34a;\n  border-color: #16a34a;\n  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);\n}\n.lesson-panel-header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.lesson-panel-header[_ngcontent-%COMP%]   .panel-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.lesson-panel-header[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0 !important;\n  font-size: 18px !important;\n  font-weight: 700 !important;\n}\n.mt-10[_ngcontent-%COMP%] {\n  margin-top: 10px;\n}\n@keyframes _ngcontent-%COMP%_bounce {\n  0%, 100% {\n    transform: translateY(0);\n  }\n  50% {\n    transform: translateY(-8px);\n  }\n}\n.animate-bounce[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_bounce 2s infinite;\n}\n.orbit-spinner[_ngcontent-%COMP%] {\n  position: relative;\n  width: 80px;\n  height: 80px;\n  margin: 30px auto;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.orbit-spinner[_ngcontent-%COMP%]   .planet[_ngcontent-%COMP%] {\n  width: 32px;\n  height: 32px;\n  background:\n    radial-gradient(\n      circle,\n      #f97316 0%,\n      #ea580c 100%);\n  border-radius: 50%;\n  box-shadow: 0 0 25px rgba(249, 115, 22, 0.6);\n}\n.orbit-spinner[_ngcontent-%COMP%]   .satellite[_ngcontent-%COMP%] {\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  background: #38bdf8;\n  border-radius: 50%;\n  box-shadow: 0 0 12px #38bdf8;\n  top: 34px;\n  left: 34px;\n  transform-origin: center;\n  animation: _ngcontent-%COMP%_orbit 2.5s linear infinite;\n}\n@keyframes _ngcontent-%COMP%_orbit {\n  from {\n    transform: rotate(0deg) translate(35px) rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg) translate(35px) rotate(-360deg);\n  }\n}\n.animated-fire[_ngcontent-%COMP%] {\n  color: #ff5722;\n  filter: drop-shadow(0 0 8px #ff5722);\n  animation: _ngcontent-%COMP%_flicker 1s ease-in-out infinite alternate;\n}\n@keyframes _ngcontent-%COMP%_flicker {\n  0% {\n    transform: scale(0.95) rotate(-2deg);\n    filter: drop-shadow(0 0 6px #ff5722);\n  }\n  100% {\n    transform: scale(1.05) rotate(2deg);\n    filter: drop-shadow(0 0 12px #ff9800);\n  }\n}\n.quiz-questions-list[_ngcontent-%COMP%] {\n  max-height: calc(100vh - 460px);\n  overflow-y: auto;\n  padding-right: 8px;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin: 15px 0;\n}\n.quiz-question-item[_ngcontent-%COMP%] {\n  background: rgba(248, 250, 252, 0.6);\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  padding: 16px;\n}\n.quiz-question-item[_ngcontent-%COMP%]   .quiz-q-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 600;\n  margin-bottom: 12px;\n  color: #1e293b;\n}\n.quiz-options-grid[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n.quiz-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 14px;\n  background: #ffffff;\n  border: 1px solid #cbd5e1;\n  border-radius: 8px;\n  color: #475569;\n  text-align: left;\n  font-size: 13px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n}\n.quiz-option-button[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  border-color: #6366f1;\n  color: #0f172a;\n}\n.quiz-option-button.selected[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #4f46e5;\n  font-weight: 600;\n  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);\n}\n.quiz-option-button[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  font-size: 12px;\n  color: #64748b;\n}\n.quiz-option-button.selected[_ngcontent-%COMP%]   .option-badge[_ngcontent-%COMP%] {\n  background: #6366f1;\n  color: #ffffff;\n}\n.quiz-active-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;\n  margin-top: 20px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.quiz-active-footer[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  flex: 1;\n  padding: 12px;\n}\n.quiz-finished-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 20px 0;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .finished-stars-container[_ngcontent-%COMP%] {\n  color: #eab308;\n  filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.4));\n  margin-bottom: 16px;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .finished-stars-container[_ngcontent-%COMP%]   .huge-finished-icon[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%] {\n  margin: 20px 0;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background: #ffffff;\n  border: 4px solid #e2e8f0;\n  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle.excellent[_ngcontent-%COMP%] {\n  border-color: #22c55e;\n  box-shadow: 0 10px 25px rgba(34, 197, 148, 0.2);\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle.excellent[_ngcontent-%COMP%]   .percentage[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle.needs-work[_ngcontent-%COMP%] {\n  border-color: #f97316;\n  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle.needs-work[_ngcontent-%COMP%]   .percentage[_ngcontent-%COMP%] {\n  color: #f97316;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle[_ngcontent-%COMP%]   .percentage[_ngcontent-%COMP%] {\n  font-size: 32px;\n  font-weight: 800;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .quiz-score-display[_ngcontent-%COMP%]   .score-circle[_ngcontent-%COMP%]   .details[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n  margin-top: 4px;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .streak-fire-title[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 10px 0 5px;\n}\n.quiz-finished-state[_ngcontent-%COMP%]   .streak-fire-title[_ngcontent-%COMP%]   .fire-icon[_ngcontent-%COMP%] {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n/*# sourceMappingURL=lesson-interface.component.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(LessonInterfaceComponent, [{
@@ -78366,29 +77558,119 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
           </div>
         </div>
 
-        <!-- STEP 3 View: Unlock Quiz -->
+        <!-- STEP 3 View: Unlock and Take Quiz -->
         <div *ngIf="currentStep === 3" class="step-card card fade-in quiz-unlocked-card">
-          <div class="unlocked-icon-container">
-            <mat-icon class="huge-unlocked-icon animate-bounce">lock_open</mat-icon>
+          
+          <!-- 3a. Quiz Not Started & Not Finished -->
+          <div *ngIf="!isQuizActive && !quizFinished && !quizLoading" class="quiz-intro-state text-center">
+            <div class="unlocked-icon-container">
+              <mat-icon class="huge-unlocked-icon animate-bounce">lock_open</mat-icon>
+            </div>
+            <div class="step-card-header text-center">
+              <div class="step-badge-current">Step 3 of 3</div>
+              <h3>Launch Official Quiz</h3>
+            </div>
+            <div class="step-card-body text-center">
+              <p class="unlocked-text">Orbit Established! You are clear to start your Week {{ selectedWeek }} quiz.</p>
+              <p class="unlocked-subtext">This quiz contains exactly 10 questions customized to your target topics. Submitting your answers will save analytics to BigQuery and extend your streak!</p>
+            </div>
+            <div class="step-card-footer">
+              <button class="btn btn-primary btn-block btn-start-quiz" (click)="startIntegratedQuiz()">
+                <mat-icon>rocket_launch</mat-icon>
+                <span>Launch Quiz (10 Questions)</span>
+              </button>
+              <button class="btn btn-outline btn-block mt-10" (click)="goToStep(1)">
+                <mat-icon>menu_book</mat-icon>
+                <span>Review Lesson Content</span>
+              </button>
+            </div>
           </div>
-          <div class="step-card-header text-center">
-            <div class="step-badge-current">Step 3 of 3</div>
-            <h3>Weekly Quiz Unlocked!</h3>
+
+          <!-- 3b. Quiz Loading State -->
+          <div *ngIf="quizLoading" class="quiz-loading-state text-center">
+            <div class="orbit-spinner">
+              <div class="planet"></div>
+              <div class="satellite"></div>
+            </div>
+            <h3>Generating Quiz Orbit...</h3>
+            <p>{{ quizStatusMessage }}</p>
           </div>
-          <div class="step-card-body text-center">
-            <p class="unlocked-text">Congratulations! You have completed the study lesson and solved the practice exercises successfully.</p>
-            <p class="unlocked-subtext">You are now ready to take the official adaptive performance quiz. Taking the quiz will record your score to Google BigQuery and advance your study streak!</p>
+
+          <!-- 3c. Quiz Active (Taking the Quiz) -->
+          <div *ngIf="isQuizActive && !quizFinished && !quizLoading" class="quiz-active-state">
+            <div class="step-card-header">
+              <div class="step-badge-current">Week {{ selectedWeek }} Official Quiz</div>
+              <h3>Testing Orbit Knowledge</h3>
+              <p class="desc">Select your answers for all 10 questions. Telemetry will be gathered upon submission.</p>
+            </div>
+            
+            <div class="quiz-questions-list scrollable-y">
+              <div *ngFor="let q of quizQuestions; let qIdx = index" class="quiz-question-item">
+                <h4 class="quiz-q-text">{{ qIdx + 1 }}. {{ q.question_text }}</h4>
+                
+                <div class="quiz-options-grid">
+                  <button 
+                    *ngFor="let option of q.options; let optIdx = index"
+                    class="quiz-option-button"
+                    [class.selected]="quizSelectedAnswers[qIdx] === optIdx"
+                    (click)="selectQuizOption(qIdx, optIdx)"
+                  >
+                    <span class="option-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
+                    <span class="option-text">{{ option }}</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="quiz-active-footer">
+              <button class="btn btn-outline" (click)="cancelQuiz()">
+                Cancel
+              </button>
+              <button 
+                class="btn btn-primary" 
+                [disabled]="!allQuizAnswered()" 
+                (click)="submitQuizAnswers()"
+              >
+                Submit Quiz Telemetry
+              </button>
+            </div>
           </div>
-          <div class="step-card-footer">
-            <button class="btn btn-primary btn-block btn-start-quiz" (click)="startQuiz.emit()">
-              <mat-icon>assignment_turned_in</mat-icon>
-              <span>Start Official Quiz</span>
-            </button>
-            <button class="btn btn-outline btn-block mt-10" (click)="goToStep(1)">
-              <mat-icon>menu_book</mat-icon>
-              <span>Review Lesson Content</span>
-            </button>
+
+          <!-- 3d. Quiz Finished (Results Screen) -->
+          <div *ngIf="quizFinished" class="quiz-finished-state text-center fade-in">
+            <div class="finished-stars-container">
+              <mat-icon class="huge-finished-icon text-glow">stars</mat-icon>
+            </div>
+            
+            <div class="step-card-header text-center">
+              <div class="step-badge-current">Mission Accomplished</div>
+              <h3>Quiz Evaluation Complete</h3>
+            </div>
+            
+            <div class="quiz-score-display">
+              <div class="score-circle" [class.excellent]="quizPercentage >= 70" [class.needs-work]="quizPercentage < 70">
+                <span class="percentage">{{ quizPercentage }}%</span>
+                <span class="details">{{ quizScore }} / {{ quizTotal }} Correct</span>
+              </div>
+            </div>
+
+            <div class="step-card-body text-center">
+              <p class="streak-fire-title">
+                <mat-icon class="fire-icon animated-fire">local_fire_department</mat-icon>
+                <span>Study Streak Maintained!</span>
+              </p>
+              <p class="unlocked-subtext" *ngIf="quizPercentage >= 70">Superb exploration! Your telemetry data has been written to the ship's BigQuery archives.</p>
+              <p class="unlocked-subtext" *ngIf="quizPercentage < 70">Review the topics on your next study pass. Telemetry recorded successfully.</p>
+            </div>
+
+            <div class="step-card-footer">
+              <button class="btn btn-primary btn-block" (click)="finishStudySession()">
+                <mat-icon>done_all</mat-icon>
+                <span>Complete Study Session</span>
+              </button>
+            </div>
           </div>
+
         </div>
 
       </div>
@@ -78442,7 +77724,7 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
     </div>
   </div>
 </div>
-`, styles: ['/* src/app/components/lesson-interface/lesson-interface.component.scss */\n.lesson-wrapper {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n}\n.loading-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: rgba(255, 255, 255, 0.7);\n  backdrop-filter: blur(10px);\n  border-radius: 16px;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);\n}\n.loading-state .spinner {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(99, 102, 241, 0.1);\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n  margin-bottom: 20px;\n}\n.loading-state p {\n  color: #475569;\n  font-size: 16px;\n  font-weight: 500;\n}\n.error-alert {\n  display: flex;\n  align-items: center;\n  gap: 15px;\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n  padding: 16px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.error-alert mat-icon {\n  color: #ef4444;\n}\n.error-alert span {\n  flex-grow: 1;\n  font-weight: 500;\n}\n.error-alert button {\n  padding: 6px 12px;\n  font-size: 13px;\n}\n.lesson-content-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  height: 100%;\n}\n.lesson-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-header .lesson-meta {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lesson-header .lesson-meta .header-icon {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.lesson-header .lesson-meta h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.lesson-header .btn-refresh {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  color: #64748b;\n  border-color: #cbd5e1;\n  cursor: pointer;\n}\n.lesson-header .btn-refresh:hover {\n  background: #f8fafc;\n  color: #6366f1;\n  border-color: #6366f1;\n}\n.lesson-body-split {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 20px;\n  height: calc(100vh - 280px);\n  min-height: 500px;\n}\n@media (max-width: 1024px) {\n  .lesson-body-split {\n    grid-template-columns: 1fr;\n    height: auto;\n  }\n}\n.lesson-text-panel {\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  overflow-y: auto;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-text-panel .markdown-body {\n  line-height: 1.6;\n  color: #334155;\n}\n.lesson-text-panel .markdown-body h1,\n.lesson-text-panel .markdown-body h2,\n.lesson-text-panel .markdown-body h3 {\n  color: #0f172a;\n  margin-top: 24px;\n  margin-bottom: 12px;\n  font-weight: 700;\n}\n.lesson-text-panel .markdown-body h1 {\n  font-size: 22px;\n  border-bottom: 1px solid #e2e8f0;\n  padding-bottom: 8px;\n}\n.lesson-text-panel .markdown-body h2 {\n  font-size: 18px;\n}\n.lesson-text-panel .markdown-body h3 {\n  font-size: 16px;\n}\n.lesson-text-panel .markdown-body p {\n  margin-bottom: 16px;\n}\n.lesson-text-panel .markdown-body ul,\n.lesson-text-panel .markdown-body ol {\n  margin-bottom: 16px;\n  padding-left: 20px;\n}\n.lesson-text-panel .markdown-body li {\n  margin-bottom: 8px;\n}\n.lesson-text-panel .markdown-body strong {\n  color: #0f172a;\n  font-weight: 600;\n}\n.exercises-panel {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.exercises-panel .exercises-header {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.exercises-panel .exercises-header h3 {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.exercises-panel .exercises-header .desc {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.exercises-panel .exercises-list {\n  flex-grow: 1;\n  overflow-y: auto;\n  padding-right: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-bottom: 20px;\n}\n.exercise-item {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.exercise-item .ex-question {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 600;\n  color: #1e293b;\n  line-height: 1.4;\n}\n.ex-options-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 10px;\n}\n.ex-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 10px;\n  text-align: left;\n  font-size: 14px;\n  font-weight: 500;\n  color: #475569;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.ex-option-button:hover:not(:disabled) {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n  color: #1e293b;\n}\n.ex-option-button.selected {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #6366f1;\n}\n.ex-option-button.correct {\n  background: rgba(34, 197, 94, 0.1);\n  border-color: #22c55e;\n  color: #15803d;\n  font-weight: 600;\n}\n.ex-option-button.wrong {\n  background: rgba(239, 68, 68, 0.1);\n  border-color: #ef4444;\n  color: #b91c1c;\n}\n.ex-option-button .option-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  font-size: 11px;\n  font-weight: 700;\n  color: #64748b;\n}\n.ex-option-button.selected .option-badge {\n  background: #6366f1;\n  border-color: #6366f1;\n  color: white;\n}\n.ex-option-button.correct .option-badge {\n  background: #22c55e;\n  border-color: #22c55e;\n  color: white;\n}\n.ex-option-button.wrong .option-badge {\n  background: #ef4444;\n  border-color: #ef4444;\n  color: white;\n}\n.ex-option-button .option-text {\n  flex-grow: 1;\n}\n.explanation-box {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  font-size: 13px;\n  line-height: 1.4;\n}\n.explanation-box .exp-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 600;\n}\n.explanation-box .exp-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.explanation-box.correct-box {\n  background: #f0fdf4;\n  color: #166534;\n  border: 1px solid #bbf7d0;\n}\n.explanation-box.correct-box mat-icon {\n  color: #22c55e;\n}\n.explanation-box.wrong-box {\n  background: #fef2f2;\n  color: #991b1b;\n  border: 1px solid #fca5a5;\n}\n.explanation-box.wrong-box mat-icon {\n  color: #ef4444;\n}\n.explanation-box .exp-text {\n  margin: 0;\n}\n.exercises-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.result-box {\n  display: flex;\n  align-items: flex-start;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n}\n.result-box .result-icon {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.result-box .result-text {\n  flex-grow: 1;\n}\n.result-box .result-text h4 {\n  margin: 0 0 4px 0;\n  font-size: 16px;\n  font-weight: 700;\n}\n.result-box .result-text p {\n  margin: 0 0 2px 0;\n  font-size: 14px;\n  font-weight: 500;\n}\n.result-box .result-text .note {\n  font-size: 12px;\n  opacity: 0.8;\n  margin: 0;\n}\n.result-box.passed {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #166534;\n}\n.result-box.passed .result-icon {\n  color: #22c55e;\n}\n.result-box.failed {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #991b1b;\n}\n.result-box.failed .result-icon {\n  color: #ef4444;\n}\n.result-box.failed button {\n  align-self: center;\n}\n.btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 600;\n  border-radius: 10px;\n  border: 1px solid transparent;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-primary {\n  background: #6366f1;\n  color: white;\n}\n.btn-primary:hover:not(:disabled) {\n  background: #4f46e5;\n}\n.btn-primary:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n}\n.btn-outline {\n  background: transparent;\n  border-color: #e2e8f0;\n  color: #475569;\n}\n.btn-outline:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.btn-block {\n  display: flex;\n  width: 100%;\n}\n@keyframes spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.step-navigation-bar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);\n  margin-bottom: 20px;\n}\n.step-tab {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: all 0.3s ease;\n  padding: 8px 12px;\n  border-radius: 10px;\n}\n.step-tab:hover:not(.disabled) {\n  background: #f8fafc;\n}\n.step-tab.active .step-icon {\n  background: #6366f1;\n  color: white;\n  border-color: #6366f1;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);\n}\n.step-tab.active .step-info .step-title {\n  color: #6366f1;\n}\n.step-tab.completed .step-icon {\n  background: #22c55e;\n  color: white;\n  border-color: #22c55e;\n}\n.step-tab.disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n.step-icon {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  border: 2px solid #e2e8f0;\n  font-weight: 700;\n  font-size: 14px;\n  color: #64748b;\n  transition: all 0.3s ease;\n  background: white;\n}\n.step-icon mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.step-info {\n  display: flex;\n  flex-direction: column;\n  text-align: left;\n}\n.step-info .step-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: #0f172a;\n  transition: all 0.3s ease;\n}\n.step-info .step-desc {\n  font-size: 11px;\n  color: #64748b;\n}\n.step-connector {\n  flex-grow: 1;\n  height: 2px;\n  background: #e2e8f0;\n  margin: 0 16px;\n  border-radius: 2px;\n  transition: all 0.3s ease;\n}\n.step-connector.filled {\n  background: #22c55e;\n}\n.step-action-panel {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\n.step-card {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  height: 100%;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.step-card .step-card-header {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.step-card .step-card-header .step-badge-current {\n  display: inline-block;\n  padding: 4px 8px;\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n  font-size: 11px;\n  font-weight: 700;\n  border-radius: 6px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n.step-card .step-card-header h3 {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.step-card .step-card-header .desc {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.step-card .step-card-body {\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n.step-card .step-card-body .instruction-text {\n  font-size: 14px;\n  line-height: 1.6;\n  color: #475569;\n  margin-bottom: 12px;\n}\n.step-card .step-card-body .checklist-bullet {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #334155;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon.done {\n  color: #22c55e;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon.pending {\n  color: #94a3b8;\n}\n.step-card .step-card-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.btn-proceed {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  font-size: 15px;\n}\n.btn-proceed mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n  transition: transform 0.2s ease;\n}\n.btn-proceed:hover mat-icon {\n  transform: translateX(4px);\n}\n.quiz-unlocked-card {\n  align-items: center;\n  justify-content: center;\n  background:\n    linear-gradient(\n      135deg,\n      #ffffff 0%,\n      rgba(99, 102, 241, 0.02) 100%);\n}\n.quiz-unlocked-card .unlocked-icon-container {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 80px;\n  height: 80px;\n  background: rgba(34, 197, 94, 0.1);\n  color: #22c55e;\n  border-radius: 50%;\n  margin-bottom: 24px;\n  box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);\n}\n.quiz-unlocked-card .unlocked-icon-container .huge-unlocked-icon {\n  font-size: 40px;\n  width: 40px;\n  height: 40px;\n}\n.quiz-unlocked-card .unlocked-text {\n  font-size: 16px;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 12px;\n}\n.quiz-unlocked-card .unlocked-subtext {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #64748b;\n  max-width: 340px;\n  margin: 0 auto;\n}\n.btn-start-quiz {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  background: #22c55e;\n  border-color: #22c55e;\n  padding: 14px 24px;\n  font-size: 16px;\n  font-weight: 700;\n  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);\n}\n.btn-start-quiz:hover {\n  background: #16a34a;\n  border-color: #16a34a;\n  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);\n}\n.lesson-panel-header {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.lesson-panel-header .panel-icon {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.lesson-panel-header h2 {\n  margin: 0 !important;\n  font-size: 18px !important;\n  font-weight: 700 !important;\n}\n.mt-10 {\n  margin-top: 10px;\n}\n@keyframes bounce {\n  0%, 100% {\n    transform: translateY(0);\n  }\n  50% {\n    transform: translateY(-8px);\n  }\n}\n.animate-bounce {\n  animation: bounce 2s infinite;\n}\n/*# sourceMappingURL=lesson-interface.component.css.map */\n'] }]
+`, styles: ['/* src/app/components/lesson-interface/lesson-interface.component.scss */\n.lesson-wrapper {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n  font-family:\n    "Inter",\n    "Roboto",\n    sans-serif;\n}\n.loading-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 20px;\n  text-align: center;\n  background: rgba(255, 255, 255, 0.7);\n  backdrop-filter: blur(10px);\n  border-radius: 16px;\n  border: 1px solid rgba(255, 255, 255, 0.5);\n  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);\n}\n.loading-state .spinner {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(99, 102, 241, 0.1);\n  border-top: 4px solid #6366f1;\n  border-radius: 50%;\n  animation: spin 1s linear infinite;\n  margin-bottom: 20px;\n}\n.loading-state p {\n  color: #475569;\n  font-size: 16px;\n  font-weight: 500;\n}\n.error-alert {\n  display: flex;\n  align-items: center;\n  gap: 15px;\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n  padding: 16px;\n  border-radius: 12px;\n  margin-bottom: 20px;\n}\n.error-alert mat-icon {\n  color: #ef4444;\n}\n.error-alert span {\n  flex-grow: 1;\n  font-weight: 500;\n}\n.error-alert button {\n  padding: 6px 12px;\n  font-size: 13px;\n}\n.lesson-content-container {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  height: 100%;\n}\n.lesson-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-header .lesson-meta {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.lesson-header .lesson-meta .header-icon {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.lesson-header .lesson-meta h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.lesson-header .btn-refresh {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  color: #64748b;\n  border-color: #cbd5e1;\n  cursor: pointer;\n}\n.lesson-header .btn-refresh:hover {\n  background: #f8fafc;\n  color: #6366f1;\n  border-color: #6366f1;\n}\n.lesson-body-split {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  gap: 20px;\n  height: calc(100vh - 280px);\n  min-height: 500px;\n}\n@media (max-width: 1024px) {\n  .lesson-body-split {\n    grid-template-columns: 1fr;\n    height: auto;\n  }\n}\n.lesson-text-panel {\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  overflow-y: auto;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.lesson-text-panel .markdown-body {\n  line-height: 1.6;\n  color: #334155;\n}\n.lesson-text-panel .markdown-body h1,\n.lesson-text-panel .markdown-body h2,\n.lesson-text-panel .markdown-body h3 {\n  color: #0f172a;\n  margin-top: 24px;\n  margin-bottom: 12px;\n  font-weight: 700;\n}\n.lesson-text-panel .markdown-body h1 {\n  font-size: 22px;\n  border-bottom: 1px solid #e2e8f0;\n  padding-bottom: 8px;\n}\n.lesson-text-panel .markdown-body h2 {\n  font-size: 18px;\n}\n.lesson-text-panel .markdown-body h3 {\n  font-size: 16px;\n}\n.lesson-text-panel .markdown-body p {\n  margin-bottom: 16px;\n}\n.lesson-text-panel .markdown-body ul,\n.lesson-text-panel .markdown-body ol {\n  margin-bottom: 16px;\n  padding-left: 20px;\n}\n.lesson-text-panel .markdown-body li {\n  margin-bottom: 8px;\n}\n.lesson-text-panel .markdown-body strong {\n  color: #0f172a;\n  font-weight: 600;\n}\n.exercises-panel {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.exercises-panel .exercises-header {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.exercises-panel .exercises-header h3 {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.exercises-panel .exercises-header .desc {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.exercises-panel .exercises-list {\n  flex-grow: 1;\n  overflow-y: auto;\n  padding-right: 8px;\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-bottom: 20px;\n}\n.exercise-item {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.exercise-item .ex-question {\n  margin: 0;\n  font-size: 15px;\n  font-weight: 600;\n  color: #1e293b;\n  line-height: 1.4;\n}\n.ex-options-grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 10px;\n}\n.ex-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 10px;\n  text-align: left;\n  font-size: 14px;\n  font-weight: 500;\n  color: #475569;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.ex-option-button:hover:not(:disabled) {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n  color: #1e293b;\n}\n.ex-option-button.selected {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #6366f1;\n}\n.ex-option-button.correct {\n  background: rgba(34, 197, 94, 0.1);\n  border-color: #22c55e;\n  color: #15803d;\n  font-weight: 600;\n}\n.ex-option-button.wrong {\n  background: rgba(239, 68, 68, 0.1);\n  border-color: #ef4444;\n  color: #b91c1c;\n}\n.ex-option-button .option-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  background: white;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  font-size: 11px;\n  font-weight: 700;\n  color: #64748b;\n}\n.ex-option-button.selected .option-badge {\n  background: #6366f1;\n  border-color: #6366f1;\n  color: white;\n}\n.ex-option-button.correct .option-badge {\n  background: #22c55e;\n  border-color: #22c55e;\n  color: white;\n}\n.ex-option-button.wrong .option-badge {\n  background: #ef4444;\n  border-color: #ef4444;\n  color: white;\n}\n.ex-option-button .option-text {\n  flex-grow: 1;\n}\n.explanation-box {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  font-size: 13px;\n  line-height: 1.4;\n}\n.explanation-box .exp-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  font-weight: 600;\n}\n.explanation-box .exp-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.explanation-box.correct-box {\n  background: #f0fdf4;\n  color: #166534;\n  border: 1px solid #bbf7d0;\n}\n.explanation-box.correct-box mat-icon {\n  color: #22c55e;\n}\n.explanation-box.wrong-box {\n  background: #fef2f2;\n  color: #991b1b;\n  border: 1px solid #fca5a5;\n}\n.explanation-box.wrong-box mat-icon {\n  color: #ef4444;\n}\n.explanation-box .exp-text {\n  margin: 0;\n}\n.exercises-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.result-box {\n  display: flex;\n  align-items: flex-start;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n}\n.result-box .result-icon {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.result-box .result-text {\n  flex-grow: 1;\n}\n.result-box .result-text h4 {\n  margin: 0 0 4px 0;\n  font-size: 16px;\n  font-weight: 700;\n}\n.result-box .result-text p {\n  margin: 0 0 2px 0;\n  font-size: 14px;\n  font-weight: 500;\n}\n.result-box .result-text .note {\n  font-size: 12px;\n  opacity: 0.8;\n  margin: 0;\n}\n.result-box.passed {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #166534;\n}\n.result-box.passed .result-icon {\n  color: #22c55e;\n}\n.result-box.failed {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #991b1b;\n}\n.result-box.failed .result-icon {\n  color: #ef4444;\n}\n.result-box.failed button {\n  align-self: center;\n}\n.btn {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 600;\n  border-radius: 10px;\n  border: 1px solid transparent;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-primary {\n  background: #6366f1;\n  color: white;\n}\n.btn-primary:hover:not(:disabled) {\n  background: #4f46e5;\n}\n.btn-primary:disabled {\n  background: #cbd5e1;\n  color: #94a3b8;\n  cursor: not-allowed;\n}\n.btn-outline {\n  background: transparent;\n  border-color: #e2e8f0;\n  color: #475569;\n}\n.btn-outline:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.btn-block {\n  display: flex;\n  width: 100%;\n}\n@keyframes spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n.step-navigation-bar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);\n  margin-bottom: 20px;\n}\n.step-tab {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: all 0.3s ease;\n  padding: 8px 12px;\n  border-radius: 10px;\n}\n.step-tab:hover:not(.disabled) {\n  background: #f8fafc;\n}\n.step-tab.active .step-icon {\n  background: #6366f1;\n  color: white;\n  border-color: #6366f1;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);\n}\n.step-tab.active .step-info .step-title {\n  color: #6366f1;\n}\n.step-tab.completed .step-icon {\n  background: #22c55e;\n  color: white;\n  border-color: #22c55e;\n}\n.step-tab.disabled {\n  cursor: not-allowed;\n  opacity: 0.5;\n}\n.step-icon {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 36px;\n  height: 36px;\n  border-radius: 50%;\n  border: 2px solid #e2e8f0;\n  font-weight: 700;\n  font-size: 14px;\n  color: #64748b;\n  transition: all 0.3s ease;\n  background: white;\n}\n.step-icon mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.step-info {\n  display: flex;\n  flex-direction: column;\n  text-align: left;\n}\n.step-info .step-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: #0f172a;\n  transition: all 0.3s ease;\n}\n.step-info .step-desc {\n  font-size: 11px;\n  color: #64748b;\n}\n.step-connector {\n  flex-grow: 1;\n  height: 2px;\n  background: #e2e8f0;\n  margin: 0 16px;\n  border-radius: 2px;\n  transition: all 0.3s ease;\n}\n.step-connector.filled {\n  background: #22c55e;\n}\n.step-action-panel {\n  display: flex;\n  flex-direction: column;\n  height: 100%;\n}\n.step-card {\n  display: flex;\n  flex-direction: column;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #f1f5f9;\n  padding: 24px;\n  height: 100%;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n.step-card .step-card-header {\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.step-card .step-card-header .step-badge-current {\n  display: inline-block;\n  padding: 4px 8px;\n  background: rgba(99, 102, 241, 0.1);\n  color: #6366f1;\n  font-size: 11px;\n  font-weight: 700;\n  border-radius: 6px;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n  margin-bottom: 8px;\n}\n.step-card .step-card-header h3 {\n  margin: 0 0 6px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.step-card .step-card-header .desc {\n  margin: 0;\n  font-size: 13px;\n  color: #64748b;\n}\n.step-card .step-card-body {\n  flex-grow: 1;\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n}\n.step-card .step-card-body .instruction-text {\n  font-size: 14px;\n  line-height: 1.6;\n  color: #475569;\n  margin-bottom: 12px;\n}\n.step-card .step-card-body .checklist-bullet {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  font-size: 14px;\n  font-weight: 500;\n  color: #334155;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon.done {\n  color: #22c55e;\n}\n.step-card .step-card-body .checklist-bullet .bullet-icon.pending {\n  color: #94a3b8;\n}\n.step-card .step-card-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n}\n.btn-proceed {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  padding: 12px 24px;\n  font-size: 15px;\n}\n.btn-proceed mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n  transition: transform 0.2s ease;\n}\n.btn-proceed:hover mat-icon {\n  transform: translateX(4px);\n}\n.quiz-unlocked-card {\n  align-items: center;\n  justify-content: center;\n  background:\n    linear-gradient(\n      135deg,\n      #ffffff 0%,\n      rgba(99, 102, 241, 0.02) 100%);\n}\n.quiz-unlocked-card .unlocked-icon-container {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 80px;\n  height: 80px;\n  background: rgba(34, 197, 94, 0.1);\n  color: #22c55e;\n  border-radius: 50%;\n  margin-bottom: 24px;\n  box-shadow: 0 8px 16px rgba(34, 197, 94, 0.2);\n}\n.quiz-unlocked-card .unlocked-icon-container .huge-unlocked-icon {\n  font-size: 40px;\n  width: 40px;\n  height: 40px;\n}\n.quiz-unlocked-card .unlocked-text {\n  font-size: 16px;\n  font-weight: 600;\n  color: #1e293b;\n  margin-bottom: 12px;\n}\n.quiz-unlocked-card .unlocked-subtext {\n  font-size: 13px;\n  line-height: 1.5;\n  color: #64748b;\n  max-width: 340px;\n  margin: 0 auto;\n}\n.btn-start-quiz {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  background: #22c55e;\n  border-color: #22c55e;\n  padding: 14px 24px;\n  font-size: 16px;\n  font-weight: 700;\n  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.4);\n}\n.btn-start-quiz:hover {\n  background: #16a34a;\n  border-color: #16a34a;\n  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);\n}\n.lesson-panel-header {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 16px;\n  margin-bottom: 20px;\n}\n.lesson-panel-header .panel-icon {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.lesson-panel-header h2 {\n  margin: 0 !important;\n  font-size: 18px !important;\n  font-weight: 700 !important;\n}\n.mt-10 {\n  margin-top: 10px;\n}\n@keyframes bounce {\n  0%, 100% {\n    transform: translateY(0);\n  }\n  50% {\n    transform: translateY(-8px);\n  }\n}\n.animate-bounce {\n  animation: bounce 2s infinite;\n}\n.orbit-spinner {\n  position: relative;\n  width: 80px;\n  height: 80px;\n  margin: 30px auto;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n.orbit-spinner .planet {\n  width: 32px;\n  height: 32px;\n  background:\n    radial-gradient(\n      circle,\n      #f97316 0%,\n      #ea580c 100%);\n  border-radius: 50%;\n  box-shadow: 0 0 25px rgba(249, 115, 22, 0.6);\n}\n.orbit-spinner .satellite {\n  position: absolute;\n  width: 12px;\n  height: 12px;\n  background: #38bdf8;\n  border-radius: 50%;\n  box-shadow: 0 0 12px #38bdf8;\n  top: 34px;\n  left: 34px;\n  transform-origin: center;\n  animation: orbit 2.5s linear infinite;\n}\n@keyframes orbit {\n  from {\n    transform: rotate(0deg) translate(35px) rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg) translate(35px) rotate(-360deg);\n  }\n}\n.animated-fire {\n  color: #ff5722;\n  filter: drop-shadow(0 0 8px #ff5722);\n  animation: flicker 1s ease-in-out infinite alternate;\n}\n@keyframes flicker {\n  0% {\n    transform: scale(0.95) rotate(-2deg);\n    filter: drop-shadow(0 0 6px #ff5722);\n  }\n  100% {\n    transform: scale(1.05) rotate(2deg);\n    filter: drop-shadow(0 0 12px #ff9800);\n  }\n}\n.quiz-questions-list {\n  max-height: calc(100vh - 460px);\n  overflow-y: auto;\n  padding-right: 8px;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin: 15px 0;\n}\n.quiz-question-item {\n  background: rgba(248, 250, 252, 0.6);\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  padding: 16px;\n}\n.quiz-question-item .quiz-q-text {\n  font-size: 15px;\n  font-weight: 600;\n  margin-bottom: 12px;\n  color: #1e293b;\n}\n.quiz-options-grid {\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n}\n.quiz-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 10px 14px;\n  background: #ffffff;\n  border: 1px solid #cbd5e1;\n  border-radius: 8px;\n  color: #475569;\n  text-align: left;\n  font-size: 13px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n}\n.quiz-option-button:hover {\n  background: #f8fafc;\n  border-color: #6366f1;\n  color: #0f172a;\n}\n.quiz-option-button.selected {\n  background: rgba(99, 102, 241, 0.08);\n  border-color: #6366f1;\n  color: #4f46e5;\n  font-weight: 600;\n  box-shadow: 0 0 10px rgba(99, 102, 241, 0.15);\n}\n.quiz-option-button .option-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 24px;\n  height: 24px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  font-size: 12px;\n  color: #64748b;\n}\n.quiz-option-button.selected .option-badge {\n  background: #6366f1;\n  color: #ffffff;\n}\n.quiz-active-footer {\n  display: flex;\n  justify-content: space-between;\n  gap: 12px;\n  margin-top: 20px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.quiz-active-footer button {\n  flex: 1;\n  padding: 12px;\n}\n.quiz-finished-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 20px 0;\n}\n.quiz-finished-state .finished-stars-container {\n  color: #eab308;\n  filter: drop-shadow(0 0 10px rgba(234, 179, 8, 0.4));\n  margin-bottom: 16px;\n}\n.quiz-finished-state .finished-stars-container .huge-finished-icon {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n}\n.quiz-finished-state .quiz-score-display {\n  margin: 20px 0;\n}\n.quiz-finished-state .quiz-score-display .score-circle {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  width: 140px;\n  height: 140px;\n  border-radius: 50%;\n  background: #ffffff;\n  border: 4px solid #e2e8f0;\n  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);\n}\n.quiz-finished-state .quiz-score-display .score-circle.excellent {\n  border-color: #22c55e;\n  box-shadow: 0 10px 25px rgba(34, 197, 148, 0.2);\n}\n.quiz-finished-state .quiz-score-display .score-circle.excellent .percentage {\n  color: #22c55e;\n}\n.quiz-finished-state .quiz-score-display .score-circle.needs-work {\n  border-color: #f97316;\n  box-shadow: 0 10px 25px rgba(249, 115, 22, 0.2);\n}\n.quiz-finished-state .quiz-score-display .score-circle.needs-work .percentage {\n  color: #f97316;\n}\n.quiz-finished-state .quiz-score-display .score-circle .percentage {\n  font-size: 32px;\n  font-weight: 800;\n}\n.quiz-finished-state .quiz-score-display .score-circle .details {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n  margin-top: 4px;\n}\n.quiz-finished-state .streak-fire-title {\n  display: inline-flex;\n  align-items: center;\n  justify-content: center;\n  gap: 8px;\n  font-size: 18px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 10px 0 5px;\n}\n.quiz-finished-state .streak-fire-title .fire-icon {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n/*# sourceMappingURL=lesson-interface.component.css.map */\n'] }]
   }], () => [{ type: ApiService }], { selectedWeek: [{
     type: Input
   }], exerciseCompleted: [{
@@ -78460,7 +77742,7 @@ var LessonInterfaceComponent = class _LessonInterfaceComponent {
 })();
 
 // src/app/components/cram-exam/cram-exam.component.ts
-var _c011 = () => ["A", "B", "C", "D"];
+var _c010 = () => ["A", "B", "C", "D"];
 function CramExamComponent_div_12_option_8_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "option", 23);
@@ -78635,7 +77917,7 @@ function CramExamComponent_div_14_div_14_button_4_Template(rf, ctx) {
     \u0275\u0275classProp("selected", q_r10.selected_option_index === optIdx_r7)("correct", ctx_r1.cramGraded && optIdx_r7 === q_r10.correct_option_index)("wrong", ctx_r1.cramGraded && q_r10.selected_option_index === optIdx_r7 && optIdx_r7 !== q_r10.correct_option_index);
     \u0275\u0275property("disabled", ctx_r1.cramGraded);
     \u0275\u0275advance(2);
-    \u0275\u0275textInterpolate(\u0275\u0275pureFunction0(9, _c011)[optIdx_r7]);
+    \u0275\u0275textInterpolate(\u0275\u0275pureFunction0(9, _c010)[optIdx_r7]);
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(option_r9);
   }
@@ -79063,76 +78345,110 @@ var AuthService = class _AuthService {
 })();
 
 // src/app/components/dashboard/dashboard.component.ts
-var _c012 = (a0, a1) => ({ "insufficient-icon": a0, "sufficient-icon": a1 });
-var _c16 = (a0, a1, a2) => ({ "success": a0, "error": a1, "info": a2 });
-function DashboardComponent_nav_19_Template(rf, ctx) {
+var _c011 = (a0, a1) => ({ "insufficient-icon": a0, "sufficient-icon": a1 });
+var _c15 = (a0, a1, a2) => ({ "success": a0, "error": a1, "info": a2 });
+function DashboardComponent_nav_11_Template(rf, ctx) {
   if (rf & 1) {
     const _r1 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "nav", 20)(1, "button", 21);
-    \u0275\u0275listener("click", function DashboardComponent_nav_19_Template_button_click_1_listener() {
+    \u0275\u0275elementStart(0, "nav", 23)(1, "button", 24);
+    \u0275\u0275listener("click", function DashboardComponent_nav_11_Template_button_click_1_listener() {
+      \u0275\u0275restoreView(_r1);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.selectClass(null));
+    });
+    \u0275\u0275elementStart(2, "mat-icon");
+    \u0275\u0275text(3, "dashboard");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(4, " Dashboard ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "button", 25);
+    \u0275\u0275listener("click", function DashboardComponent_nav_11_Template_button_click_5_listener() {
       \u0275\u0275restoreView(_r1);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.selectTab("syllabus"));
     });
-    \u0275\u0275elementStart(2, "mat-icon");
-    \u0275\u0275text(3, "menu_book");
+    \u0275\u0275elementStart(6, "mat-icon");
+    \u0275\u0275text(7, "menu_book");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(4, " Syllabus & Graph ");
+    \u0275\u0275text(8, " Syllabus & Graph ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "button", 22);
-    \u0275\u0275listener("class.active", function DashboardComponent_nav_19_Template_button_class_active_5_listener() {
-      \u0275\u0275restoreView(_r1);
-      const ctx_r1 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r1.activeTab === "lesson");
-    })("click", function DashboardComponent_nav_19_Template_button_click_5_listener() {
+    \u0275\u0275elementStart(9, "button", 25);
+    \u0275\u0275listener("click", function DashboardComponent_nav_11_Template_button_click_9_listener() {
       \u0275\u0275restoreView(_r1);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.selectTab("lesson"));
     });
-    \u0275\u0275elementStart(6, "mat-icon");
-    \u0275\u0275text(7, "chrome_reader_mode");
+    \u0275\u0275elementStart(10, "mat-icon");
+    \u0275\u0275text(11, "chrome_reader_mode");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(8, " Lessons ");
+    \u0275\u0275text(12, " Study Orbit ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(9, "button", 21);
-    \u0275\u0275listener("click", function DashboardComponent_nav_19_Template_button_click_9_listener() {
+    \u0275\u0275elementStart(13, "button", 25);
+    \u0275\u0275listener("click", function DashboardComponent_nav_11_Template_button_click_13_listener() {
       \u0275\u0275restoreView(_r1);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.selectTab("tutor"));
     });
-    \u0275\u0275elementStart(10, "mat-icon");
-    \u0275\u0275text(11, "forum");
+    \u0275\u0275elementStart(14, "mat-icon");
+    \u0275\u0275text(15, "forum");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(12, " AI Tutor ");
+    \u0275\u0275text(16, " Ask Ace ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(13, "button", 21);
-    \u0275\u0275listener("click", function DashboardComponent_nav_19_Template_button_click_13_listener() {
+    \u0275\u0275elementStart(17, "button", 26);
+    \u0275\u0275listener("click", function DashboardComponent_nav_11_Template_button_click_17_listener() {
       \u0275\u0275restoreView(_r1);
       const ctx_r1 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r1.selectTab("quiz"));
+      return \u0275\u0275resetView(ctx_r1.openStreakSettingsModal());
     });
-    \u0275\u0275elementStart(14, "mat-icon");
-    \u0275\u0275text(15, "assignment_turned_in");
+    \u0275\u0275elementStart(18, "mat-icon");
+    \u0275\u0275text(19, "insights");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(16, " Quizzes ");
+    \u0275\u0275text(20, " Streak Settings ");
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
     const ctx_r1 = \u0275\u0275nextContext();
-    \u0275\u0275advance();
+    \u0275\u0275advance(5);
     \u0275\u0275classProp("active", ctx_r1.activeTab === "syllabus");
     \u0275\u0275advance(4);
     \u0275\u0275classProp("active", ctx_r1.activeTab === "lesson");
     \u0275\u0275advance(4);
     \u0275\u0275classProp("active", ctx_r1.activeTab === "tutor");
-    \u0275\u0275advance(4);
-    \u0275\u0275classProp("active", ctx_r1.activeTab === "quiz");
   }
 }
-function DashboardComponent_div_25_div_11_Template(rf, ctx) {
+function DashboardComponent_div_12_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 27)(1, "div", 28)(2, "mat-icon", 29);
+    \u0275\u0275text(3, "local_fire_department");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(4, "div", 30)(5, "span", 31);
+    \u0275\u0275text(6);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(7, "span", 32);
+    \u0275\u0275text(8, "Class Streak");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(9, "div", 33)(10, "mat-icon", 34);
+    \u0275\u0275text(11, "travel_explore");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(12, "div", 30)(13, "span", 31);
+    \u0275\u0275text(14);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(15, "span", 32);
+    \u0275\u0275text(16, "Study Orbit");
+    \u0275\u0275elementEnd()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(6);
+    \u0275\u0275textInterpolate1("", ctx_r1.currentStreak, " Days");
+    \u0275\u0275advance(8);
+    \u0275\u0275textInterpolate1("Week ", ctx_r1.selectedTimelineWeek, "");
+  }
+}
+function DashboardComponent_div_26_div_11_Template(rf, ctx) {
   if (rf & 1) {
     const _r4 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 30)(1, "mat-icon", 31);
+    \u0275\u0275elementStart(0, "div", 42)(1, "mat-icon", 43);
     \u0275\u0275text(2, "school");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "h2");
@@ -79141,8 +78457,8 @@ function DashboardComponent_div_25_div_11_Template(rf, ctx) {
     \u0275\u0275elementStart(5, "p");
     \u0275\u0275text(6, "To begin, create your first class by providing a class name and uploading its syllabus PDF.");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "button", 32);
-    \u0275\u0275listener("click", function DashboardComponent_div_25_div_11_Template_button_click_7_listener() {
+    \u0275\u0275elementStart(7, "button", 44);
+    \u0275\u0275listener("click", function DashboardComponent_div_26_div_11_Template_button_click_7_listener() {
       \u0275\u0275restoreView(_r4);
       const ctx_r1 = \u0275\u0275nextContext(2);
       return \u0275\u0275resetView(ctx_r1.openAddClassModal());
@@ -79154,32 +78470,32 @@ function DashboardComponent_div_25_div_11_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardComponent_div_25_div_12_div_1_Template(rf, ctx) {
+function DashboardComponent_div_26_div_12_div_1_Template(rf, ctx) {
   if (rf & 1) {
     const _r5 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 35);
-    \u0275\u0275listener("click", function DashboardComponent_div_25_div_12_div_1_Template_div_click_0_listener() {
+    \u0275\u0275elementStart(0, "div", 47);
+    \u0275\u0275listener("click", function DashboardComponent_div_26_div_12_div_1_Template_div_click_0_listener() {
       const classObj_r6 = \u0275\u0275restoreView(_r5).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(3);
       return \u0275\u0275resetView(ctx_r1.selectClass(classObj_r6));
     });
-    \u0275\u0275element(1, "div", 36);
-    \u0275\u0275elementStart(2, "div", 37)(3, "mat-icon", 38);
+    \u0275\u0275element(1, "div", 48);
+    \u0275\u0275elementStart(2, "div", 49)(3, "mat-icon", 50);
     \u0275\u0275text(4, "menu_book");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "div", 39)(6, "mat-icon");
+    \u0275\u0275elementStart(5, "div", 51)(6, "mat-icon");
     \u0275\u0275text(7, "local_fire_department");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(8, "span");
     \u0275\u0275text(9);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(10, "div", 40)(11, "h3");
+    \u0275\u0275elementStart(10, "div", 52)(11, "h3");
     \u0275\u0275text(12);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(13, "p", 41);
+    \u0275\u0275elementStart(13, "p", 53);
     \u0275\u0275text(14);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(15, "div", 42)(16, "span");
+    \u0275\u0275elementStart(15, "div", 54)(16, "span");
     \u0275\u0275text(17, "Enter Course Workspace");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(18, "mat-icon");
@@ -79196,10 +78512,10 @@ function DashboardComponent_div_25_div_12_div_1_Template(rf, ctx) {
     \u0275\u0275textInterpolate1("ID: ", classObj_r6.class_id, "");
   }
 }
-function DashboardComponent_div_25_div_12_Template(rf, ctx) {
+function DashboardComponent_div_26_div_12_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 33);
-    \u0275\u0275template(1, DashboardComponent_div_25_div_12_div_1_Template, 20, 3, "div", 34);
+    \u0275\u0275elementStart(0, "div", 45);
+    \u0275\u0275template(1, DashboardComponent_div_26_div_12_div_1_Template, 20, 3, "div", 46);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79208,17 +78524,17 @@ function DashboardComponent_div_25_div_12_Template(rf, ctx) {
     \u0275\u0275property("ngForOf", ctx_r1.classes);
   }
 }
-function DashboardComponent_div_25_Template(rf, ctx) {
+function DashboardComponent_div_26_Template(rf, ctx) {
   if (rf & 1) {
     const _r3 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 23)(1, "div", 24)(2, "div", 25)(3, "h1");
+    \u0275\u0275elementStart(0, "div", 35)(1, "div", 36)(2, "div", 37)(3, "h1");
     \u0275\u0275text(4, "My Classes");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p", 26);
+    \u0275\u0275elementStart(5, "p", 38);
     \u0275\u0275text(6, "Select a course to start your daily study loop, check syllabus completeness, and take quizzes.");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(7, "button", 27);
-    \u0275\u0275listener("click", function DashboardComponent_div_25_Template_button_click_7_listener() {
+    \u0275\u0275elementStart(7, "button", 39);
+    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_button_click_7_listener() {
       \u0275\u0275restoreView(_r3);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.openAddClassModal());
@@ -79228,7 +78544,7 @@ function DashboardComponent_div_25_Template(rf, ctx) {
     \u0275\u0275elementEnd();
     \u0275\u0275text(10, " Add Class ");
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(11, DashboardComponent_div_25_div_11_Template, 11, 0, "div", 28)(12, DashboardComponent_div_25_div_12_Template, 2, 1, "div", 29);
+    \u0275\u0275template(11, DashboardComponent_div_26_div_11_Template, 11, 0, "div", 40)(12, DashboardComponent_div_26_div_12_Template, 2, 1, "div", 41);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79239,41 +78555,41 @@ function DashboardComponent_div_25_Template(rf, ctx) {
     \u0275\u0275property("ngIf", ctx_r1.classes.length > 0);
   }
 }
-function DashboardComponent_div_26_button_28_span_4_Template(rf, ctx) {
+function DashboardComponent_div_27_button_28_span_4_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "span");
     \u0275\u0275text(1, "Active");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_button_28_span_5_Template(rf, ctx) {
+function DashboardComponent_div_27_button_28_span_5_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "span");
     \u0275\u0275text(1, "Completed");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_button_28_span_6_Template(rf, ctx) {
+function DashboardComponent_div_27_button_28_span_6_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "span");
     \u0275\u0275text(1, "Get Ahead");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_button_28_Template(rf, ctx) {
+function DashboardComponent_div_27_button_28_Template(rf, ctx) {
   if (rf & 1) {
     const _r8 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 75);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_button_28_Template_button_click_0_listener() {
+    \u0275\u0275elementStart(0, "button", 86);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_button_28_Template_button_click_0_listener() {
       const week_r9 = \u0275\u0275restoreView(_r8).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(2);
       return \u0275\u0275resetView(ctx_r1.selectTimelineWeek(week_r9));
     });
-    \u0275\u0275elementStart(1, "span", 76);
+    \u0275\u0275elementStart(1, "span", 87);
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "span", 77);
-    \u0275\u0275template(4, DashboardComponent_div_26_button_28_span_4_Template, 2, 0, "span", 78)(5, DashboardComponent_div_26_button_28_span_5_Template, 2, 0, "span", 78)(6, DashboardComponent_div_26_button_28_span_6_Template, 2, 0, "span", 78);
+    \u0275\u0275elementStart(3, "span", 88);
+    \u0275\u0275template(4, DashboardComponent_div_27_button_28_span_4_Template, 2, 0, "span", 89)(5, DashboardComponent_div_27_button_28_span_5_Template, 2, 0, "span", 89)(6, DashboardComponent_div_27_button_28_span_6_Template, 2, 0, "span", 89);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -79290,18 +78606,18 @@ function DashboardComponent_div_26_button_28_Template(rf, ctx) {
     \u0275\u0275property("ngIf", week_r9 > ctx_r1.currentWeek);
   }
 }
-function DashboardComponent_div_26_div_72_div_11_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_11_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 91);
-    \u0275\u0275element(1, "div", 92);
+    \u0275\u0275elementStart(0, "div", 102);
+    \u0275\u0275element(1, "div", 103);
     \u0275\u0275elementStart(2, "span");
     \u0275\u0275text(3, "Analyzing course timeline...");
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardComponent_div_26_div_72_div_12_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_12_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 93)(1, "mat-icon");
+    \u0275\u0275elementStart(0, "div", 104)(1, "mat-icon");
     \u0275\u0275text(2, "info_outline");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "p");
@@ -79309,18 +78625,18 @@ function DashboardComponent_div_26_div_72_div_12_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_span_5_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_span_5_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 104)(1, "mat-icon");
+    \u0275\u0275elementStart(0, "span", 115)(1, "mat-icon");
     \u0275\u0275text(2, "check_circle");
     \u0275\u0275elementEnd();
     \u0275\u0275text(3, " Covered ");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_span_6_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_span_6_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 105)(1, "mat-icon");
+    \u0275\u0275elementStart(0, "span", 116)(1, "mat-icon");
     \u0275\u0275text(2, "warning");
     \u0275\u0275elementEnd();
     \u0275\u0275text(3);
@@ -79333,24 +78649,24 @@ function DashboardComponent_div_26_div_72_div_13_div_1_span_6_Template(rf, ctx) 
     \u0275\u0275textInterpolate1(" ", ctx_r1.allWeeksData[wKey_r11].insufficient.length, " Warning(s) ");
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_span_7_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_span_7_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 106);
+    \u0275\u0275elementStart(0, "span", 117);
     \u0275\u0275text(1, " No topics ");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_div_1_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_div_8_div_1_div_1_Template(rf, ctx) {
   if (rf & 1) {
     const _r12 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 110)(1, "div", 111)(2, "mat-icon", 112);
+    \u0275\u0275elementStart(0, "div", 121)(1, "div", 122)(2, "mat-icon", 123);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "span", 113);
+    \u0275\u0275elementStart(4, "span", 124);
     \u0275\u0275text(5);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(6, "div", 114)(7, "button", 115);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_div_1_Template_button_click_7_listener($event) {
+    \u0275\u0275elementStart(6, "div", 125)(7, "button", 126);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_div_72_div_13_div_1_div_8_div_1_div_1_Template_button_click_7_listener($event) {
       const topic_r13 = \u0275\u0275restoreView(_r12).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(7);
       ctx_r1.openAddMaterials(topic_r13);
@@ -79368,7 +78684,7 @@ function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_div_1_Templat
     const ctx_r1 = \u0275\u0275nextContext(4);
     \u0275\u0275classProp("insufficient", ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13));
     \u0275\u0275advance(2);
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction2(6, _c012, ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13), !ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13)));
+    \u0275\u0275property("ngClass", \u0275\u0275pureFunction2(6, _c011, ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13), !ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13)));
     \u0275\u0275advance();
     \u0275\u0275textInterpolate1(" ", ctx_r1.allWeeksData[wKey_r11].insufficient.includes(topic_r13) ? "warning" : "check_circle", " ");
     \u0275\u0275advance();
@@ -79377,10 +78693,10 @@ function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_div_1_Templat
     \u0275\u0275textInterpolate(topic_r13);
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_div_8_div_1_Template(rf, ctx) {
   if (rf & 1) {
     \u0275\u0275elementStart(0, "div");
-    \u0275\u0275template(1, DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_div_1_Template, 11, 9, "div", 109);
+    \u0275\u0275template(1, DashboardComponent_div_27_div_72_div_13_div_1_div_8_div_1_div_1_Template, 11, 9, "div", 120);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79390,17 +78706,17 @@ function DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_Template(rf, 
     \u0275\u0275property("ngForOf", ctx_r1.allWeeksData[wKey_r11].topics);
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_div_8_ng_template_2_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_div_8_ng_template_2_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "p", 116);
+    \u0275\u0275elementStart(0, "p", 127);
     \u0275\u0275text(1, "No topics parsed for this week.");
     \u0275\u0275elementEnd();
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_div_8_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_div_8_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 107);
-    \u0275\u0275template(1, DashboardComponent_div_26_div_72_div_13_div_1_div_8_div_1_Template, 2, 1, "div", 108)(2, DashboardComponent_div_26_div_72_div_13_div_1_div_8_ng_template_2_Template, 2, 0, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
+    \u0275\u0275elementStart(0, "div", 118);
+    \u0275\u0275template(1, DashboardComponent_div_27_div_72_div_13_div_1_div_8_div_1_Template, 2, 1, "div", 119)(2, DashboardComponent_div_27_div_72_div_13_div_1_div_8_ng_template_2_Template, 2, 0, "ng-template", null, 0, \u0275\u0275templateRefExtractor);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79411,22 +78727,22 @@ function DashboardComponent_div_26_div_72_div_13_div_1_div_8_Template(rf, ctx) {
     \u0275\u0275property("ngIf", ctx_r1.allWeeksData[wKey_r11] && ctx_r1.allWeeksData[wKey_r11].topics.length > 0)("ngIfElse", noTopicsInWeek_r14);
   }
 }
-function DashboardComponent_div_26_div_72_div_13_div_1_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_div_1_Template(rf, ctx) {
   if (rf & 1) {
     const _r10 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 96)(1, "div", 97);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_div_72_div_13_div_1_Template_div_click_1_listener() {
+    \u0275\u0275elementStart(0, "div", 107)(1, "div", 108);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_div_72_div_13_div_1_Template_div_click_1_listener() {
       const wKey_r11 = \u0275\u0275restoreView(_r10).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(4);
       return \u0275\u0275resetView(ctx_r1.toggleSyllabusWeek(wKey_r11));
     });
-    \u0275\u0275elementStart(2, "span", 98);
+    \u0275\u0275elementStart(2, "span", 109);
     \u0275\u0275text(3);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "span", 99);
-    \u0275\u0275template(5, DashboardComponent_div_26_div_72_div_13_div_1_span_5_Template, 4, 0, "span", 100)(6, DashboardComponent_div_26_div_72_div_13_div_1_span_6_Template, 4, 1, "span", 101)(7, DashboardComponent_div_26_div_72_div_13_div_1_span_7_Template, 2, 0, "span", 102);
+    \u0275\u0275elementStart(4, "span", 110);
+    \u0275\u0275template(5, DashboardComponent_div_27_div_72_div_13_div_1_span_5_Template, 4, 0, "span", 111)(6, DashboardComponent_div_27_div_72_div_13_div_1_span_6_Template, 4, 1, "span", 112)(7, DashboardComponent_div_27_div_72_div_13_div_1_span_7_Template, 2, 0, "span", 113);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(8, DashboardComponent_div_26_div_72_div_13_div_1_div_8_Template, 4, 2, "div", 103);
+    \u0275\u0275template(8, DashboardComponent_div_27_div_72_div_13_div_1_div_8_Template, 4, 2, "div", 114);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79445,10 +78761,10 @@ function DashboardComponent_div_26_div_72_div_13_div_1_Template(rf, ctx) {
     \u0275\u0275property("ngIf", ctx_r1.selectedTimelineWeek === wKey_r11);
   }
 }
-function DashboardComponent_div_26_div_72_div_13_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_div_13_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 94);
-    \u0275\u0275template(1, DashboardComponent_div_26_div_72_div_13_div_1_Template, 9, 7, "div", 95);
+    \u0275\u0275elementStart(0, "div", 105);
+    \u0275\u0275template(1, DashboardComponent_div_27_div_72_div_13_div_1_Template, 9, 7, "div", 106);
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
@@ -79457,31 +78773,31 @@ function DashboardComponent_div_26_div_72_div_13_Template(rf, ctx) {
     \u0275\u0275property("ngForOf", ctx_r1.weeks);
   }
 }
-function DashboardComponent_div_26_div_72_Template(rf, ctx) {
+function DashboardComponent_div_27_div_72_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 79)(1, "div", 80)(2, "div", 81)(3, "div", 82)(4, "div", 83)(5, "mat-icon");
+    \u0275\u0275elementStart(0, "div", 90)(1, "div", 91)(2, "div", 92)(3, "div", 93)(4, "div", 94)(5, "mat-icon");
     \u0275\u0275text(6, "calendar_view_week");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(7, "h3");
     \u0275\u0275text(8, "Course Syllabus Timeline");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(9, "p", 84);
+    \u0275\u0275elementStart(9, "p", 95);
     \u0275\u0275text(10, "Review topics, sufficiency statuses, and upload course materials (PDF, PPTX, TXT) per week.");
     \u0275\u0275elementEnd();
-    \u0275\u0275template(11, DashboardComponent_div_26_div_72_div_11_Template, 4, 0, "div", 85)(12, DashboardComponent_div_26_div_72_div_12_Template, 5, 0, "div", 86)(13, DashboardComponent_div_26_div_72_div_13_Template, 2, 1, "div", 87);
+    \u0275\u0275template(11, DashboardComponent_div_27_div_72_div_11_Template, 4, 0, "div", 96)(12, DashboardComponent_div_27_div_72_div_12_Template, 5, 0, "div", 97)(13, DashboardComponent_div_27_div_72_div_13_Template, 2, 1, "div", 98);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 88)(15, "h3");
+    \u0275\u0275elementStart(14, "div", 99)(15, "h3");
     \u0275\u0275text(16, "General Material Ingestion");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(17, "p", 84);
+    \u0275\u0275elementStart(17, "p", 95);
     \u0275\u0275text(18, "Ingest general slides, transcripts, or notes by selecting a week number and topic name.");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(19, "app-ingest", 89);
+    \u0275\u0275element(19, "app-ingest", 100);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(20, "div", 90)(21, "h3");
+    \u0275\u0275elementStart(20, "div", 101)(21, "h3");
     \u0275\u0275text(22, "Knowledge Graph");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(23, "p", 84);
+    \u0275\u0275elementStart(23, "p", 95);
     \u0275\u0275text(24, "Visual representation of course prerequisites and topic dependencies extracted by Gemini.");
     \u0275\u0275elementEnd();
     \u0275\u0275element(25, "app-graph-visualizer");
@@ -79499,15 +78815,15 @@ function DashboardComponent_div_26_div_72_Template(rf, ctx) {
     \u0275\u0275property("classId", ctx_r1.selectedClass.class_id);
   }
 }
-function DashboardComponent_div_26_div_73_Template(rf, ctx) {
+function DashboardComponent_div_27_div_73_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 117)(1, "div", 118)(2, "h3");
+    \u0275\u0275elementStart(0, "div", 128)(1, "div", 129)(2, "h3");
     \u0275\u0275text(3, "Ask Ace");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(4, "p", 84);
+    \u0275\u0275elementStart(4, "p", 95);
     \u0275\u0275text(5, "Ask questions about policies, prerequisites, syllabus content, or educational topics.");
     \u0275\u0275elementEnd();
-    \u0275\u0275element(6, "app-chat-interface", 89);
+    \u0275\u0275element(6, "app-chat-interface", 100);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -79516,18 +78832,14 @@ function DashboardComponent_div_26_div_73_Template(rf, ctx) {
     \u0275\u0275property("classId", ctx_r1.selectedClass.class_id);
   }
 }
-function DashboardComponent_div_26_div_74_Template(rf, ctx) {
+function DashboardComponent_div_27_div_74_Template(rf, ctx) {
   if (rf & 1) {
     const _r15 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 119)(1, "app-lesson-interface", 120);
-    \u0275\u0275listener("exerciseCompleted", function DashboardComponent_div_26_div_74_Template_app_lesson_interface_exerciseCompleted_1_listener() {
+    \u0275\u0275elementStart(0, "div", 130)(1, "app-lesson-interface", 131);
+    \u0275\u0275listener("exerciseCompleted", function DashboardComponent_div_27_div_74_Template_app_lesson_interface_exerciseCompleted_1_listener() {
       \u0275\u0275restoreView(_r15);
       const ctx_r1 = \u0275\u0275nextContext(2);
       return \u0275\u0275resetView(ctx_r1.loadDailyState());
-    })("startQuiz", function DashboardComponent_div_26_div_74_Template_app_lesson_interface_startQuiz_1_listener() {
-      \u0275\u0275restoreView(_r15);
-      const ctx_r1 = \u0275\u0275nextContext(2);
-      return \u0275\u0275resetView(ctx_r1.selectTab("quiz"));
     });
     \u0275\u0275elementEnd()();
   }
@@ -79537,64 +78849,11 @@ function DashboardComponent_div_26_div_74_Template(rf, ctx) {
     \u0275\u0275property("selectedWeek", ctx_r1.selectedTimelineWeek)("dailyState", ctx_r1.dailyState)("classId", ctx_r1.selectedClass.class_id);
   }
 }
-function DashboardComponent_div_26_div_75_div_1_Template(rf, ctx) {
-  if (rf & 1) {
-    const _r16 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 124)(1, "mat-icon", 125);
-    \u0275\u0275text(2, "lock");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "h3");
-    \u0275\u0275text(4, "Quiz is Locked");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "p");
-    \u0275\u0275text(6, "You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(7, "button", 32);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_div_75_div_1_Template_button_click_7_listener() {
-      \u0275\u0275restoreView(_r16);
-      const ctx_r1 = \u0275\u0275nextContext(3);
-      return \u0275\u0275resetView(ctx_r1.activeTab = "lesson");
-    });
-    \u0275\u0275text(8, "Go to Lesson");
-    \u0275\u0275elementEnd()();
-  }
-}
-function DashboardComponent_div_26_div_75_div_2_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 126)(1, "h3");
-    \u0275\u0275text(2, "Adaptive Performance Quiz");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "p", 84);
-    \u0275\u0275text(4, "Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.");
-    \u0275\u0275elementEnd();
-    \u0275\u0275element(5, "app-quiz-interface", 127);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = \u0275\u0275nextContext(3);
-    \u0275\u0275advance(5);
-    \u0275\u0275property("selectedWeek", ctx_r1.selectedTimelineWeek)("classId", ctx_r1.selectedClass.class_id);
-  }
-}
-function DashboardComponent_div_26_div_75_Template(rf, ctx) {
-  if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 121);
-    \u0275\u0275template(1, DashboardComponent_div_26_div_75_div_1_Template, 9, 0, "div", 122)(2, DashboardComponent_div_26_div_75_div_2_Template, 6, 2, "div", 123);
-    \u0275\u0275elementEnd();
-  }
-  if (rf & 2) {
-    const ctx_r1 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", !ctx_r1.dailyState.quiz_unlocked);
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r1.dailyState.quiz_unlocked);
-  }
-}
-function DashboardComponent_div_26_Template(rf, ctx) {
+function DashboardComponent_div_27_Template(rf, ctx) {
   if (rf & 1) {
     const _r7 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 43)(1, "div", 44)(2, "button", 45);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_button_click_2_listener() {
+    \u0275\u0275elementStart(0, "div", 55)(1, "div", 56)(2, "button", 57);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_button_click_2_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.selectClass(null));
@@ -79604,32 +78863,32 @@ function DashboardComponent_div_26_Template(rf, ctx) {
     \u0275\u0275elementEnd();
     \u0275\u0275text(5, " Back to Classes ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(6, "div", 46)(7, "h2");
+    \u0275\u0275elementStart(6, "div", 58)(7, "h2");
     \u0275\u0275text(8);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(9, "span", 47);
+    \u0275\u0275elementStart(9, "span", 59);
     \u0275\u0275text(10);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "div", 48)(12, "div", 49)(13, "div", 50)(14, "mat-icon", 9);
+    \u0275\u0275elementStart(11, "div", 60)(12, "div", 61)(13, "div", 62)(14, "mat-icon", 12);
     \u0275\u0275text(15, "local_fire_department");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(16, "div", 10)(17, "span", 11);
+    \u0275\u0275elementStart(16, "div", 13)(17, "span", 14);
     \u0275\u0275text(18);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(19, "span", 12);
+    \u0275\u0275elementStart(19, "span", 15);
     \u0275\u0275text(20, "Class Streak");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(21, "div", 51)(22, "span", 52);
+    \u0275\u0275elementStart(21, "div", 63)(22, "span", 64);
     \u0275\u0275text(23, "Current Calendar Week:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "span", 53);
+    \u0275\u0275elementStart(24, "span", 65);
     \u0275\u0275text(25);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(26, "div", 54)(27, "div", 55);
-    \u0275\u0275template(28, DashboardComponent_div_26_button_28_Template, 7, 10, "button", 56);
+    \u0275\u0275elementStart(26, "div", 66)(27, "div", 67);
+    \u0275\u0275template(28, DashboardComponent_div_27_button_28_Template, 7, 10, "button", 68);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(29, "div", 57)(30, "button", 58);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_button_click_30_listener() {
+    \u0275\u0275elementStart(29, "div", 69)(30, "button", 70);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_button_click_30_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.selectTimelineWeek(ctx_r1.currentWeek));
@@ -79639,8 +78898,8 @@ function DashboardComponent_div_26_Template(rf, ctx) {
     \u0275\u0275elementEnd();
     \u0275\u0275text(33, " Study ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(34, "button", 59);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_button_click_34_listener() {
+    \u0275\u0275elementStart(34, "button", 71);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_button_click_34_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.openCramModal());
@@ -79650,62 +78909,62 @@ function DashboardComponent_div_26_Template(rf, ctx) {
     \u0275\u0275elementEnd();
     \u0275\u0275text(37, " Cram for Exam ");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(38, "div", 60)(39, "div", 61)(40, "mat-icon", 62);
+    \u0275\u0275elementStart(38, "div", 72)(39, "div", 73)(40, "mat-icon", 74);
     \u0275\u0275text(41, "today");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(42, "h3");
     \u0275\u0275text(43, "Today's Study Checklist");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(44, "span", 63);
+    \u0275\u0275elementStart(44, "span", 75);
     \u0275\u0275text(45);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(46, "div", 64)(47, "div", 65);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_div_click_47_listener() {
+    \u0275\u0275elementStart(46, "div", 76)(47, "div", 77);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_div_click_47_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.activeTab = "lesson");
     });
-    \u0275\u0275elementStart(48, "mat-icon", 66);
+    \u0275\u0275elementStart(48, "mat-icon", 78);
     \u0275\u0275text(49);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(50, "div", 67)(51, "span", 68);
+    \u0275\u0275elementStart(50, "div", 79)(51, "span", 80);
     \u0275\u0275text(52, "1. Read Today's Lesson");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(53, "span", 69);
+    \u0275\u0275elementStart(53, "span", 81);
     \u0275\u0275text(54, "Learn the core concepts for this week");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(55, "div", 65);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_div_click_55_listener() {
+    \u0275\u0275elementStart(55, "div", 77);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_div_click_55_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.activeTab = "lesson");
     });
-    \u0275\u0275elementStart(56, "mat-icon", 66);
+    \u0275\u0275elementStart(56, "mat-icon", 78);
     \u0275\u0275text(57);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(58, "div", 67)(59, "span", 68);
+    \u0275\u0275elementStart(58, "div", 79)(59, "span", 80);
     \u0275\u0275text(60, "2. Complete Practice Exercises");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(61, "span", 69);
+    \u0275\u0275elementStart(61, "span", 81);
     \u0275\u0275text(62, "Solve practice questions (Get >= 60% correct to pass)");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(63, "div", 65);
-    \u0275\u0275listener("click", function DashboardComponent_div_26_Template_div_click_63_listener() {
+    \u0275\u0275elementStart(63, "div", 77);
+    \u0275\u0275listener("click", function DashboardComponent_div_27_Template_div_click_63_listener() {
       \u0275\u0275restoreView(_r7);
       const ctx_r1 = \u0275\u0275nextContext();
-      return \u0275\u0275resetView(ctx_r1.dailyState.quiz_unlocked ? ctx_r1.activeTab = "quiz" : null);
+      return \u0275\u0275resetView(ctx_r1.dailyState.quiz_unlocked ? ctx_r1.activeTab = "lesson" : null);
     });
-    \u0275\u0275elementStart(64, "mat-icon", 66);
+    \u0275\u0275elementStart(64, "mat-icon", 78);
     \u0275\u0275text(65);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(66, "div", 67)(67, "span", 68);
+    \u0275\u0275elementStart(66, "div", 79)(67, "span", 80);
     \u0275\u0275text(68, "3. Unlock Weekly Quiz");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(69, "span", 69);
+    \u0275\u0275elementStart(69, "span", 81);
     \u0275\u0275text(70);
     \u0275\u0275elementEnd()()()()();
-    \u0275\u0275elementStart(71, "main", 70);
-    \u0275\u0275template(72, DashboardComponent_div_26_div_72_Template, 26, 4, "div", 71)(73, DashboardComponent_div_26_div_73_Template, 7, 1, "div", 72)(74, DashboardComponent_div_26_div_74_Template, 2, 3, "div", 73)(75, DashboardComponent_div_26_div_75_Template, 3, 2, "div", 74);
+    \u0275\u0275elementStart(71, "main", 82);
+    \u0275\u0275template(72, DashboardComponent_div_27_div_72_Template, 26, 4, "div", 83)(73, DashboardComponent_div_27_div_73_Template, 7, 1, "div", 84)(74, DashboardComponent_div_27_div_74_Template, 2, 3, "div", 85);
     \u0275\u0275elementEnd()();
   }
   if (rf & 2) {
@@ -79742,16 +79001,14 @@ function DashboardComponent_div_26_Template(rf, ctx) {
     \u0275\u0275property("ngIf", ctx_r1.activeTab === "tutor");
     \u0275\u0275advance();
     \u0275\u0275property("ngIf", ctx_r1.activeTab === "lesson");
-    \u0275\u0275advance();
-    \u0275\u0275property("ngIf", ctx_r1.activeTab === "quiz");
   }
 }
-function DashboardComponent_app_cram_exam_27_Template(rf, ctx) {
+function DashboardComponent_app_cram_exam_28_Template(rf, ctx) {
   if (rf & 1) {
-    const _r17 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "app-cram-exam", 128);
-    \u0275\u0275listener("close", function DashboardComponent_app_cram_exam_27_Template_app_cram_exam_close_0_listener() {
-      \u0275\u0275restoreView(_r17);
+    const _r16 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "app-cram-exam", 132);
+    \u0275\u0275listener("close", function DashboardComponent_app_cram_exam_28_Template_app_cram_exam_close_0_listener() {
+      \u0275\u0275restoreView(_r16);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeCramModal());
     });
@@ -79762,9 +79019,9 @@ function DashboardComponent_app_cram_exam_27_Template(rf, ctx) {
     \u0275\u0275property("weeks", ctx_r1.weeks)("cramStartWeek", ctx_r1.currentWeek)("cramEndWeek", ctx_r1.currentWeek)("classId", (ctx_r1.selectedClass == null ? null : ctx_r1.selectedClass.class_id) || "default_class");
   }
 }
-function DashboardComponent_div_28_div_27_Template(rf, ctx) {
+function DashboardComponent_div_29_div_27_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 150)(1, "strong");
+    \u0275\u0275elementStart(0, "div", 154)(1, "strong");
     \u0275\u0275text(2, "Click to upload PDF");
     \u0275\u0275elementEnd();
     \u0275\u0275text(3, " or drag and drop ");
@@ -79773,12 +79030,12 @@ function DashboardComponent_div_28_div_27_Template(rf, ctx) {
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardComponent_div_28_div_28_Template(rf, ctx) {
+function DashboardComponent_div_29_div_28_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 150)(1, "strong");
+    \u0275\u0275elementStart(0, "div", 154)(1, "strong");
     \u0275\u0275text(2, "Syllabus PDF Selected:");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "span", 151);
+    \u0275\u0275elementStart(3, "span", 155);
     \u0275\u0275text(4);
     \u0275\u0275elementEnd()();
   }
@@ -79788,9 +79045,9 @@ function DashboardComponent_div_28_div_28_Template(rf, ctx) {
     \u0275\u0275textInterpolate(ctx_r1.newClassSyllabusFile.name);
   }
 }
-function DashboardComponent_div_28_div_29_Template(rf, ctx) {
+function DashboardComponent_div_29_div_29_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 152)(1, "mat-icon");
+    \u0275\u0275elementStart(0, "div", 156)(1, "mat-icon");
     \u0275\u0275text(2, "error_outline");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "span");
@@ -79803,81 +79060,81 @@ function DashboardComponent_div_28_div_29_Template(rf, ctx) {
     \u0275\u0275textInterpolate(ctx_r1.addClassErrorMessage);
   }
 }
-function DashboardComponent_div_28_div_30_Template(rf, ctx) {
+function DashboardComponent_div_29_div_30_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 153);
-    \u0275\u0275element(1, "mat-progress-bar", 154);
-    \u0275\u0275elementStart(2, "span", 155);
+    \u0275\u0275elementStart(0, "div", 157);
+    \u0275\u0275element(1, "mat-progress-bar", 158);
+    \u0275\u0275elementStart(2, "span", 159);
     \u0275\u0275text(3, "AI Brain parsing syllabus and mapping knowledge graph nodes...");
     \u0275\u0275elementEnd()();
   }
 }
-function DashboardComponent_div_28_Template(rf, ctx) {
+function DashboardComponent_div_29_Template(rf, ctx) {
   if (rf & 1) {
-    const _r18 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 129)(1, "div", 130)(2, "div", 131)(3, "div", 132)(4, "mat-icon", 133);
+    const _r17 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 133)(1, "div", 134)(2, "div", 135)(3, "div", 136)(4, "mat-icon", 137);
     \u0275\u0275text(5, "school");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(6, "h2");
     \u0275\u0275text(7, "Create New Class");
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "button", 134);
-    \u0275\u0275listener("click", function DashboardComponent_div_28_Template_button_click_8_listener() {
-      \u0275\u0275restoreView(_r18);
+    \u0275\u0275elementStart(8, "button", 138);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_8_listener() {
+      \u0275\u0275restoreView(_r17);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeAddClassModal());
     });
     \u0275\u0275elementStart(9, "mat-icon");
     \u0275\u0275text(10, "close");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "div", 135)(12, "p", 136);
+    \u0275\u0275elementStart(11, "div", 139)(12, "p", 140);
     \u0275\u0275text(13, " To register a class, enter a class name and upload its Syllabus or Class Calendar PDF. Ace Agent will parse key topics, weekly timelines, and dependent structures. ");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 137)(15, "label", 138);
+    \u0275\u0275elementStart(14, "div", 141)(15, "label", 142);
     \u0275\u0275text(16, "Class Name");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(17, "input", 139);
-    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_28_Template_input_ngModelChange_17_listener($event) {
-      \u0275\u0275restoreView(_r18);
+    \u0275\u0275elementStart(17, "input", 143);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_29_Template_input_ngModelChange_17_listener($event) {
+      \u0275\u0275restoreView(_r17);
       const ctx_r1 = \u0275\u0275nextContext();
       \u0275\u0275twoWayBindingSet(ctx_r1.newClassName, $event) || (ctx_r1.newClassName = $event);
       return \u0275\u0275resetView($event);
     });
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(18, "div", 137)(19, "label");
+    \u0275\u0275elementStart(18, "div", 141)(19, "label");
     \u0275\u0275text(20, "Syllabus / Class Calendar PDF");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 140)(22, "input", 141, 1);
-    \u0275\u0275listener("change", function DashboardComponent_div_28_Template_input_change_22_listener($event) {
-      \u0275\u0275restoreView(_r18);
+    \u0275\u0275elementStart(21, "div", 144)(22, "input", 145, 1);
+    \u0275\u0275listener("change", function DashboardComponent_div_29_Template_input_change_22_listener($event) {
+      \u0275\u0275restoreView(_r17);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.onAddClassFileSelected($event));
     });
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "div", 142);
-    \u0275\u0275listener("click", function DashboardComponent_div_28_Template_div_click_24_listener() {
-      \u0275\u0275restoreView(_r18);
-      const classSyllabusInput_r19 = \u0275\u0275reference(23);
-      return \u0275\u0275resetView(classSyllabusInput_r19.click());
+    \u0275\u0275elementStart(24, "div", 146);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_div_click_24_listener() {
+      \u0275\u0275restoreView(_r17);
+      const classSyllabusInput_r18 = \u0275\u0275reference(23);
+      return \u0275\u0275resetView(classSyllabusInput_r18.click());
     });
-    \u0275\u0275elementStart(25, "mat-icon", 143);
+    \u0275\u0275elementStart(25, "mat-icon", 147);
     \u0275\u0275text(26, "cloud_upload");
     \u0275\u0275elementEnd();
-    \u0275\u0275template(27, DashboardComponent_div_28_div_27_Template, 6, 0, "div", 144)(28, DashboardComponent_div_28_div_28_Template, 5, 1, "div", 144);
+    \u0275\u0275template(27, DashboardComponent_div_29_div_27_Template, 6, 0, "div", 148)(28, DashboardComponent_div_29_div_28_Template, 5, 1, "div", 148);
     \u0275\u0275elementEnd()()();
-    \u0275\u0275template(29, DashboardComponent_div_28_div_29_Template, 5, 1, "div", 145)(30, DashboardComponent_div_28_div_30_Template, 4, 0, "div", 146);
+    \u0275\u0275template(29, DashboardComponent_div_29_div_29_Template, 5, 1, "div", 149)(30, DashboardComponent_div_29_div_30_Template, 4, 0, "div", 150);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(31, "div", 147)(32, "button", 148);
-    \u0275\u0275listener("click", function DashboardComponent_div_28_Template_button_click_32_listener() {
-      \u0275\u0275restoreView(_r18);
+    \u0275\u0275elementStart(31, "div", 151)(32, "button", 152);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_32_listener() {
+      \u0275\u0275restoreView(_r17);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeAddClassModal());
     });
     \u0275\u0275text(33, "Cancel");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(34, "button", 149);
-    \u0275\u0275listener("click", function DashboardComponent_div_28_Template_button_click_34_listener() {
-      \u0275\u0275restoreView(_r18);
+    \u0275\u0275elementStart(34, "button", 153);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_34_listener() {
+      \u0275\u0275restoreView(_r17);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.createClass());
     });
@@ -79912,15 +79169,15 @@ function DashboardComponent_div_28_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isAddingClass || !ctx_r1.newClassName.trim() || !ctx_r1.newClassSyllabusFile);
   }
 }
-function DashboardComponent_div_29_div_14_Template(rf, ctx) {
+function DashboardComponent_div_30_div_14_Template(rf, ctx) {
   if (rf & 1) {
-    const _r21 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 137)(1, "label", 164);
+    const _r20 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 141)(1, "label", 168);
     \u0275\u0275text(2, "Notes & Text Content");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(3, "textarea", 165);
-    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_29_div_14_Template_textarea_ngModelChange_3_listener($event) {
-      \u0275\u0275restoreView(_r21);
+    \u0275\u0275elementStart(3, "textarea", 169);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_30_div_14_Template_textarea_ngModelChange_3_listener($event) {
+      \u0275\u0275restoreView(_r20);
       const ctx_r1 = \u0275\u0275nextContext(2);
       \u0275\u0275twoWayBindingSet(ctx_r1.newMaterialText, $event) || (ctx_r1.newMaterialText = $event);
       return \u0275\u0275resetView($event);
@@ -79934,15 +79191,15 @@ function DashboardComponent_div_29_div_14_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
   }
 }
-function DashboardComponent_div_29_button_21_Template(rf, ctx) {
+function DashboardComponent_div_30_button_21_Template(rf, ctx) {
   if (rf & 1) {
-    const _r22 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "button", 166);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_button_21_Template_button_click_0_listener() {
-      \u0275\u0275restoreView(_r22);
+    const _r21 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 170);
+    \u0275\u0275listener("click", function DashboardComponent_div_30_button_21_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r21);
       \u0275\u0275nextContext();
-      const materialFileInput_r23 = \u0275\u0275reference(20);
-      return \u0275\u0275resetView(materialFileInput_r23.click());
+      const materialFileInput_r22 = \u0275\u0275reference(20);
+      return \u0275\u0275resetView(materialFileInput_r22.click());
     });
     \u0275\u0275elementStart(1, "mat-icon");
     \u0275\u0275text(2, "attach_file");
@@ -79955,21 +79212,21 @@ function DashboardComponent_div_29_button_21_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
   }
 }
-function DashboardComponent_div_29_div_22_Template(rf, ctx) {
+function DashboardComponent_div_30_div_22_Template(rf, ctx) {
   if (rf & 1) {
-    const _r24 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 167)(1, "span", 168)(2, "mat-icon", 169);
+    const _r23 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 171)(1, "span", 172)(2, "mat-icon", 173);
     \u0275\u0275text(3, "insert_drive_file");
     \u0275\u0275elementEnd();
     \u0275\u0275text(4);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(5, "button", 170);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_div_22_Template_button_click_5_listener() {
-      \u0275\u0275restoreView(_r24);
+    \u0275\u0275elementStart(5, "button", 174);
+    \u0275\u0275listener("click", function DashboardComponent_div_30_div_22_Template_button_click_5_listener() {
+      \u0275\u0275restoreView(_r23);
       const ctx_r1 = \u0275\u0275nextContext(2);
       return \u0275\u0275resetView(ctx_r1.clearSelectedFile());
     });
-    \u0275\u0275elementStart(6, "mat-icon", 171);
+    \u0275\u0275elementStart(6, "mat-icon", 175);
     \u0275\u0275text(7, "close");
     \u0275\u0275elementEnd()()();
   }
@@ -79981,9 +79238,9 @@ function DashboardComponent_div_29_div_22_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
   }
 }
-function DashboardComponent_div_29_div_23_Template(rf, ctx) {
+function DashboardComponent_div_30_div_23_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 172)(1, "mat-icon");
+    \u0275\u0275elementStart(0, "div", 176)(1, "mat-icon");
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "span");
@@ -79992,60 +79249,60 @@ function DashboardComponent_div_29_div_23_Template(rf, ctx) {
   }
   if (rf & 2) {
     const ctx_r1 = \u0275\u0275nextContext(2);
-    \u0275\u0275property("ngClass", \u0275\u0275pureFunction3(3, _c16, ctx_r1.ingestSuccess, !ctx_r1.ingestSuccess && !ctx_r1.isIngestingMaterial, ctx_r1.isIngestingMaterial));
+    \u0275\u0275property("ngClass", \u0275\u0275pureFunction3(3, _c15, ctx_r1.ingestSuccess, !ctx_r1.ingestSuccess && !ctx_r1.isIngestingMaterial, ctx_r1.isIngestingMaterial));
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(ctx_r1.ingestSuccess ? "check_circle" : !ctx_r1.ingestSuccess && !ctx_r1.isIngestingMaterial ? "error" : "sync");
     \u0275\u0275advance(2);
     \u0275\u0275textInterpolate(ctx_r1.ingestMessage);
   }
 }
-function DashboardComponent_div_29_Template(rf, ctx) {
+function DashboardComponent_div_30_Template(rf, ctx) {
   if (rf & 1) {
-    const _r20 = \u0275\u0275getCurrentView();
-    \u0275\u0275elementStart(0, "div", 129)(1, "div", 130)(2, "div", 131)(3, "div", 132)(4, "mat-icon", 156);
+    const _r19 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 133)(1, "div", 134)(2, "div", 135)(3, "div", 136)(4, "mat-icon", 160);
     \u0275\u0275text(5, "warning");
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(6, "h2");
     \u0275\u0275text(7);
     \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(8, "button", 134);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_8_listener() {
-      \u0275\u0275restoreView(_r20);
+    \u0275\u0275elementStart(8, "button", 138);
+    \u0275\u0275listener("click", function DashboardComponent_div_30_Template_button_click_8_listener() {
+      \u0275\u0275restoreView(_r19);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeAddMaterials());
     });
     \u0275\u0275elementStart(9, "mat-icon");
     \u0275\u0275text(10, "close");
     \u0275\u0275elementEnd()()();
-    \u0275\u0275elementStart(11, "div", 135)(12, "p", 136);
+    \u0275\u0275elementStart(11, "div", 139)(12, "p", 140);
     \u0275\u0275text(13, ' Provide course slides text transcripts, lecture notes, or text documents for this topic to clear the "insufficient materials" warning. ');
     \u0275\u0275elementEnd();
-    \u0275\u0275template(14, DashboardComponent_div_29_div_14_Template, 4, 2, "div", 157);
-    \u0275\u0275elementStart(15, "div", 137)(16, "label");
+    \u0275\u0275template(14, DashboardComponent_div_30_div_14_Template, 4, 2, "div", 161);
+    \u0275\u0275elementStart(15, "div", 141)(16, "label");
     \u0275\u0275text(17);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(18, "div", 158)(19, "input", 159, 2);
-    \u0275\u0275listener("change", function DashboardComponent_div_29_Template_input_change_19_listener($event) {
-      \u0275\u0275restoreView(_r20);
+    \u0275\u0275elementStart(18, "div", 162)(19, "input", 163, 2);
+    \u0275\u0275listener("change", function DashboardComponent_div_30_Template_input_change_19_listener($event) {
+      \u0275\u0275restoreView(_r19);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.onMaterialFileSelected($event));
     });
     \u0275\u0275elementEnd();
-    \u0275\u0275template(21, DashboardComponent_div_29_button_21_Template, 4, 1, "button", 160)(22, DashboardComponent_div_29_div_22_Template, 8, 2, "div", 161);
+    \u0275\u0275template(21, DashboardComponent_div_30_button_21_Template, 4, 1, "button", 164)(22, DashboardComponent_div_30_div_22_Template, 8, 2, "div", 165);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(23, DashboardComponent_div_29_div_23_Template, 5, 7, "div", 162);
+    \u0275\u0275template(23, DashboardComponent_div_30_div_23_Template, 5, 7, "div", 166);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "div", 147)(25, "button", 148);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_25_listener() {
-      \u0275\u0275restoreView(_r20);
+    \u0275\u0275elementStart(24, "div", 151)(25, "button", 152);
+    \u0275\u0275listener("click", function DashboardComponent_div_30_Template_button_click_25_listener() {
+      \u0275\u0275restoreView(_r19);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeAddMaterials());
     });
     \u0275\u0275text(26, "Cancel");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(27, "button", 163);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_27_listener() {
-      \u0275\u0275restoreView(_r20);
+    \u0275\u0275elementStart(27, "button", 167);
+    \u0275\u0275listener("click", function DashboardComponent_div_30_Template_button_click_27_listener() {
+      \u0275\u0275restoreView(_r19);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.submitMaterials());
     });
@@ -80079,6 +79336,114 @@ function DashboardComponent_div_29_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial || !ctx_r1.newMaterialText.trim() && !ctx_r1.newMaterialFile);
   }
 }
+function DashboardComponent_div_31_label_21_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r25 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "label", 198)(1, "input", 199);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_31_label_21_Template_input_ngModelChange_1_listener($event) {
+      const day_r26 = \u0275\u0275restoreView(_r25).$implicit;
+      \u0275\u0275twoWayBindingSet(day_r26.selected, $event) || (day_r26.selected = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(2, "span");
+    \u0275\u0275text(3);
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const day_r26 = ctx.$implicit;
+    \u0275\u0275advance();
+    \u0275\u0275twoWayProperty("ngModel", day_r26.selected);
+    \u0275\u0275advance(2);
+    \u0275\u0275textInterpolate(day_r26.name);
+  }
+}
+function DashboardComponent_div_31_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r24 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 177)(1, "div", 178)(2, "div", 179)(3, "div", 180)(4, "mat-icon", 181);
+    \u0275\u0275text(5, "insights");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(6, "span");
+    \u0275\u0275text(7, "Streak & Schedule Settings");
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(8, "button", 182);
+    \u0275\u0275listener("click", function DashboardComponent_div_31_Template_button_click_8_listener() {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.closeStreakSettingsModal());
+    });
+    \u0275\u0275elementStart(9, "mat-icon");
+    \u0275\u0275text(10, "close");
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(11, "div", 183)(12, "p", 184);
+    \u0275\u0275text(13, " Configure your weekly learning schedule and pace for ");
+    \u0275\u0275elementStart(14, "strong");
+    \u0275\u0275text(15);
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(16, " to maintain your orbit. ");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(17, "div", 185)(18, "label", 186);
+    \u0275\u0275text(19, "Preferred Orbit Days");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(20, "div", 187);
+    \u0275\u0275template(21, DashboardComponent_div_31_label_21_Template, 4, 2, "label", 188);
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(22, "div", 189)(23, "label", 190);
+    \u0275\u0275text(24, "Daily Study Pace (Minutes)");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(25, "input", 191);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_31_Template_input_ngModelChange_25_listener($event) {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1.streakSettingsPace, $event) || (ctx_r1.streakSettingsPace = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275elementEnd()();
+    \u0275\u0275elementStart(26, "div", 189)(27, "label", 192);
+    \u0275\u0275text(28, "Course Orbit Start Date");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(29, "input", 193);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_31_Template_input_ngModelChange_29_listener($event) {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext();
+      \u0275\u0275twoWayBindingSet(ctx_r1.streakSettingsStartDate, $event) || (ctx_r1.streakSettingsStartDate = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275elementEnd()()();
+    \u0275\u0275elementStart(30, "div", 194)(31, "button", 195);
+    \u0275\u0275listener("click", function DashboardComponent_div_31_Template_button_click_31_listener() {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.closeStreakSettingsModal());
+    });
+    \u0275\u0275text(32, "Cancel");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(33, "button", 196);
+    \u0275\u0275listener("click", function DashboardComponent_div_31_Template_button_click_33_listener() {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext();
+      return \u0275\u0275resetView(ctx_r1.saveStreakSettings());
+    });
+    \u0275\u0275elementStart(34, "mat-icon", 197);
+    \u0275\u0275text(35, "save");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(36, "span");
+    \u0275\u0275text(37, "Save Orbit Plan");
+    \u0275\u0275elementEnd()()()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext();
+    \u0275\u0275advance(15);
+    \u0275\u0275textInterpolate(ctx_r1.selectedClass == null ? null : ctx_r1.selectedClass.class_name);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngForOf", ctx_r1.streakSettingsDays);
+    \u0275\u0275advance(4);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.streakSettingsPace);
+    \u0275\u0275advance(4);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.streakSettingsStartDate);
+  }
+}
 var DashboardComponent = class _DashboardComponent {
   route;
   router;
@@ -80088,6 +79453,20 @@ var DashboardComponent = class _DashboardComponent {
   activeTab = "syllabus";
   calendarConnected = false;
   isScheduleConfigured = false;
+  // Streak Settings Modal State
+  isStreakSettingsModalOpen = false;
+  streakSettingsStartDate = "";
+  streakSettingsPace = 45;
+  streakSettingsStreak = 0;
+  streakSettingsDays = [
+    { name: "Sun", value: 0, selected: false },
+    { name: "Mon", value: 1, selected: false },
+    { name: "Tue", value: 2, selected: false },
+    { name: "Wed", value: 3, selected: false },
+    { name: "Thu", value: 4, selected: false },
+    { name: "Fri", value: 5, selected: false },
+    { name: "Sat", value: 6, selected: false }
+  ];
   // Multi-Class Management
   classes = [];
   selectedClass = null;
@@ -80418,6 +79797,56 @@ var DashboardComponent = class _DashboardComponent {
       }
     });
   }
+  openStreakSettingsModal() {
+    if (!this.selectedClass)
+      return;
+    this.isStreakSettingsModalOpen = true;
+    this.streakSettingsStartDate = this.selectedClass.course_start_date || (/* @__PURE__ */ new Date()).toISOString().split("T")[0];
+    this.streakSettingsPace = 45;
+    this.streakSettingsStreak = this.selectedClass.class_streak || this.selectedClass.current_streak || 0;
+    this.api.getUserScheduleSettings(this.selectedClass.class_id).subscribe({
+      next: (sched) => {
+        if (sched) {
+          if (sched.course_start_date)
+            this.streakSettingsStartDate = sched.course_start_date;
+          if (sched.daily_pace)
+            this.streakSettingsPace = sched.daily_pace;
+          if (sched.current_streak)
+            this.streakSettingsStreak = sched.current_streak;
+          if (sched.preferred_days && Array.isArray(sched.preferred_days)) {
+            this.streakSettingsDays.forEach((d) => {
+              d.selected = sched.preferred_days.includes(d.value);
+            });
+          }
+        }
+      },
+      error: (err) => {
+        console.warn("Could not load existing schedule settings for modal:", err);
+      }
+    });
+  }
+  closeStreakSettingsModal() {
+    this.isStreakSettingsModalOpen = false;
+  }
+  saveStreakSettings() {
+    const selectedDays = this.streakSettingsDays.filter((d) => d.selected).map((d) => d.value);
+    if (selectedDays.length === 0) {
+      alert("Please select at least one preferred study day.");
+      return;
+    }
+    const classId = this.selectedClass ? this.selectedClass.class_id : "default_class";
+    const className = this.selectedClass ? this.selectedClass.class_name : "Default Class";
+    this.api.saveUserScheduleSettings(selectedDays, this.streakSettingsPace, this.streakSettingsStreak, this.streakSettingsStartDate, classId, className).subscribe({
+      next: (res) => {
+        this.isStreakSettingsModalOpen = false;
+        this.loadClasses();
+        alert("Streak settings saved successfully!");
+      },
+      error: (err) => {
+        alert("Failed to save settings: " + (err.error?.message || err.message || err));
+      }
+    });
+  }
   logout() {
     this.authService.logout();
     this.router.navigate(["/login"]);
@@ -80432,51 +79861,54 @@ var DashboardComponent = class _DashboardComponent {
   static \u0275fac = function DashboardComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _DashboardComponent)(\u0275\u0275directiveInject(ActivatedRoute), \u0275\u0275directiveInject(Router), \u0275\u0275directiveInject(AuthService), \u0275\u0275directiveInject(ApiService), \u0275\u0275directiveInject(IngestService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 30, vars: 7, consts: [["noTopicsInWeek", ""], ["classSyllabusInput", ""], ["materialFileInput", ""], [1, "app-header"], [1, "logo-area", 2, "cursor", "pointer", 3, "click"], [1, "logo-icon"], [1, "logo-text"], [1, "header-right"], [1, "global-streak-header-widget"], [1, "streak-icon"], [1, "streak-text"], [1, "streak-value"], [1, "streak-label"], ["class", "tab-nav", 4, "ngIf"], [1, "btn-logout", 3, "click"], [1, "app-wrapper"], ["class", "class-manager-container fade-in", 4, "ngIf"], ["class", "class-workspace-container fade-in", 4, "ngIf"], [3, "weeks", "cramStartWeek", "cramEndWeek", "classId", "close", 4, "ngIf"], ["class", "modal-overlay fade-in", 4, "ngIf"], [1, "tab-nav"], [1, "nav-tab", 3, "click"], [1, "nav-tab", 3, "class.active", "click"], [1, "class-manager-container", "fade-in"], [1, "manager-header", "card"], [1, "header-details"], [1, "subtitle"], [1, "btn-add-class", 3, "click"], ["class", "empty-state card fade-in", 4, "ngIf"], ["class", "classes-grid", 4, "ngIf"], [1, "empty-state", "card", "fade-in"], [1, "empty-icon"], [1, "btn", "btn-primary", 3, "click"], [1, "classes-grid"], ["class", "class-card card", 3, "click", 4, "ngFor", "ngForOf"], [1, "class-card", "card", 3, "click"], [1, "class-card-glow"], [1, "class-card-header"], [1, "class-icon"], [1, "class-streak-badge"], [1, "class-card-body"], [1, "class-id"], [1, "class-card-footer"], [1, "class-workspace-container", "fade-in"], [1, "class-subheader"], [1, "btn-back", 3, "click"], [1, "subheader-title"], [1, "class-id-badge"], [1, "timeline-bar-container", "card"], [1, "timeline-left"], [1, "streak-widget"], [1, "week-widget"], [1, "week-label"], [1, "week-value"], [1, "timeline-scroll"], [1, "timeline-weeks"], ["class", "timeline-week-btn", "title", "Click to study topics for this week", 3, "current", "past", "future", "click", 4, "ngFor", "ngForOf"], [1, "timeline-right"], [1, "btn-study", 3, "click"], [1, "btn-cram", 3, "click"], [1, "daily-progress-container", "card", "fade-in"], [1, "daily-progress-header"], [1, "progress-title-icon"], [1, "date-badge"], [1, "checklist-items"], [1, "checklist-item", 3, "click"], [1, "check-icon"], [1, "item-text"], [1, "item-title"], [1, "item-desc"], [1, "app-workspace"], ["class", "tab-content fade-in", 4, "ngIf"], ["class", "tab-content fade-in tutor-tab", 4, "ngIf"], ["class", "tab-content fade-in lesson-tab", 4, "ngIf"], ["class", "tab-content fade-in quiz-tab", 4, "ngIf"], ["title", "Click to study topics for this week", 1, "timeline-week-btn", 3, "click"], [1, "week-num"], [1, "week-status"], [4, "ngIf"], [1, "tab-content", "fade-in"], [1, "syllabus-layout"], [1, "sidebar-column"], [1, "syllabus-topics-card", "card"], [1, "card-header-row"], [1, "section-desc"], ["class", "loading-topics", 4, "ngIf"], ["class", "empty-topics", 4, "ngIf"], ["class", "weeks-accordion", 4, "ngIf"], [1, "ingest-section", "card"], [3, "classId"], [1, "graph-section", "card"], [1, "loading-topics"], [1, "topic-spinner"], [1, "empty-topics"], [1, "weeks-accordion"], ["class", "week-group", 3, "active-week", 4, "ngFor", "ngForOf"], [1, "week-group"], [1, "week-group-header", 3, "click"], [1, "week-title-label"], [1, "week-badge-summary"], ["class", "badge-sufficient", 4, "ngIf"], ["class", "badge-insufficient", 4, "ngIf"], ["class", "badge-empty", 4, "ngIf"], ["class", "week-group-content", 4, "ngIf"], [1, "badge-sufficient"], [1, "badge-insufficient"], [1, "badge-empty"], [1, "week-group-content"], [4, "ngIf", "ngIfElse"], ["class", "timeline-topic-item", 3, "insufficient", 4, "ngFor", "ngForOf"], [1, "timeline-topic-item"], [1, "topic-item-left"], [1, "topic-status-icon", 3, "ngClass"], [1, "topic-name-label", 3, "title"], [1, "topic-item-actions"], ["title", "Upload raw text notes or PPTX/PDF to clear warnings", 1, "btn", "btn-add-materials-small", 3, "click"], [1, "empty-desc", 2, "font-size", "12px", "color", "#94a3b8", "margin", "0", "padding", "4px"], [1, "tab-content", "fade-in", "tutor-tab"], [1, "chat-layout", "card"], [1, "tab-content", "fade-in", "lesson-tab"], [3, "exerciseCompleted", "startQuiz", "selectedWeek", "dailyState", "classId"], [1, "tab-content", "fade-in", "quiz-tab"], ["class", "quiz-locked-notice card", 4, "ngIf"], ["class", "quiz-layout card", 4, "ngIf"], [1, "quiz-locked-notice", "card"], [1, "locked-icon"], [1, "quiz-layout", "card"], [3, "selectedWeek", "classId"], [3, "close", "weeks", "cramStartWeek", "cramEndWeek", "classId"], [1, "modal-overlay", "fade-in"], [1, "modal-card", "card", "scale-up"], [1, "modal-header"], [1, "modal-title-container"], [1, "modal-header-icon"], [1, "btn-modal-close", 3, "click", "disabled"], [1, "modal-body"], [1, "modal-desc"], [1, "form-group"], ["for", "newClassName"], ["type", "text", "id", "newClassName", "placeholder", "e.g. Intro to Artificial Intelligence", "required", "", 3, "ngModelChange", "ngModel", "disabled"], [1, "file-uploader-dropzone"], ["type", "file", "id", "newClassSyllabus", "accept", ".pdf", "hidden", "", 3, "change", "disabled"], [1, "dropzone-content", 3, "click"], [1, "upload-icon"], ["class", "upload-text", 4, "ngIf"], ["class", "modal-error-alert", 4, "ngIf"], ["class", "modal-progress-container", 4, "ngIf"], [1, "modal-actions"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", "btn-submit-class", 3, "click", "disabled"], [1, "upload-text"], [1, "selected-filename"], [1, "modal-error-alert"], [1, "modal-progress-container"], ["mode", "indeterminate"], [1, "progress-subtext"], [1, "modal-header-icon", "warning-color"], ["class", "form-group", 4, "ngIf"], [1, "file-uploader-mini"], ["type", "file", "accept", ".txt,.md,.pdf,.ppt,.pptx", "hidden", "", 3, "change", "disabled"], ["class", "btn btn-secondary btn-mini-upload", 3, "disabled", "click", 4, "ngIf"], ["class", "uploaded-file-row", "style", "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);", 4, "ngIf"], ["class", "modal-status-alert", 3, "ngClass", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click", "disabled"], ["for", "materialText"], ["id", "materialText", "placeholder", "Paste notes, transcripts, or reference text here...", "rows", "8", 3, "ngModelChange", "ngModel", "disabled"], [1, "btn", "btn-secondary", "btn-mini-upload", 3, "click", "disabled"], [1, "uploaded-file-row", 2, "display", "flex", "align-items", "center", "justify-content", "space-between", "padding", "8px 12px", "background", "rgba(255,255,255,0.05)", "border-radius", "6px", "border", "1px solid rgba(255,255,255,0.1)"], [1, "mini-upload-filename", 2, "display", "flex", "align-items", "center", "gap", "8px", "color", "#f1f5f9"], [2, "color", "#6366f1"], [1, "btn-clear-file", 2, "background", "none", "border", "none", "color", "#94a3b8", "cursor", "pointer", "display", "flex", "align-items", "center", "justify-content", "center", "padding", "4px", "border-radius", "4px", "transition", "all 0.2s", 3, "click", "disabled"], [2, "font-size", "18px", "width", "18px", "height", "18px"], [1, "modal-status-alert", 3, "ngClass"]], template: function DashboardComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 32, vars: 9, consts: [["noTopicsInWeek", ""], ["classSyllabusInput", ""], ["materialFileInput", ""], [1, "app-header"], [1, "logo-area", 2, "cursor", "pointer", 3, "click"], [1, "logo-icon"], [1, "logo-cosmic"], [1, "logo-text"], [1, "header-right"], ["class", "tab-nav", 4, "ngIf"], ["class", "header-status-area", 4, "ngIf"], [1, "global-streak-header-widget"], [1, "streak-icon"], [1, "streak-text"], [1, "streak-value"], [1, "streak-label"], [1, "btn-logout", 3, "click"], [1, "app-wrapper"], ["class", "class-manager-container fade-in", 4, "ngIf"], ["class", "class-workspace-container fade-in", 4, "ngIf"], [3, "weeks", "cramStartWeek", "cramEndWeek", "classId", "close", 4, "ngIf"], ["class", "modal-overlay fade-in", 4, "ngIf"], ["class", "modal-overlay fade-in", "style", "position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2500; padding: 20px; box-sizing: border-box;", 4, "ngIf"], [1, "tab-nav"], ["title", "Back to Classes Dashboard", 1, "nav-tab", 3, "click"], [1, "nav-tab", 3, "click"], ["title", "Modify Streak & Schedule Settings", 1, "nav-tab", "btn-streak-settings", 3, "click"], [1, "header-status-area"], [1, "header-status-widget", "class-streak-widget"], [1, "fire-icon", "animated-fire"], [1, "widget-details"], [1, "widget-val"], [1, "widget-lbl"], [1, "header-status-widget", "week-widget"], [1, "planet-icon"], [1, "class-manager-container", "fade-in"], [1, "manager-header", "card"], [1, "header-details"], [1, "subtitle"], [1, "btn-add-class", 3, "click"], ["class", "empty-state card fade-in", 4, "ngIf"], ["class", "classes-grid", 4, "ngIf"], [1, "empty-state", "card", "fade-in"], [1, "empty-icon"], [1, "btn", "btn-primary", 3, "click"], [1, "classes-grid"], ["class", "class-card card", 3, "click", 4, "ngFor", "ngForOf"], [1, "class-card", "card", 3, "click"], [1, "class-card-glow"], [1, "class-card-header"], [1, "class-icon"], [1, "class-streak-badge"], [1, "class-card-body"], [1, "class-id"], [1, "class-card-footer"], [1, "class-workspace-container", "fade-in"], [1, "class-subheader"], [1, "btn-back", 3, "click"], [1, "subheader-title"], [1, "class-id-badge"], [1, "timeline-bar-container", "card"], [1, "timeline-left"], [1, "streak-widget"], [1, "week-widget"], [1, "week-label"], [1, "week-value"], [1, "timeline-scroll"], [1, "timeline-weeks"], ["class", "timeline-week-btn", "title", "Click to study topics for this week", 3, "current", "past", "future", "click", 4, "ngFor", "ngForOf"], [1, "timeline-right"], [1, "btn-study", 3, "click"], [1, "btn-cram", 3, "click"], [1, "daily-progress-container", "card", "fade-in"], [1, "daily-progress-header"], [1, "progress-title-icon"], [1, "date-badge"], [1, "checklist-items"], [1, "checklist-item", 3, "click"], [1, "check-icon"], [1, "item-text"], [1, "item-title"], [1, "item-desc"], [1, "app-workspace"], ["class", "tab-content fade-in", 4, "ngIf"], ["class", "tab-content fade-in tutor-tab", 4, "ngIf"], ["class", "tab-content fade-in lesson-tab", 4, "ngIf"], ["title", "Click to study topics for this week", 1, "timeline-week-btn", 3, "click"], [1, "week-num"], [1, "week-status"], [4, "ngIf"], [1, "tab-content", "fade-in"], [1, "syllabus-layout"], [1, "sidebar-column"], [1, "syllabus-topics-card", "card"], [1, "card-header-row"], [1, "section-desc"], ["class", "loading-topics", 4, "ngIf"], ["class", "empty-topics", 4, "ngIf"], ["class", "weeks-accordion", 4, "ngIf"], [1, "ingest-section", "card"], [3, "classId"], [1, "graph-section", "card"], [1, "loading-topics"], [1, "topic-spinner"], [1, "empty-topics"], [1, "weeks-accordion"], ["class", "week-group", 3, "active-week", 4, "ngFor", "ngForOf"], [1, "week-group"], [1, "week-group-header", 3, "click"], [1, "week-title-label"], [1, "week-badge-summary"], ["class", "badge-sufficient", 4, "ngIf"], ["class", "badge-insufficient", 4, "ngIf"], ["class", "badge-empty", 4, "ngIf"], ["class", "week-group-content", 4, "ngIf"], [1, "badge-sufficient"], [1, "badge-insufficient"], [1, "badge-empty"], [1, "week-group-content"], [4, "ngIf", "ngIfElse"], ["class", "timeline-topic-item", 3, "insufficient", 4, "ngFor", "ngForOf"], [1, "timeline-topic-item"], [1, "topic-item-left"], [1, "topic-status-icon", 3, "ngClass"], [1, "topic-name-label", 3, "title"], [1, "topic-item-actions"], ["title", "Upload raw text notes or PPTX/PDF to clear warnings", 1, "btn", "btn-add-materials-small", 3, "click"], [1, "empty-desc", 2, "font-size", "12px", "color", "#94a3b8", "margin", "0", "padding", "4px"], [1, "tab-content", "fade-in", "tutor-tab"], [1, "chat-layout", "card"], [1, "tab-content", "fade-in", "lesson-tab"], [3, "exerciseCompleted", "selectedWeek", "dailyState", "classId"], [3, "close", "weeks", "cramStartWeek", "cramEndWeek", "classId"], [1, "modal-overlay", "fade-in"], [1, "modal-card", "card", "scale-up"], [1, "modal-header"], [1, "modal-title-container"], [1, "modal-header-icon"], [1, "btn-modal-close", 3, "click", "disabled"], [1, "modal-body"], [1, "modal-desc"], [1, "form-group"], ["for", "newClassName"], ["type", "text", "id", "newClassName", "placeholder", "e.g. Intro to Artificial Intelligence", "required", "", 3, "ngModelChange", "ngModel", "disabled"], [1, "file-uploader-dropzone"], ["type", "file", "id", "newClassSyllabus", "accept", ".pdf", "hidden", "", 3, "change", "disabled"], [1, "dropzone-content", 3, "click"], [1, "upload-icon"], ["class", "upload-text", 4, "ngIf"], ["class", "modal-error-alert", 4, "ngIf"], ["class", "modal-progress-container", 4, "ngIf"], [1, "modal-actions"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", "btn-submit-class", 3, "click", "disabled"], [1, "upload-text"], [1, "selected-filename"], [1, "modal-error-alert"], [1, "modal-progress-container"], ["mode", "indeterminate"], [1, "progress-subtext"], [1, "modal-header-icon", "warning-color"], ["class", "form-group", 4, "ngIf"], [1, "file-uploader-mini"], ["type", "file", "accept", ".txt,.md,.pdf,.ppt,.pptx", "hidden", "", 3, "change", "disabled"], ["class", "btn btn-secondary btn-mini-upload", 3, "disabled", "click", 4, "ngIf"], ["class", "uploaded-file-row", "style", "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);", 4, "ngIf"], ["class", "modal-status-alert", 3, "ngClass", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click", "disabled"], ["for", "materialText"], ["id", "materialText", "placeholder", "Paste notes, transcripts, or reference text here...", "rows", "8", 3, "ngModelChange", "ngModel", "disabled"], [1, "btn", "btn-secondary", "btn-mini-upload", 3, "click", "disabled"], [1, "uploaded-file-row", 2, "display", "flex", "align-items", "center", "justify-content", "space-between", "padding", "8px 12px", "background", "rgba(255,255,255,0.05)", "border-radius", "6px", "border", "1px solid rgba(255,255,255,0.1)"], [1, "mini-upload-filename", 2, "display", "flex", "align-items", "center", "gap", "8px", "color", "#f1f5f9"], [2, "color", "#6366f1"], [1, "btn-clear-file", 2, "background", "none", "border", "none", "color", "#94a3b8", "cursor", "pointer", "display", "flex", "align-items", "center", "justify-content", "center", "padding", "4px", "border-radius", "4px", "transition", "all 0.2s", 3, "click", "disabled"], [2, "font-size", "18px", "width", "18px", "height", "18px"], [1, "modal-status-alert", 3, "ngClass"], [1, "modal-overlay", "fade-in", 2, "position", "fixed", "top", "0", "left", "0", "width", "100vw", "height", "100vh", "background", "rgba(5, 8, 16, 0.85)", "backdrop-filter", "blur(8px)", "display", "flex", "justify-content", "center", "align-items", "center", "z-index", "2500", "padding", "20px", "box-sizing", "border-box"], [1, "modal-card", "card", "scale-up", "cosmic-modal", 2, "width", "100%", "max-width", "500px", "background", "#0f172a", "border", "1px solid rgba(99, 102, 241, 0.3)", "border-radius", "16px", "padding", "24px", "box-shadow", "0 0 30px rgba(99, 102, 241, 0.2)", "box-sizing", "border-box", "display", "flex", "flex-direction", "column", "gap", "16px", "color", "#f1f5f9"], [1, "modal-header", 2, "display", "flex", "justify-content", "space-between", "align-items", "center", "border-bottom", "1px solid rgba(255, 255, 255, 0.1)", "padding-bottom", "12px"], [1, "modal-title-container", 2, "display", "flex", "align-items", "center", "gap", "8px", "font-weight", "800", "font-size", "18px", "color", "#38bdf8"], [2, "color", "#38bdf8"], [1, "btn-modal-close", 2, "background", "transparent", "border", "none", "cursor", "pointer", "color", "#94a3b8", 3, "click"], [1, "modal-body", 2, "display", "flex", "flex-direction", "column", "gap", "16px"], [1, "modal-desc", 2, "font-size", "13px", "color", "#94a3b8", "margin", "0", "line-height", "1.5"], [1, "form-group", 2, "display", "flex", "flex-direction", "column", "gap", "8px"], [2, "font-size", "11px", "font-weight", "700", "color", "#38bdf8", "text-transform", "uppercase", "letter-spacing", "0.5px"], [1, "days-checkbox-grid", 2, "display", "grid", "grid-template-columns", "repeat(4, 1fr)", "gap", "8px"], ["class", "cosmic-checkbox-label", "style", "display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;", 4, "ngFor", "ngForOf"], [1, "form-group", 2, "display", "flex", "flex-direction", "column", "gap", "6px"], ["for", "modalPace", 2, "font-size", "11px", "font-weight", "700", "color", "#38bdf8", "text-transform", "uppercase", "letter-spacing", "0.5px"], ["type", "number", "id", "modalPace", "min", "1", 2, "padding", "10px", "border", "1px solid rgba(255,255,255,0.1)", "border-radius", "6px", "font-size", "13px", "background", "rgba(0,0,0,0.2)", "color", "white", "outline", "none", "width", "100%", "box-sizing", "border-box", 3, "ngModelChange", "ngModel"], ["for", "modalStartDate", 2, "font-size", "11px", "font-weight", "700", "color", "#38bdf8", "text-transform", "uppercase", "letter-spacing", "0.5px"], ["type", "date", "id", "modalStartDate", 2, "padding", "10px", "border", "1px solid rgba(255,255,255,0.1)", "border-radius", "6px", "font-size", "13px", "background", "rgba(0,0,0,0.2)", "color", "white", "outline", "none", "width", "100%", "box-sizing", "border-box", 3, "ngModelChange", "ngModel"], [1, "modal-actions", 2, "display", "flex", "justify-content", "flex-end", "gap", "12px", "border-top", "1px solid rgba(255, 255, 255, 0.1)", "padding-top", "12px", "margin-top", "8px"], [1, "btn", "btn-secondary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "1px solid rgba(255,255,255,0.1)", "background", "transparent", "color", "#94a3b8", "cursor", "pointer", "font-weight", "600", 3, "click"], [1, "btn", "btn-primary", 2, "padding", "8px 16px", "font-size", "13px", "border-radius", "6px", "border", "none", "background", "#6366f1", "color", "white", "cursor", "pointer", "font-weight", "700", "display", "inline-flex", "align-items", "center", "gap", "6px", "box-shadow", "0 0 15px rgba(99, 102, 241, 0.4)", 3, "click"], [2, "font-size", "16px", "width", "16px", "height", "16px"], [1, "cosmic-checkbox-label", 2, "display", "flex", "align-items", "center", "gap", "6px", "font-size", "12px", "cursor", "pointer", "background", "rgba(255, 255, 255, 0.05)", "padding", "8px", "border-radius", "6px", "border", "1px solid rgba(255,255,255,0.1)", "transition", "all 0.2s"], ["type", "checkbox", 2, "accent-color", "#38bdf8", 3, "ngModelChange", "ngModel"]], template: function DashboardComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "header", 3)(1, "div", 4);
       \u0275\u0275listener("click", function DashboardComponent_Template_div_click_1_listener() {
         return ctx.selectClass(null);
       });
-      \u0275\u0275elementStart(2, "div", 5)(3, "mat-icon");
-      \u0275\u0275text(4, "school");
+      \u0275\u0275elementStart(2, "div", 5)(3, "mat-icon", 6);
+      \u0275\u0275text(4, "space_dashboard");
       \u0275\u0275elementEnd()();
-      \u0275\u0275elementStart(5, "div", 6)(6, "h2");
+      \u0275\u0275elementStart(5, "div", 7)(6, "h2");
       \u0275\u0275text(7, "Ace Agent");
       \u0275\u0275elementEnd();
       \u0275\u0275elementStart(8, "span");
-      \u0275\u0275text(9, "Interactive AI Study Companion");
+      \u0275\u0275text(9, "Cosmic Study Orbit");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(10, "div", 7)(11, "div", 8)(12, "mat-icon", 9);
-      \u0275\u0275text(13, "local_fire_department");
+      \u0275\u0275elementStart(10, "div", 8);
+      \u0275\u0275template(11, DashboardComponent_nav_11_Template, 21, 6, "nav", 9)(12, DashboardComponent_div_12_Template, 17, 2, "div", 10);
+      \u0275\u0275elementStart(13, "div", 11)(14, "mat-icon", 12);
+      \u0275\u0275text(15, "public");
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(14, "div", 10)(15, "span", 11);
-      \u0275\u0275text(16);
+      \u0275\u0275elementStart(16, "div", 13)(17, "span", 14);
+      \u0275\u0275text(18);
       \u0275\u0275elementEnd();
-      \u0275\u0275elementStart(17, "span", 12);
-      \u0275\u0275text(18, "Global Streak");
+      \u0275\u0275elementStart(19, "span", 15);
+      \u0275\u0275text(20, "Global Streak");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275template(19, DashboardComponent_nav_19_Template, 17, 8, "nav", 13);
-      \u0275\u0275elementStart(20, "button", 14);
-      \u0275\u0275listener("click", function DashboardComponent_Template_button_click_20_listener() {
+      \u0275\u0275elementStart(21, "button", 16);
+      \u0275\u0275listener("click", function DashboardComponent_Template_button_click_21_listener() {
         return ctx.logout();
       });
-      \u0275\u0275elementStart(21, "mat-icon");
-      \u0275\u0275text(22, "logout");
+      \u0275\u0275elementStart(22, "mat-icon");
+      \u0275\u0275text(23, "logout");
       \u0275\u0275elementEnd();
-      \u0275\u0275text(23, " Logout ");
+      \u0275\u0275text(24, " Logout ");
       \u0275\u0275elementEnd()()();
-      \u0275\u0275elementStart(24, "div", 15);
-      \u0275\u0275template(25, DashboardComponent_div_25_Template, 13, 2, "div", 16)(26, DashboardComponent_div_26_Template, 76, 22, "div", 17);
+      \u0275\u0275elementStart(25, "div", 17);
+      \u0275\u0275template(26, DashboardComponent_div_26_Template, 13, 2, "div", 18)(27, DashboardComponent_div_27_Template, 75, 21, "div", 19);
       \u0275\u0275elementEnd();
-      \u0275\u0275template(27, DashboardComponent_app_cram_exam_27_Template, 1, 4, "app-cram-exam", 18)(28, DashboardComponent_div_28_Template, 38, 12, "div", 19)(29, DashboardComponent_div_29_Template, 31, 10, "div", 19);
+      \u0275\u0275template(28, DashboardComponent_app_cram_exam_28_Template, 1, 4, "app-cram-exam", 20)(29, DashboardComponent_div_29_Template, 38, 12, "div", 21)(30, DashboardComponent_div_30_Template, 31, 10, "div", 21)(31, DashboardComponent_div_31_Template, 38, 4, "div", 22);
     }
     if (rf & 2) {
-      \u0275\u0275advance(16);
-      \u0275\u0275textInterpolate1("", ctx.globalStreak, " Days");
-      \u0275\u0275advance(3);
+      \u0275\u0275advance(11);
+      \u0275\u0275property("ngIf", ctx.selectedClass);
+      \u0275\u0275advance();
       \u0275\u0275property("ngIf", ctx.selectedClass);
       \u0275\u0275advance(6);
+      \u0275\u0275textInterpolate1("", ctx.globalStreak, " Days");
+      \u0275\u0275advance(8);
       \u0275\u0275property("ngIf", !ctx.selectedClass);
       \u0275\u0275advance();
       \u0275\u0275property("ngIf", ctx.selectedClass);
@@ -80486,6 +79918,8 @@ var DashboardComponent = class _DashboardComponent {
       \u0275\u0275property("ngIf", ctx.isAddClassModalOpen);
       \u0275\u0275advance();
       \u0275\u0275property("ngIf", ctx.addingMaterialTopic);
+      \u0275\u0275advance();
+      \u0275\u0275property("ngIf", ctx.isStreakSettingsModalOpen);
     }
   }, dependencies: [
     CommonModule,
@@ -80498,16 +79932,18 @@ var DashboardComponent = class _DashboardComponent {
     MatProgressBar,
     FormsModule,
     DefaultValueAccessor,
+    NumberValueAccessor,
+    CheckboxControlValueAccessor,
     NgControlStatus,
     RequiredValidator,
+    MinValidator,
     NgModel,
     GraphVisualizerComponent,
     ChatInterfaceComponent,
-    QuizInterfaceComponent,
     IngestComponent,
     LessonInterfaceComponent,
     CramExamComponent
-  ], styles: ['@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";\n\n\n\n.schedule-banner[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #f59e0b 0%,\n      #d97706 100%);\n  color: white;\n  padding: 12px 40px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 20px;\n  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);\n  font-family: "Inter", sans-serif;\n  animation: _ngcontent-%COMP%_slideDown 0.3s ease;\n  z-index: 1000;\n  position: relative;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%]   .banner-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%]   .banner-text[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.2px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .btn-banner[_ngcontent-%COMP%] {\n  background: white;\n  color: #d97706;\n  border: none;\n  padding: 8px 16px;\n  border-radius: 6px;\n  font-size: 13px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n}\n.schedule-banner[_ngcontent-%COMP%]   .btn-banner[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  transform: translateY(-1px);\n}\n.app-wrapper[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  background-color: #f8fafc;\n  font-family:\n    "Inter",\n    -apple-system,\n    BlinkMacSystemFont,\n    "Segoe UI",\n    Roboto,\n    Helvetica,\n    Arial,\n    sans-serif;\n  color: #1e293b;\n}\n.app-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: #ffffff;\n  padding: 16px 40px;\n  border-bottom: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  position: sticky;\n  top: 0;\n  z-index: 100;\n  flex-wrap: wrap;\n  gap: 15px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border-radius: 10px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-weight: 500;\n  color: #64748b;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 8px;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 18px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  color: #64748b;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%]:hover {\n  color: #1e293b;\n  background-color: #f1f5f9;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab.active[_ngcontent-%COMP%] {\n  color: #4f46e5;\n  background-color: #ede9fe;\n}\n.app-workspace[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  padding: 30px 40px;\n  max-width: 1400px;\n  width: 100%;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\n.tab-content[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_fadeIn 0.35s ease;\n}\n.card[_ngcontent-%COMP%] {\n  background-color: #ffffff;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);\n  margin-bottom: 25px;\n}\n.card[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.card[_ngcontent-%COMP%]   .section-desc[_ngcontent-%COMP%] {\n  margin: 0 0 20px 0;\n  font-size: 13px;\n  color: #64748b;\n  line-height: 1.5;\n}\n.syllabus-layout[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 380px 1fr;\n  gap: 25px;\n  align-items: start;\n}\n.syllabus-layout[_ngcontent-%COMP%]   .sidebar-column[_ngcontent-%COMP%] {\n  position: sticky;\n  top: 95px;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n.tutor-tab[_ngcontent-%COMP%], \n.quiz-tab[_ngcontent-%COMP%] {\n  max-width: 1000px;\n  margin: 0 auto;\n}\n@keyframes _ngcontent-%COMP%_fadeIn {\n  from {\n    opacity: 0;\n    transform: translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes _ngcontent-%COMP%_slideDown {\n  from {\n    transform: translateY(-100%);\n  }\n  to {\n    transform: translateY(0);\n  }\n}\n@media (max-width: 1024px) {\n  .syllabus-layout[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .syllabus-layout[_ngcontent-%COMP%]   .sidebar-column[_ngcontent-%COMP%] {\n    position: relative;\n    top: 0;\n  }\n}\n@media (max-width: 768px) {\n  .app-header[_ngcontent-%COMP%] {\n    padding: 15px 20px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%] {\n    justify-content: space-between;\n  }\n  .app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%] {\n    padding: 8px 12px;\n    font-size: 12px;\n    flex-grow: 1;\n    justify-content: center;\n  }\n  .app-workspace[_ngcontent-%COMP%] {\n    padding: 20px 15px;\n  }\n}\n.header-right[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n}\n.btn-logout[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n  font-weight: 600;\n  color: #ef4444;\n  background: rgba(239, 68, 68, 0.08);\n  border: 1px solid rgba(239, 68, 68, 0.15);\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-logout[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.btn-logout[_ngcontent-%COMP%]:hover {\n  background: rgba(239, 68, 68, 0.15);\n  transform: translateY(-1px);\n}\n.timeline-bar-container[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  margin: 20px 40px 0 40px;\n  gap: 20px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n  flex-wrap: wrap;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 24px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fff5f5;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #fee2e2;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-value[_ngcontent-%COMP%] {\n  font-weight: 700;\n  color: #ef4444;\n  font-size: 14px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-label[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #991b1b;\n  font-weight: 500;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%]   .week-label[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%]   .week-value[_ngcontent-%COMP%] {\n  font-size: 16px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 8px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 6px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: white;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  min-width: 80px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  font-size: 13px;\n  font-weight: 700;\n  color: #475569;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  font-size: 9px;\n  font-weight: 600;\n  color: #64748b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%] {\n  background: #ede9fe;\n  border-color: #c084fc;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #6b21a8;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #701a75;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #86efac;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #166534;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #15803d;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-style: dashed;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #64748b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #4f46e5;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #10b981 0%,\n      #059669 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);\n  transition: all 0.2s ease;\n  margin-right: 12px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%]:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);\n  transition: all 0.2s ease;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%]:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);\n}\n.cram-modal-overlay[_ngcontent-%COMP%] {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.6);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 1000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.cram-modal-content[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 1000px;\n  height: 80vh;\n  background: white;\n  border-radius: 16px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  animation: _ngcontent-%COMP%_modalSlideUp 0.3s ease-out;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  border-bottom: 1px solid #e2e8f0;\n  background: #f8fafc;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%]   .modal-icon[_ngcontent-%COMP%] {\n  color: #a855f7;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .btn-close[_ngcontent-%COMP%] {\n  background: transparent;\n  border: none;\n  color: #64748b;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  transition: all 0.2s ease;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .btn-close[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n.cram-setup-form[_ngcontent-%COMP%] {\n  padding: 40px;\n  max-width: 500px;\n  margin: 0 auto;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-desc[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 14px;\n  line-height: 1.6;\n  margin-bottom: 30px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%] {\n  flex: 1;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 600;\n  color: #475569;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   select.form-input[_ngcontent-%COMP%] {\n  padding: 10px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  font-size: 14px;\n  color: #1f2937;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 12px;\n  justify-content: center;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-outline[_ngcontent-%COMP%] {\n  background: transparent;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-outline[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n.cram-loading-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px;\n}\n.cram-loading-state[_ngcontent-%COMP%]   .spinner[_ngcontent-%COMP%] {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(124, 58, 237, 0.1);\n  border-top-color: #7c3aed;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s infinite linear;\n  margin-bottom: 20px;\n}\n.cram-loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #64748b;\n  font-weight: 500;\n}\n.cram-session-workspace[_ngcontent-%COMP%] {\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%] {\n  border-right: 1px solid #e2e8f0;\n  padding: 24px;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #a855f7;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  line-height: 1.6;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%], \n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%], \n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  color: #0f172a;\n  margin-top: 20px;\n  margin-bottom: 10px;\n  font-weight: 700;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 16px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 4px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 14px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 10px 0;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 6px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   code[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  padding: 2px 6px;\n  border-radius: 4px;\n  font-family: monospace;\n  font-size: 13px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%] {\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #6366f1;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-question-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex-grow: 1;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%]   .progress-bar-bg[_ngcontent-%COMP%] {\n  height: 6px;\n  background: #e2e8f0;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%]   .progress-bar-bg[_ngcontent-%COMP%]   .progress-bar-fill[_ngcontent-%COMP%] {\n  height: 100%;\n  background: #6366f1;\n  transition: width 0.3s ease;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-q-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 10px 0;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-text-lbl[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%] {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%] {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  border-left: 4px solid #cbd5e1;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .status-lbl[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 12px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .text-success[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .text-error[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-details[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 10px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n.cram-complete-view[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  text-align: center;\n  padding: 40px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-trophy[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 16px;\n  animation: _ngcontent-%COMP%_popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);\n}\n.cram-complete-view[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 10px 0;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-score[_ngcontent-%COMP%] {\n  font-size: 15px;\n  color: #475569;\n  margin-bottom: 8px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-score[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 18px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-message[_ngcontent-%COMP%] {\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 24px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes _ngcontent-%COMP%_modalSlideUp {\n  from {\n    transform: translateY(20px);\n    opacity: 0;\n  }\n  to {\n    transform: translateY(0);\n    opacity: 1;\n  }\n}\n@keyframes _ngcontent-%COMP%_popIn {\n  from {\n    transform: scale(0.5);\n    opacity: 0;\n  }\n  to {\n    transform: scale(1);\n    opacity: 1;\n  }\n}\n@media (max-width: 768px) {\n  .timeline-bar-container[_ngcontent-%COMP%] {\n    margin: 15px 15px 0 15px;\n    padding: 12px 16px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%] {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n  }\n  .cram-split-layout[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%] {\n    border-right: none;\n    border-bottom: 1px solid #e2e8f0;\n    height: 50%;\n  }\n  .cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%] {\n    height: 50%;\n  }\n}\n.daily-progress-container[_ngcontent-%COMP%] {\n  margin: 20px 40px 0 40px;\n  padding: 20px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n@media (max-width: 768px) {\n  .daily-progress-container[_ngcontent-%COMP%] {\n    margin: 15px 15px 0 15px;\n    padding: 16px;\n  }\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin-bottom: 16px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   .progress-title-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 700;\n  color: #0f172a;\n  flex-grow: 1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   .date-badge[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  background: #f1f5f9;\n  padding: 4px 10px;\n  border-radius: 9999px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-items[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 16px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: flex-start;\n  gap: 12px;\n  padding: 14px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n  border-color: #cbd5e1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .check-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  color: #94a3b8;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%]   .item-title[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%]   .item-desc[_ngcontent-%COMP%] {\n  font-size: 12px;\n  color: #64748b;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%] {\n  background: rgba(34, 197, 94, 0.04);\n  border-color: #22c55e;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%]   .check-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%]   .item-title[_ngcontent-%COMP%] {\n  color: #166534;\n  text-decoration: line-through;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.locked[_ngcontent-%COMP%] {\n  cursor: not-allowed;\n  opacity: 0.8;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.locked[_ngcontent-%COMP%]:hover {\n  transform: none;\n  box-shadow: none;\n  border-color: #e2e8f0;\n}\n.quiz-locked-notice[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  max-width: 500px;\n  margin: 40px auto;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   .locked-icon[_ngcontent-%COMP%] {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #64748b;\n  margin-bottom: 20px;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 10px 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 24px 0;\n  font-size: 14px;\n  color: #475569;\n  line-height: 1.5;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 10px 24px;\n  border-radius: 10px;\n  border: none;\n  background: #6366f1;\n  color: white;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]:hover {\n  background: #4f46e5;\n}\n.cram-questions-list[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-top: 16px;\n  margin-bottom: 24px;\n}\n.cram-question-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #f1f5f9;\n  padding: 16px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-q-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 0;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-text-lbl[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%] {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%] {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  margin-top: 8px;\n  border-left: 4px solid #cbd5e1;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-details[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%] {\n  border-left-color: #22c55e;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  color: #15803d;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%] {\n  border-left-color: #ef4444;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  color: #b91c1c;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-result-banner[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  opacity: 0.9;\n}\n.cram-result-banner.passed[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #15803d;\n}\n.cram-result-banner.passed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-result-banner.failed[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #b91c1c;\n}\n.cram-result-banner.failed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .btn-sm[_ngcontent-%COMP%] {\n  padding: 6px 12px;\n  font-size: 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  cursor: pointer;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .btn-sm[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.cram-quiz-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  margin-top: 12px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background:\n    linear-gradient(\n      135deg,\n      #fffbeb 0%,\n      #fef3c7 100%);\n  border: 1px solid #fde68a;\n  padding: 6px 14px;\n  border-radius: 20px;\n  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);\n  margin-right: 15px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-icon[_ngcontent-%COMP%] {\n  color: #d97706;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-value[_ngcontent-%COMP%] {\n  font-weight: 800;\n  color: #b45309;\n  font-size: 13px;\n  line-height: 1.2;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-label[_ngcontent-%COMP%] {\n  font-size: 9px;\n  color: #b45309;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.3px;\n}\n.class-manager-container[_ngcontent-%COMP%] {\n  max-width: 1200px;\n  width: 100%;\n  margin: 30px auto;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 15px;\n  background: white;\n  border-radius: 16px;\n  padding: 24px 30px;\n  border: 1px solid #e2e8f0;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  color: #0f172a;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .subtitle[_ngcontent-%COMP%] {\n  margin: 4px 0 0 0;\n  color: #64748b;\n  font-size: 14px;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .btn-add-class[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 24px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  border: none;\n  border-radius: 10px;\n  font-size: 15px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .btn-add-class[_ngcontent-%COMP%]:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);\n}\n.empty-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  border-radius: 16px;\n  border: 2px dashed #cbd5e1;\n  background: white;\n  margin-top: 30px;\n}\n.empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #94a3b8;\n  margin-bottom: 20px;\n}\n.empty-state[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 20px;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 8px 0;\n}\n.empty-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 14px;\n  max-width: 400px;\n  margin: 0 0 24px 0;\n  line-height: 1.6;\n}\n.empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  border: none;\n  cursor: pointer;\n  background: #4f46e5;\n  color: white;\n  transition: all 0.2s;\n}\n.empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  background: #4338ca;\n}\n.classes-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 25px;\n  margin-top: 30px;\n}\n.class-card[_ngcontent-%COMP%] {\n  position: relative;\n  border-radius: 16px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  cursor: pointer;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n  height: 200px;\n  box-sizing: border-box;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n}\n.class-card[_ngcontent-%COMP%]   .class-card-glow[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 4px;\n  background:\n    linear-gradient(\n      90deg,\n      #6366f1,\n      #a855f7);\n  opacity: 0;\n  transition: opacity 0.3s ease;\n}\n.class-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);\n  border-color: #cbd5e1;\n}\n.class-card[_ngcontent-%COMP%]:hover   .class-card-glow[_ngcontent-%COMP%] {\n  opacity: 1;\n}\n.class-card[_ngcontent-%COMP%]:hover   .class-card-footer[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  transform: translateX(4px);\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-streak-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  background: #fff5f5;\n  border: 1px solid #fee2e2;\n  padding: 4px 8px;\n  border-radius: 20px;\n  color: #ef4444;\n  font-size: 11px;\n  font-weight: 700;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-streak-badge[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 19px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 0 0 6px 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%]   .class-id[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 12px;\n  color: #94a3b8;\n  font-family: monospace;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 12px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #4f46e5;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-footer[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n  transition: transform 0.2s ease;\n}\n.class-workspace-container[_ngcontent-%COMP%] {\n  width: 100%;\n  margin-top: 20px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 20px;\n  margin: 0 40px 15px 40px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  color: #475569;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n  border-color: #cbd5e1;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 22px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%]   .class-id-badge[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-family: monospace;\n  background: #f1f5f9;\n  color: #64748b;\n  padding: 2px 8px;\n  border-radius: 4px;\n  border: 1px solid #e2e8f0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .card-header-row[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .card-header-row[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .loading-topics[_ngcontent-%COMP%], \n.syllabus-topics-card[_ngcontent-%COMP%]   .empty-topics[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 30px;\n  text-align: center;\n  color: #64748b;\n  font-size: 13px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .loading-topics[_ngcontent-%COMP%]   p[_ngcontent-%COMP%], \n.syllabus-topics-card[_ngcontent-%COMP%]   .empty-topics[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 6px 0 0 0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-spinner[_ngcontent-%COMP%] {\n  width: 24px;\n  height: 24px;\n  border: 2px solid rgba(99, 102, 241, 0.15);\n  border-top-color: #6366f1;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 0.8s infinite linear;\n  margin-bottom: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topics-list[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-top: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #e2e8f0;\n  background: #f8fafc;\n  gap: 12px;\n  transition: all 0.2s ease;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item.insufficient[_ngcontent-%COMP%] {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item.insufficient[_ngcontent-%COMP%]:hover {\n  background: #fffbeb;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.sufficient-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.insufficient-icon[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-name-label[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  color: #334155;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .warning-badge[_ngcontent-%COMP%] {\n  font-size: 10px;\n  font-weight: 700;\n  background: #fef08a;\n  color: #713f12;\n  padding: 2px 6px;\n  border-radius: 4px;\n  white-space: nowrap;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 10px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  font-size: 11px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.modal-overlay[_ngcontent-%COMP%] {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.65);\n  backdrop-filter: blur(5px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 2000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.modal-card[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 550px;\n  background: white;\n  border-radius: 16px;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);\n  margin-bottom: 0 !important;\n  animation: _ngcontent-%COMP%_modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);\n  display: flex;\n  flex-direction: column;\n  box-sizing: border-box;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   .modal-header-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   .modal-header-icon.warning-color[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .btn-modal-close[_ngcontent-%COMP%] {\n  background: transparent;\n  border: none;\n  color: #94a3b8;\n  cursor: pointer;\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .btn-modal-close[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin-bottom: 24px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .modal-desc[_ngcontent-%COMP%] {\n  margin: 0;\n  color: #64748b;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #475569;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input[type=text][_ngcontent-%COMP%], \n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea[_ngcontent-%COMP%] {\n  padding: 12px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  outline: none;\n  box-sizing: border-box;\n  width: 100%;\n  background: #f8fafc;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input[type=text][_ngcontent-%COMP%]:focus, \n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea[_ngcontent-%COMP%]:focus {\n  border-color: #6366f1;\n  background: white;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%] {\n  border: 2px dashed #cbd5e1;\n  background: #f8fafc;\n  border-radius: 10px;\n  padding: 24px;\n  text-align: center;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]:hover {\n  border-color: #6366f1;\n  background: #f0f3ff;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone.file-selected[_ngcontent-%COMP%] {\n  border-color: #10b981;\n  background: #f0fdf4;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 8px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-icon[_ngcontent-%COMP%] {\n  font-size: 36px;\n  width: 36px;\n  height: 36px;\n  color: #64748b;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  font-size: 13px;\n  color: #475569;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #94a3b8;\n  margin-top: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   .selected-filename[_ngcontent-%COMP%] {\n  color: #047857;\n  font-weight: 700;\n  font-size: 13px;\n  margin-top: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .btn-mini-upload[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  font-size: 12px;\n  font-weight: 700;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  background: white;\n  cursor: pointer;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .btn-mini-upload[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .mini-upload-filename[_ngcontent-%COMP%] {\n  font-size: 12px;\n  color: #0f172a;\n  font-weight: 600;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-error-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fef2f2;\n  border: 1px solid #fee2e2;\n  color: #991b1b;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-error-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.success[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border: 1px solid #bbf7d0;\n  color: #166534;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.error[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.info[_ngcontent-%COMP%] {\n  background: #f0fdfa;\n  border: 1px solid #ccfbf1;\n  color: #0f766e;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.info[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_spin 1s infinite linear;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%]   mat-progress-bar[_ngcontent-%COMP%] {\n  border-radius: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%]   .progress-subtext[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n  font-style: italic;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 12px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  border: none;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-secondary[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  color: #475569;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-secondary[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%] {\n  background: #4f46e5;\n  color: white;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover {\n  background: #4338ca;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:disabled {\n  background: #94a3b8;\n  cursor: not-allowed;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes _ngcontent-%COMP%_modalSlideUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n.scale-up[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);\n}\n.weeks-accordion[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  margin-top: 15px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%] {\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  background: #ffffff;\n  overflow: hidden;\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group.active-week[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group.active-week[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.04);\n  border-bottom: 1px solid rgba(99, 102, 241, 0.1);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 14px 18px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: background 0.2s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-title-label[_ngcontent-%COMP%] {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n  font-weight: 550;\n  padding: 3px 8px;\n  border-radius: 9999px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-sufficient[_ngcontent-%COMP%] {\n  background: #ecfdf5;\n  color: #065f46;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-sufficient[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-insufficient[_ngcontent-%COMP%] {\n  background: #fff9db;\n  color: #856404;\n  border: 1px solid #ffeeba;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-insufficient[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-empty[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  color: #64748b;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%] {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  background: #fafafb;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: #ffffff;\n  font-size: 13px;\n  transition: all 0.2s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item.insufficient[_ngcontent-%COMP%] {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item.insufficient[_ngcontent-%COMP%]:hover {\n  background: #fffbeb;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-width: 0;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.sufficient-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.insufficient-icon[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-name-label[_ngcontent-%COMP%] {\n  font-weight: 500;\n  color: #334155;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  background: #f1f5f9;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n  padding: 4px 8px;\n  font-size: 11px;\n  font-weight: 600;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n/*# sourceMappingURL=dashboard.component.css.map */'] });
+  ], styles: ['@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";\n\n\n\n.schedule-banner[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #f59e0b 0%,\n      #d97706 100%);\n  color: white;\n  padding: 12px 40px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 20px;\n  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);\n  font-family: "Inter", sans-serif;\n  animation: _ngcontent-%COMP%_slideDown 0.3s ease;\n  z-index: 1000;\n  position: relative;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%]   .banner-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .banner-content[_ngcontent-%COMP%]   .banner-text[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.2px;\n}\n.schedule-banner[_ngcontent-%COMP%]   .btn-banner[_ngcontent-%COMP%] {\n  background: white;\n  color: #d97706;\n  border: none;\n  padding: 8px 16px;\n  border-radius: 6px;\n  font-size: 13px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n}\n.schedule-banner[_ngcontent-%COMP%]   .btn-banner[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  transform: translateY(-1px);\n}\n.app-wrapper[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  background-color: #f8fafc;\n  font-family:\n    "Inter",\n    -apple-system,\n    BlinkMacSystemFont,\n    "Segoe UI",\n    Roboto,\n    Helvetica,\n    Arial,\n    sans-serif;\n  color: #1e293b;\n}\n.app-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: #ffffff;\n  padding: 16px 40px;\n  border-bottom: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  position: sticky;\n  top: 0;\n  z-index: 100;\n  flex-wrap: wrap;\n  gap: 15px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border-radius: 10px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-weight: 500;\n  color: #64748b;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 8px;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 18px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  color: #64748b;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%]:hover {\n  color: #1e293b;\n  background-color: #f1f5f9;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab.active[_ngcontent-%COMP%] {\n  color: #4f46e5;\n  background-color: #ede9fe;\n}\n.app-workspace[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  padding: 30px 40px;\n  max-width: 1400px;\n  width: 100%;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\n.tab-content[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_fadeIn 0.35s ease;\n}\n.card[_ngcontent-%COMP%] {\n  background-color: #ffffff;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);\n  margin-bottom: 25px;\n}\n.card[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.card[_ngcontent-%COMP%]   .section-desc[_ngcontent-%COMP%] {\n  margin: 0 0 20px 0;\n  font-size: 13px;\n  color: #64748b;\n  line-height: 1.5;\n}\n.syllabus-layout[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 380px 1fr;\n  gap: 25px;\n  align-items: start;\n}\n.syllabus-layout[_ngcontent-%COMP%]   .sidebar-column[_ngcontent-%COMP%] {\n  position: sticky;\n  top: 95px;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n.tutor-tab[_ngcontent-%COMP%], \n.quiz-tab[_ngcontent-%COMP%] {\n  max-width: 1000px;\n  margin: 0 auto;\n}\n@keyframes _ngcontent-%COMP%_fadeIn {\n  from {\n    opacity: 0;\n    transform: translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes _ngcontent-%COMP%_slideDown {\n  from {\n    transform: translateY(-100%);\n  }\n  to {\n    transform: translateY(0);\n  }\n}\n@media (max-width: 1024px) {\n  .syllabus-layout[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .syllabus-layout[_ngcontent-%COMP%]   .sidebar-column[_ngcontent-%COMP%] {\n    position: relative;\n    top: 0;\n  }\n}\n@media (max-width: 768px) {\n  .app-header[_ngcontent-%COMP%] {\n    padding: 15px 20px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%] {\n    justify-content: space-between;\n  }\n  .app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%] {\n    padding: 8px 12px;\n    font-size: 12px;\n    flex-grow: 1;\n    justify-content: center;\n  }\n  .app-workspace[_ngcontent-%COMP%] {\n    padding: 20px 15px;\n  }\n}\n.header-right[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n}\n.btn-logout[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n  font-weight: 600;\n  color: #ef4444;\n  background: rgba(239, 68, 68, 0.08);\n  border: 1px solid rgba(239, 68, 68, 0.15);\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-logout[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.btn-logout[_ngcontent-%COMP%]:hover {\n  background: rgba(239, 68, 68, 0.15);\n  transform: translateY(-1px);\n}\n.timeline-bar-container[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  margin: 20px 40px 0 40px;\n  gap: 20px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n  flex-wrap: wrap;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 24px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fff5f5;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #fee2e2;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-value[_ngcontent-%COMP%] {\n  font-weight: 700;\n  color: #ef4444;\n  font-size: 14px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .streak-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-label[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #991b1b;\n  font-weight: 500;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%]   .week-label[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%]   .week-widget[_ngcontent-%COMP%]   .week-value[_ngcontent-%COMP%] {\n  font-size: 16px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 8px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 6px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: white;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  min-width: 80px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  font-size: 13px;\n  font-weight: 700;\n  color: #475569;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  font-size: 9px;\n  font-weight: 600;\n  color: #64748b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%] {\n  background: #ede9fe;\n  border-color: #c084fc;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #6b21a8;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.current[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #701a75;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #86efac;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #166534;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.past[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #15803d;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-style: dashed;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%]   .week-num[_ngcontent-%COMP%] {\n  color: #64748b;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-scroll[_ngcontent-%COMP%]   .timeline-weeks[_ngcontent-%COMP%]   .timeline-week-btn.future[_ngcontent-%COMP%]   .week-status[_ngcontent-%COMP%] {\n  color: #4f46e5;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #10b981 0%,\n      #059669 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);\n  transition: all 0.2s ease;\n  margin-right: 12px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-study[_ngcontent-%COMP%]:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);\n  transition: all 0.2s ease;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container[_ngcontent-%COMP%]   .timeline-right[_ngcontent-%COMP%]   .btn-cram[_ngcontent-%COMP%]:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);\n}\n.cram-modal-overlay[_ngcontent-%COMP%] {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.6);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 1000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.cram-modal-content[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 1000px;\n  height: 80vh;\n  background: white;\n  border-radius: 16px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  animation: _ngcontent-%COMP%_modalSlideUp 0.3s ease-out;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  border-bottom: 1px solid #e2e8f0;\n  background: #f8fafc;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%]   .modal-icon[_ngcontent-%COMP%] {\n  color: #a855f7;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .header-icon-title[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .btn-close[_ngcontent-%COMP%] {\n  background: transparent;\n  border: none;\n  color: #64748b;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  transition: all 0.2s ease;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-header[_ngcontent-%COMP%]   .btn-close[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n}\n.cram-modal-content[_ngcontent-%COMP%]   .cram-modal-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n.cram-setup-form[_ngcontent-%COMP%] {\n  padding: 40px;\n  max-width: 500px;\n  margin: 0 auto;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-desc[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 14px;\n  line-height: 1.6;\n  margin-bottom: 30px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%] {\n  flex: 1;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 600;\n  color: #475569;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .range-inputs[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   select.form-input[_ngcontent-%COMP%] {\n  padding: 10px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  font-size: 14px;\n  color: #1f2937;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%] {\n  display: flex;\n  gap: 12px;\n  justify-content: center;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-outline[_ngcontent-%COMP%] {\n  background: transparent;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-outline[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n}\n.cram-setup-form[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n.cram-loading-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px;\n}\n.cram-loading-state[_ngcontent-%COMP%]   .spinner[_ngcontent-%COMP%] {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(124, 58, 237, 0.1);\n  border-top-color: #7c3aed;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 1s infinite linear;\n  margin-bottom: 20px;\n}\n.cram-loading-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #64748b;\n  font-weight: 500;\n}\n.cram-session-workspace[_ngcontent-%COMP%] {\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%] {\n  border-right: 1px solid #e2e8f0;\n  padding: 24px;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #a855f7;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  line-height: 1.6;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%], \n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%], \n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  color: #0f172a;\n  margin-top: 20px;\n  margin-bottom: 10px;\n  font-weight: 700;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 16px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 4px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 14px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 10px 0;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   li[_ngcontent-%COMP%] {\n  margin-bottom: 6px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%]   .markdown-body[_ngcontent-%COMP%]   code[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  padding: 2px 6px;\n  border-radius: 4px;\n  font-family: monospace;\n  font-size: 13px;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%] {\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #6366f1;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-question-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex-grow: 1;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%]   .progress-bar-bg[_ngcontent-%COMP%] {\n  height: 6px;\n  background: #e2e8f0;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-progress-stats[_ngcontent-%COMP%]   .progress-bar-bg[_ngcontent-%COMP%]   .progress-bar-fill[_ngcontent-%COMP%] {\n  height: 100%;\n  background: #6366f1;\n  transition: width 0.3s ease;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-q-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 10px 0;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-text-lbl[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%] {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%] {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  border-left: 4px solid #cbd5e1;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .status-lbl[_ngcontent-%COMP%] {\n  font-weight: 700;\n  font-size: 12px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .text-success[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   .text-error[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-details[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 10px;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-question-container[_ngcontent-%COMP%]   .cram-action-footer[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n.cram-complete-view[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  text-align: center;\n  padding: 40px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-trophy[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 16px;\n  animation: _ngcontent-%COMP%_popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);\n}\n.cram-complete-view[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 10px 0;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-score[_ngcontent-%COMP%] {\n  font-size: 15px;\n  color: #475569;\n  margin-bottom: 8px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-score[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 18px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .complete-message[_ngcontent-%COMP%] {\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 24px;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-complete-view[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  opacity: 0.95;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes _ngcontent-%COMP%_modalSlideUp {\n  from {\n    transform: translateY(20px);\n    opacity: 0;\n  }\n  to {\n    transform: translateY(0);\n    opacity: 1;\n  }\n}\n@keyframes _ngcontent-%COMP%_popIn {\n  from {\n    transform: scale(0.5);\n    opacity: 0;\n  }\n  to {\n    transform: scale(1);\n    opacity: 1;\n  }\n}\n@media (max-width: 768px) {\n  .timeline-bar-container[_ngcontent-%COMP%] {\n    margin: 15px 15px 0 15px;\n    padding: 12px 16px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .timeline-bar-container[_ngcontent-%COMP%]   .timeline-left[_ngcontent-%COMP%] {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n  }\n  .cram-split-layout[_ngcontent-%COMP%] {\n    grid-template-columns: 1fr;\n  }\n  .cram-split-layout[_ngcontent-%COMP%]   .cram-guide-panel[_ngcontent-%COMP%] {\n    border-right: none;\n    border-bottom: 1px solid #e2e8f0;\n    height: 50%;\n  }\n  .cram-split-layout[_ngcontent-%COMP%]   .cram-quiz-panel[_ngcontent-%COMP%] {\n    height: 50%;\n  }\n}\n.daily-progress-container[_ngcontent-%COMP%] {\n  margin: 20px 40px 0 40px;\n  padding: 20px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n@media (max-width: 768px) {\n  .daily-progress-container[_ngcontent-%COMP%] {\n    margin: 15px 15px 0 15px;\n    padding: 16px;\n  }\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin-bottom: 16px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   .progress-title-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 700;\n  color: #0f172a;\n  flex-grow: 1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .daily-progress-header[_ngcontent-%COMP%]   .date-badge[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  background: #f1f5f9;\n  padding: 4px 10px;\n  border-radius: 9999px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-items[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 16px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: flex-start;\n  gap: 12px;\n  padding: 14px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n  border-color: #cbd5e1;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .check-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  color: #94a3b8;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%]   .item-title[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item[_ngcontent-%COMP%]   .item-text[_ngcontent-%COMP%]   .item-desc[_ngcontent-%COMP%] {\n  font-size: 12px;\n  color: #64748b;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%] {\n  background: rgba(34, 197, 94, 0.04);\n  border-color: #22c55e;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%]   .check-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.completed[_ngcontent-%COMP%]   .item-title[_ngcontent-%COMP%] {\n  color: #166534;\n  text-decoration: line-through;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.locked[_ngcontent-%COMP%] {\n  cursor: not-allowed;\n  opacity: 0.8;\n}\n.daily-progress-container[_ngcontent-%COMP%]   .checklist-item.locked[_ngcontent-%COMP%]:hover {\n  transform: none;\n  box-shadow: none;\n  border-color: #e2e8f0;\n}\n.quiz-locked-notice[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  max-width: 500px;\n  margin: 40px auto;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   .locked-icon[_ngcontent-%COMP%] {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #64748b;\n  margin-bottom: 20px;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  margin: 0 0 10px 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0 0 24px 0;\n  font-size: 14px;\n  color: #475569;\n  line-height: 1.5;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   button[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 10px 24px;\n  border-radius: 10px;\n  border: none;\n  background: #6366f1;\n  color: white;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n.quiz-locked-notice[_ngcontent-%COMP%]   button[_ngcontent-%COMP%]:hover {\n  background: #4f46e5;\n}\n.cram-questions-list[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-top: 16px;\n  margin-bottom: 24px;\n}\n.cram-question-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #f1f5f9;\n  padding: 16px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-q-text[_ngcontent-%COMP%] {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 0;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-options-grid[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]   .option-text-lbl[_ngcontent-%COMP%] {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button[_ngcontent-%COMP%]:hover:not(:disabled) {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.selected[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%] {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.correct[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%] {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-option-button.wrong[_ngcontent-%COMP%]   .option-label-badge[_ngcontent-%COMP%] {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%] {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  margin-top: 8px;\n  border-left: 4px solid #cbd5e1;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block[_ngcontent-%COMP%]   .explanation-details[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%] {\n  border-left-color: #22c55e;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  color: #15803d;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.correct-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%] {\n  border-left-color: #ef4444;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%] {\n  color: #b91c1c;\n}\n.cram-question-card[_ngcontent-%COMP%]   .cram-explanation-block.wrong-status[_ngcontent-%COMP%]   .explanation-status[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-result-banner[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%]   h4[_ngcontent-%COMP%] {\n  margin: 0 0 4px 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .result-info[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 13px;\n  opacity: 0.9;\n}\n.cram-result-banner.passed[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #15803d;\n}\n.cram-result-banner.passed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #22c55e;\n}\n.cram-result-banner.failed[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #b91c1c;\n}\n.cram-result-banner.failed[_ngcontent-%COMP%]   .result-icon[_ngcontent-%COMP%] {\n  color: #ef4444;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .btn-sm[_ngcontent-%COMP%] {\n  padding: 6px 12px;\n  font-size: 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  cursor: pointer;\n}\n.cram-result-banner[_ngcontent-%COMP%]   .btn-sm[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.cram-quiz-footer[_ngcontent-%COMP%] {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  margin-top: 12px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background:\n    linear-gradient(\n      135deg,\n      #fffbeb 0%,\n      #fef3c7 100%);\n  border: 1px solid #fde68a;\n  padding: 6px 14px;\n  border-radius: 20px;\n  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);\n  margin-right: 15px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-icon[_ngcontent-%COMP%] {\n  color: #d97706;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-value[_ngcontent-%COMP%] {\n  font-weight: 800;\n  color: #b45309;\n  font-size: 13px;\n  line-height: 1.2;\n}\n.global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-label[_ngcontent-%COMP%] {\n  font-size: 9px;\n  color: #b45309;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.3px;\n}\n.class-manager-container[_ngcontent-%COMP%] {\n  max-width: 1200px;\n  width: 100%;\n  margin: 30px auto;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 15px;\n  background: white;\n  border-radius: 16px;\n  padding: 24px 30px;\n  border: 1px solid #e2e8f0;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   h1[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  color: #0f172a;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .subtitle[_ngcontent-%COMP%] {\n  margin: 4px 0 0 0;\n  color: #64748b;\n  font-size: 14px;\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .btn-add-class[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 24px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  border: none;\n  border-radius: 10px;\n  font-size: 15px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.class-manager-container[_ngcontent-%COMP%]   .manager-header[_ngcontent-%COMP%]   .btn-add-class[_ngcontent-%COMP%]:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);\n}\n.empty-state[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  border-radius: 16px;\n  border: 2px dashed #cbd5e1;\n  background: white;\n  margin-top: 30px;\n}\n.empty-state[_ngcontent-%COMP%]   .empty-icon[_ngcontent-%COMP%] {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #94a3b8;\n  margin-bottom: 20px;\n}\n.empty-state[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  font-size: 20px;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 8px 0;\n}\n.empty-state[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  color: #64748b;\n  font-size: 14px;\n  max-width: 400px;\n  margin: 0 0 24px 0;\n  line-height: 1.6;\n}\n.empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  border: none;\n  cursor: pointer;\n  background: #4f46e5;\n  color: white;\n  transition: all 0.2s;\n}\n.empty-state[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%]:hover {\n  background: #4338ca;\n}\n.classes-grid[_ngcontent-%COMP%] {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 25px;\n  margin-top: 30px;\n}\n.class-card[_ngcontent-%COMP%] {\n  position: relative;\n  border-radius: 16px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  cursor: pointer;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n  height: 200px;\n  box-sizing: border-box;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n}\n.class-card[_ngcontent-%COMP%]   .class-card-glow[_ngcontent-%COMP%] {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 4px;\n  background:\n    linear-gradient(\n      90deg,\n      #6366f1,\n      #a855f7);\n  opacity: 0;\n  transition: opacity 0.3s ease;\n}\n.class-card[_ngcontent-%COMP%]:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);\n  border-color: #cbd5e1;\n}\n.class-card[_ngcontent-%COMP%]:hover   .class-card-glow[_ngcontent-%COMP%] {\n  opacity: 1;\n}\n.class-card[_ngcontent-%COMP%]:hover   .class-card-footer[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  transform: translateX(4px);\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-streak-badge[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  background: #fff5f5;\n  border: 1px solid #fee2e2;\n  padding: 4px 8px;\n  border-radius: 20px;\n  color: #ef4444;\n  font-size: 11px;\n  font-weight: 700;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-header[_ngcontent-%COMP%]   .class-streak-badge[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%] {\n  flex-grow: 1;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%]   h3[_ngcontent-%COMP%] {\n  font-size: 19px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 0 0 6px 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-body[_ngcontent-%COMP%]   .class-id[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 12px;\n  color: #94a3b8;\n  font-family: monospace;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-footer[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 12px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #4f46e5;\n}\n.class-card[_ngcontent-%COMP%]   .class-card-footer[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n  transition: transform 0.2s ease;\n}\n.class-workspace-container[_ngcontent-%COMP%] {\n  width: 100%;\n  margin-top: 20px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 20px;\n  margin: 0 40px 15px 40px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  color: #475569;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .btn-back[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n  color: #0f172a;\n  border-color: #cbd5e1;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 22px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.class-workspace-container[_ngcontent-%COMP%]   .class-subheader[_ngcontent-%COMP%]   .subheader-title[_ngcontent-%COMP%]   .class-id-badge[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-family: monospace;\n  background: #f1f5f9;\n  color: #64748b;\n  padding: 2px 8px;\n  border-radius: 4px;\n  border: 1px solid #e2e8f0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .card-header-row[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .card-header-row[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .loading-topics[_ngcontent-%COMP%], \n.syllabus-topics-card[_ngcontent-%COMP%]   .empty-topics[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 30px;\n  text-align: center;\n  color: #64748b;\n  font-size: 13px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .loading-topics[_ngcontent-%COMP%]   p[_ngcontent-%COMP%], \n.syllabus-topics-card[_ngcontent-%COMP%]   .empty-topics[_ngcontent-%COMP%]   p[_ngcontent-%COMP%] {\n  margin: 6px 0 0 0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-spinner[_ngcontent-%COMP%] {\n  width: 24px;\n  height: 24px;\n  border: 2px solid rgba(99, 102, 241, 0.15);\n  border-top-color: #6366f1;\n  border-radius: 50%;\n  animation: _ngcontent-%COMP%_spin 0.8s infinite linear;\n  margin-bottom: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topics-list[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-top: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #e2e8f0;\n  background: #f8fafc;\n  gap: 12px;\n  transition: all 0.2s ease;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item.insufficient[_ngcontent-%COMP%] {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item.insufficient[_ngcontent-%COMP%]:hover {\n  background: #fffbeb;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.sufficient-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.insufficient-icon[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-name-label[_ngcontent-%COMP%] {\n  font-size: 14px;\n  font-weight: 600;\n  color: #334155;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .warning-badge[_ngcontent-%COMP%] {\n  font-size: 10px;\n  font-weight: 700;\n  background: #fef08a;\n  color: #713f12;\n  padding: 2px 6px;\n  border-radius: 4px;\n  white-space: nowrap;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 10px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  font-size: 11px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n.syllabus-topics-card[_ngcontent-%COMP%]   .topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.modal-overlay[_ngcontent-%COMP%] {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.65);\n  backdrop-filter: blur(5px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 2000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.modal-card[_ngcontent-%COMP%] {\n  width: 100%;\n  max-width: 550px;\n  background: white;\n  border-radius: 16px;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);\n  margin-bottom: 0 !important;\n  animation: _ngcontent-%COMP%_modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);\n  display: flex;\n  flex-direction: column;\n  box-sizing: border-box;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   .modal-header-icon[_ngcontent-%COMP%] {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   .modal-header-icon.warning-color[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .modal-title-container[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .btn-modal-close[_ngcontent-%COMP%] {\n  background: transparent;\n  border: none;\n  color: #94a3b8;\n  cursor: pointer;\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-header[_ngcontent-%COMP%]   .btn-modal-close[_ngcontent-%COMP%]:hover {\n  background: #f1f5f9;\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin-bottom: 24px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-body[_ngcontent-%COMP%]   .modal-desc[_ngcontent-%COMP%] {\n  margin: 0;\n  color: #64748b;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #475569;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input[type=text][_ngcontent-%COMP%], \n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea[_ngcontent-%COMP%] {\n  padding: 12px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  outline: none;\n  box-sizing: border-box;\n  width: 100%;\n  background: #f8fafc;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   input[type=text][_ngcontent-%COMP%]:focus, \n.modal-card[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   textarea[_ngcontent-%COMP%]:focus {\n  border-color: #6366f1;\n  background: white;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%] {\n  border: 2px dashed #cbd5e1;\n  background: #f8fafc;\n  border-radius: 10px;\n  padding: 24px;\n  text-align: center;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]:hover {\n  border-color: #6366f1;\n  background: #f0f3ff;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone.file-selected[_ngcontent-%COMP%] {\n  border-color: #10b981;\n  background: #f0fdf4;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 8px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-icon[_ngcontent-%COMP%] {\n  font-size: 36px;\n  width: 36px;\n  height: 36px;\n  color: #64748b;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  font-size: 13px;\n  color: #475569;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   strong[_ngcontent-%COMP%] {\n  color: #0f172a;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #94a3b8;\n  margin-top: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-dropzone[_ngcontent-%COMP%]   .dropzone-content[_ngcontent-%COMP%]   .upload-text[_ngcontent-%COMP%]   .selected-filename[_ngcontent-%COMP%] {\n  color: #047857;\n  font-weight: 700;\n  font-size: 13px;\n  margin-top: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .btn-mini-upload[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  font-size: 12px;\n  font-weight: 700;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  background: white;\n  cursor: pointer;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .btn-mini-upload[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.modal-card[_ngcontent-%COMP%]   .file-uploader-mini[_ngcontent-%COMP%]   .mini-upload-filename[_ngcontent-%COMP%] {\n  font-size: 12px;\n  color: #0f172a;\n  font-weight: 600;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-error-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fef2f2;\n  border: 1px solid #fee2e2;\n  color: #991b1b;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-error-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.success[_ngcontent-%COMP%] {\n  background: #f0fdf4;\n  border: 1px solid #bbf7d0;\n  color: #166534;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.error[_ngcontent-%COMP%] {\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.info[_ngcontent-%COMP%] {\n  background: #f0fdfa;\n  border: 1px solid #ccfbf1;\n  color: #0f766e;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-status-alert.info[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_spin 1s infinite linear;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%]   mat-progress-bar[_ngcontent-%COMP%] {\n  border-radius: 4px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-progress-container[_ngcontent-%COMP%]   .progress-subtext[_ngcontent-%COMP%] {\n  font-size: 11px;\n  color: #64748b;\n  font-style: italic;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: flex-end;\n  gap: 12px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn[_ngcontent-%COMP%] {\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  border: none;\n  transition: all 0.2s;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-secondary[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  color: #475569;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-secondary[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%] {\n  background: #4f46e5;\n  color: white;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:hover {\n  background: #4338ca;\n}\n.modal-card[_ngcontent-%COMP%]   .modal-actions[_ngcontent-%COMP%]   .btn-primary[_ngcontent-%COMP%]:disabled {\n  background: #94a3b8;\n  cursor: not-allowed;\n}\n@keyframes _ngcontent-%COMP%_spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes _ngcontent-%COMP%_modalSlideUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n.scale-up[_ngcontent-%COMP%] {\n  animation: _ngcontent-%COMP%_modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);\n}\n.weeks-accordion[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  margin-top: 15px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%] {\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  background: #ffffff;\n  overflow: hidden;\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group.active-week[_ngcontent-%COMP%] {\n  border-color: #6366f1;\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group.active-week[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.04);\n  border-bottom: 1px solid rgba(99, 102, 241, 0.1);\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 14px 18px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: background 0.2s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-title-label[_ngcontent-%COMP%] {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n  font-weight: 550;\n  padding: 3px 8px;\n  border-radius: 9999px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-sufficient[_ngcontent-%COMP%] {\n  background: #ecfdf5;\n  color: #065f46;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-sufficient[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-insufficient[_ngcontent-%COMP%] {\n  background: #fff9db;\n  color: #856404;\n  border: 1px solid #ffeeba;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-insufficient[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-header[_ngcontent-%COMP%]   .week-badge-summary[_ngcontent-%COMP%]   .badge-empty[_ngcontent-%COMP%] {\n  background: #f1f5f9;\n  color: #64748b;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%] {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  background: #fafafb;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%] {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: #ffffff;\n  font-size: 13px;\n  transition: all 0.2s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]:hover {\n  background: #f8fafc;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item.insufficient[_ngcontent-%COMP%] {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item.insufficient[_ngcontent-%COMP%]:hover {\n  background: #fffbeb;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-width: 0;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon[_ngcontent-%COMP%] {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.sufficient-icon[_ngcontent-%COMP%] {\n  color: #10b981;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-status-icon.insufficient-icon[_ngcontent-%COMP%] {\n  color: #eab308;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-left[_ngcontent-%COMP%]   .topic-name-label[_ngcontent-%COMP%] {\n  font-weight: 500;\n  color: #334155;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%] {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  background: #f1f5f9;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n  padding: 4px 8px;\n  font-size: 11px;\n  font-weight: 600;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%]   mat-icon[_ngcontent-%COMP%] {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion[_ngcontent-%COMP%]   .week-group[_ngcontent-%COMP%]   .week-group-content[_ngcontent-%COMP%]   .timeline-topic-item[_ngcontent-%COMP%]   .topic-item-actions[_ngcontent-%COMP%]   .btn-add-materials-small[_ngcontent-%COMP%]:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.app-header[_ngcontent-%COMP%] {\n  background-color: #0b0f19 !important;\n  border-bottom: 1px solid rgba(99, 102, 241, 0.25) !important;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;\n  color: #f1f5f9 !important;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #1e1b4b 0%,\n      #312e81 100%) !important;\n  border: 1px solid rgba(99, 102, 241, 0.4);\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-icon[_ngcontent-%COMP%]   .logo-cosmic[_ngcontent-%COMP%] {\n  color: #38bdf8;\n  filter: drop-shadow(0 0 8px #38bdf8);\n  animation: _ngcontent-%COMP%_slow-rotate 10s linear infinite;\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   h2[_ngcontent-%COMP%] {\n  background:\n    linear-gradient(\n      135deg,\n      #38bdf8 0%,\n      #6366f1 100%) !important;\n  -webkit-background-clip: text !important;\n  -webkit-text-fill-color: transparent !important;\n  font-weight: 800;\n  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2));\n}\n.app-header[_ngcontent-%COMP%]   .logo-area[_ngcontent-%COMP%]   .logo-text[_ngcontent-%COMP%]   span[_ngcontent-%COMP%] {\n  color: #94a3b8 !important;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%] {\n  color: #94a3b8;\n  border: 1px solid transparent;\n  margin: 0 2px;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab[_ngcontent-%COMP%]:hover {\n  background-color: rgba(255, 255, 255, 0.05);\n  color: #ffffff;\n}\n.app-header[_ngcontent-%COMP%]   .tab-nav[_ngcontent-%COMP%]   .nav-tab.active[_ngcontent-%COMP%] {\n  background: rgba(99, 102, 241, 0.15) !important;\n  border: 1px solid rgba(99, 102, 241, 0.4);\n  color: #38bdf8 !important;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);\n}\n.app-header[_ngcontent-%COMP%]   .global-streak-header-widget[_ngcontent-%COMP%] {\n  background: rgba(255, 255, 255, 0.05);\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  border-radius: 8px;\n  padding: 6px 12px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n.app-header[_ngcontent-%COMP%]   .global-streak-header-widget[_ngcontent-%COMP%]   .streak-icon[_ngcontent-%COMP%] {\n  color: #a855f7;\n  filter: drop-shadow(0 0 6px #a855f7);\n}\n.app-header[_ngcontent-%COMP%]   .global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n}\n.app-header[_ngcontent-%COMP%]   .global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-value[_ngcontent-%COMP%] {\n  font-size: 13px;\n  font-weight: 800;\n  color: #f1f5f9;\n  line-height: 1.2;\n}\n.app-header[_ngcontent-%COMP%]   .global-streak-header-widget[_ngcontent-%COMP%]   .streak-text[_ngcontent-%COMP%]   .streak-label[_ngcontent-%COMP%] {\n  font-size: 10px;\n  color: #94a3b8;\n}\n@keyframes _ngcontent-%COMP%_slow-rotate {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n.header-status-area[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  margin: 0 8px;\n}\n.header-status-widget[_ngcontent-%COMP%] {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 12px;\n  background: rgba(255, 255, 255, 0.04);\n  border: 1px solid rgba(255, 255, 255, 0.08);\n  border-radius: 8px;\n  height: 38px;\n  box-sizing: border-box;\n}\n.header-status-widget[_ngcontent-%COMP%]   .fire-icon[_ngcontent-%COMP%] {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.header-status-widget[_ngcontent-%COMP%]   .planet-icon[_ngcontent-%COMP%] {\n  color: #38bdf8;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  filter: drop-shadow(0 0 6px #38bdf8);\n  animation: _ngcontent-%COMP%_pulse-cosmic 2s infinite alternate;\n}\n.header-status-widget[_ngcontent-%COMP%]   .widget-details[_ngcontent-%COMP%] {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.header-status-widget[_ngcontent-%COMP%]   .widget-details[_ngcontent-%COMP%]   .widget-val[_ngcontent-%COMP%] {\n  font-size: 12px;\n  font-weight: 700;\n  color: #f8fafc;\n  line-height: 1.2;\n}\n.header-status-widget[_ngcontent-%COMP%]   .widget-details[_ngcontent-%COMP%]   .widget-lbl[_ngcontent-%COMP%] {\n  font-size: 9px;\n  color: #94a3b8;\n  font-weight: 500;\n  letter-spacing: 0.2px;\n}\n@keyframes _ngcontent-%COMP%_pulse-cosmic {\n  0% {\n    transform: scale(0.95);\n    opacity: 0.8;\n  }\n  100% {\n    transform: scale(1.05);\n    opacity: 1;\n    filter: drop-shadow(0 0 10px #38bdf8);\n  }\n}\n.cosmic-modal[_ngcontent-%COMP%]   .form-group[_ngcontent-%COMP%]   label[_ngcontent-%COMP%] {\n  font-size: 11px;\n  font-weight: 700;\n  color: #38bdf8;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.cosmic-modal[_ngcontent-%COMP%]   .cosmic-checkbox-label[_ngcontent-%COMP%]:hover {\n  background: rgba(99, 102, 241, 0.15) !important;\n  border-color: rgba(99, 102, 241, 0.4) !important;\n  color: white;\n}\n/*# sourceMappingURL=dashboard.component.css.map */'] });
 };
 (() => {
   (typeof ngDevMode === "undefined" || ngDevMode) && setClassMetadata(DashboardComponent, [{
@@ -80519,7 +79955,6 @@ var DashboardComponent = class _DashboardComponent {
       FormsModule,
       GraphVisualizerComponent,
       ChatInterfaceComponent,
-      QuizInterfaceComponent,
       IngestComponent,
       LessonInterfaceComponent,
       CramExamComponent
@@ -80527,38 +79962,63 @@ var DashboardComponent = class _DashboardComponent {
 <header class="app-header">
   <div class="logo-area" (click)="selectClass(null)" style="cursor: pointer;">
     <div class="logo-icon">
-      <mat-icon>school</mat-icon>
+      <mat-icon class="logo-cosmic">space_dashboard</mat-icon>
     </div>
     <div class="logo-text">
       <h2>Ace Agent</h2>
-      <span>Interactive AI Study Companion</span>
+      <span>Cosmic Study Orbit</span>
     </div>
   </div>
   
   <div class="header-right">
-    <!-- Global Streak Widget at the very top -->
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav" *ngIf="selectedClass">
+      <button class="nav-tab" (click)="selectClass(null)" title="Back to Classes Dashboard">
+        <mat-icon>dashboard</mat-icon> Dashboard
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
+        <mat-icon>menu_book</mat-icon> Syllabus & Graph
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'lesson'" (click)="selectTab('lesson')">
+        <mat-icon>chrome_reader_mode</mat-icon> Study Orbit
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+        <mat-icon>forum</mat-icon> Ask Ace
+      </button>
+      <button class="nav-tab btn-streak-settings" (click)="openStreakSettingsModal()" title="Modify Streak & Schedule Settings">
+        <mat-icon>insights</mat-icon> Streak Settings
+      </button>
+    </nav>
+
+    <!-- Streaks & Progress Indicators in the Taskbar -->
+    <div class="header-status-area" *ngIf="selectedClass">
+      <!-- Class Streak -->
+      <div class="header-status-widget class-streak-widget">
+        <mat-icon class="fire-icon animated-fire">local_fire_department</mat-icon>
+        <div class="widget-details">
+          <span class="widget-val">{{ currentStreak }} Days</span>
+          <span class="widget-lbl">Class Streak</span>
+        </div>
+      </div>
+
+      <!-- Current Week Progress -->
+      <div class="header-status-widget week-widget">
+        <mat-icon class="planet-icon">travel_explore</mat-icon>
+        <div class="widget-details">
+          <span class="widget-val">Week {{ selectedTimelineWeek }}</span>
+          <span class="widget-lbl">Study Orbit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Streak Widget -->
     <div class="global-streak-header-widget">
-      <mat-icon class="streak-icon">local_fire_department</mat-icon>
+      <mat-icon class="streak-icon">public</mat-icon>
       <div class="streak-text">
         <span class="streak-value">{{ globalStreak }} Days</span>
         <span class="streak-label">Global Streak</span>
       </div>
     </div>
-
-    <nav class="tab-nav" *ngIf="selectedClass">
-      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
-        <mat-icon>menu_book</mat-icon> Syllabus & Graph
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'lesson'" (class.active)="activeTab === 'lesson'" (click)="selectTab('lesson')">
-        <mat-icon>chrome_reader_mode</mat-icon> Lessons
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
-        <mat-icon>forum</mat-icon> AI Tutor
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
-        <mat-icon>assignment_turned_in</mat-icon> Quizzes
-      </button>
-    </nav>
 
     <button class="btn-logout" (click)="logout()">
       <mat-icon>logout</mat-icon> Logout
@@ -80694,7 +80154,7 @@ var DashboardComponent = class _DashboardComponent {
             <span class="item-desc">Solve practice questions (Get >= 60% correct to pass)</span>
           </div>
         </div>
-        <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'quiz' : null">
+        <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'lesson' : null">
           <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
           <div class="item-text">
             <span class="item-title">3. Unlock Weekly Quiz</span>
@@ -80796,30 +80256,14 @@ var DashboardComponent = class _DashboardComponent {
         </div>
       </div>
 
-      <!-- Lesson Tab -->
+      <!-- Lesson Tab (Integrated Study & Quiz) -->
       <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
         <app-lesson-interface 
           [selectedWeek]="selectedTimelineWeek" 
           [dailyState]="dailyState"
           [classId]="selectedClass.class_id"
           (exerciseCompleted)="loadDailyState()"
-          (startQuiz)="selectTab('quiz')"
         ></app-lesson-interface>
-      </div>
-
-      <!-- Quiz Tab -->
-      <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
-        <div *ngIf="!dailyState.quiz_unlocked" class="quiz-locked-notice card">
-          <mat-icon class="locked-icon">lock</mat-icon>
-          <h3>Quiz is Locked</h3>
-          <p>You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.</p>
-          <button class="btn btn-primary" (click)="activeTab = 'lesson'">Go to Lesson</button>
-        </div>
-        <div *ngIf="dailyState.quiz_unlocked" class="quiz-layout card">
-          <h3>Adaptive Performance Quiz</h3>
-          <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
-          <app-quiz-interface [selectedWeek]="selectedTimelineWeek" [classId]="selectedClass.class_id"></app-quiz-interface>
-        </div>
       </div>
     </main>
   </div>
@@ -80981,11 +80425,80 @@ var DashboardComponent = class _DashboardComponent {
     </div>
   </div>
 </div>
-`, styles: ['@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";\n\n/* src/app/components/dashboard/dashboard.component.scss */\n.schedule-banner {\n  background:\n    linear-gradient(\n      135deg,\n      #f59e0b 0%,\n      #d97706 100%);\n  color: white;\n  padding: 12px 40px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 20px;\n  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);\n  font-family: "Inter", sans-serif;\n  animation: slideDown 0.3s ease;\n  z-index: 1000;\n  position: relative;\n}\n.schedule-banner .banner-content {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.schedule-banner .banner-content .banner-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.schedule-banner .banner-content .banner-text {\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.2px;\n}\n.schedule-banner .btn-banner {\n  background: white;\n  color: #d97706;\n  border: none;\n  padding: 8px 16px;\n  border-radius: 6px;\n  font-size: 13px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n}\n.schedule-banner .btn-banner:hover {\n  background: #f8fafc;\n  transform: translateY(-1px);\n}\n.app-wrapper {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  background-color: #f8fafc;\n  font-family:\n    "Inter",\n    -apple-system,\n    BlinkMacSystemFont,\n    "Segoe UI",\n    Roboto,\n    Helvetica,\n    Arial,\n    sans-serif;\n  color: #1e293b;\n}\n.app-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: #ffffff;\n  padding: 16px 40px;\n  border-bottom: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  position: sticky;\n  top: 0;\n  z-index: 100;\n  flex-wrap: wrap;\n  gap: 15px;\n}\n.app-header .logo-area {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.app-header .logo-area .logo-icon {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border-radius: 10px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);\n}\n.app-header .logo-area .logo-icon mat-icon {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.app-header .logo-area .logo-text h2 {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n.app-header .logo-area .logo-text span {\n  font-size: 11px;\n  font-weight: 500;\n  color: #64748b;\n}\n.app-header .tab-nav {\n  display: flex;\n  gap: 8px;\n}\n.app-header .tab-nav .nav-tab {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 18px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  color: #64748b;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.app-header .tab-nav .nav-tab mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.app-header .tab-nav .nav-tab:hover {\n  color: #1e293b;\n  background-color: #f1f5f9;\n}\n.app-header .tab-nav .nav-tab.active {\n  color: #4f46e5;\n  background-color: #ede9fe;\n}\n.app-workspace {\n  flex-grow: 1;\n  padding: 30px 40px;\n  max-width: 1400px;\n  width: 100%;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\n.tab-content {\n  animation: fadeIn 0.35s ease;\n}\n.card {\n  background-color: #ffffff;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);\n  margin-bottom: 25px;\n}\n.card h3 {\n  margin: 0 0 4px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.card .section-desc {\n  margin: 0 0 20px 0;\n  font-size: 13px;\n  color: #64748b;\n  line-height: 1.5;\n}\n.syllabus-layout {\n  display: grid;\n  grid-template-columns: 380px 1fr;\n  gap: 25px;\n  align-items: start;\n}\n.syllabus-layout .sidebar-column {\n  position: sticky;\n  top: 95px;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n.tutor-tab,\n.quiz-tab {\n  max-width: 1000px;\n  margin: 0 auto;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n    transform: translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes slideDown {\n  from {\n    transform: translateY(-100%);\n  }\n  to {\n    transform: translateY(0);\n  }\n}\n@media (max-width: 1024px) {\n  .syllabus-layout {\n    grid-template-columns: 1fr;\n  }\n  .syllabus-layout .sidebar-column {\n    position: relative;\n    top: 0;\n  }\n}\n@media (max-width: 768px) {\n  .app-header {\n    padding: 15px 20px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .app-header .tab-nav {\n    justify-content: space-between;\n  }\n  .app-header .tab-nav .nav-tab {\n    padding: 8px 12px;\n    font-size: 12px;\n    flex-grow: 1;\n    justify-content: center;\n  }\n  .app-workspace {\n    padding: 20px 15px;\n  }\n}\n.header-right {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n}\n.btn-logout {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n  font-weight: 600;\n  color: #ef4444;\n  background: rgba(239, 68, 68, 0.08);\n  border: 1px solid rgba(239, 68, 68, 0.15);\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-logout mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.btn-logout:hover {\n  background: rgba(239, 68, 68, 0.15);\n  transform: translateY(-1px);\n}\n.timeline-bar-container {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  margin: 20px 40px 0 40px;\n  gap: 20px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n  flex-wrap: wrap;\n}\n.timeline-bar-container .timeline-left {\n  display: flex;\n  align-items: center;\n  gap: 24px;\n}\n.timeline-bar-container .timeline-left .streak-widget {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fff5f5;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #fee2e2;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-icon {\n  color: #ef4444;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text .streak-value {\n  font-weight: 700;\n  color: #ef4444;\n  font-size: 14px;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text .streak-label {\n  font-size: 10px;\n  color: #991b1b;\n  font-weight: 500;\n}\n.timeline-bar-container .timeline-left .week-widget {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container .timeline-left .week-widget .week-label {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n}\n.timeline-bar-container .timeline-left .week-widget .week-value {\n  font-size: 16px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.timeline-bar-container .timeline-scroll {\n  flex-grow: 1;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks {\n  display: flex;\n  gap: 8px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 6px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: white;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  min-width: 80px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn .week-num {\n  font-size: 13px;\n  font-weight: 700;\n  color: #475569;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn .week-status {\n  font-size: 9px;\n  font-weight: 600;\n  color: #64748b;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn:hover {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current {\n  background: #ede9fe;\n  border-color: #c084fc;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current .week-num {\n  color: #6b21a8;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current .week-status {\n  color: #701a75;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past {\n  background: #f0fdf4;\n  border-color: #86efac;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past .week-num {\n  color: #166534;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past .week-status {\n  color: #15803d;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future {\n  background: #f8fafc;\n  border-style: dashed;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future .week-num {\n  color: #64748b;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future .week-status {\n  color: #4f46e5;\n}\n.timeline-bar-container .timeline-right {\n  display: flex;\n  align-items: center;\n}\n.timeline-bar-container .timeline-right .btn-study {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #10b981 0%,\n      #059669 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);\n  transition: all 0.2s ease;\n  margin-right: 12px;\n}\n.timeline-bar-container .timeline-right .btn-study mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container .timeline-right .btn-study:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);\n}\n.timeline-bar-container .timeline-right .btn-cram {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);\n  transition: all 0.2s ease;\n}\n.timeline-bar-container .timeline-right .btn-cram mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container .timeline-right .btn-cram:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);\n}\n.cram-modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.6);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 1000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.cram-modal-content {\n  width: 100%;\n  max-width: 1000px;\n  height: 80vh;\n  background: white;\n  border-radius: 16px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  animation: modalSlideUp 0.3s ease-out;\n}\n.cram-modal-content .cram-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  border-bottom: 1px solid #e2e8f0;\n  background: #f8fafc;\n}\n.cram-modal-content .cram-modal-header .header-icon-title {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.cram-modal-content .cram-modal-header .header-icon-title .modal-icon {\n  color: #a855f7;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.cram-modal-content .cram-modal-header .header-icon-title h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n}\n.cram-modal-content .cram-modal-header .btn-close {\n  background: transparent;\n  border: none;\n  color: #64748b;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  transition: all 0.2s ease;\n}\n.cram-modal-content .cram-modal-header .btn-close:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n}\n.cram-modal-content .cram-modal-body {\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n.cram-setup-form {\n  padding: 40px;\n  max-width: 500px;\n  margin: 0 auto;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form .modal-desc {\n  color: #64748b;\n  font-size: 14px;\n  line-height: 1.6;\n  margin-bottom: 30px;\n}\n.cram-setup-form .range-inputs {\n  display: flex;\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.cram-setup-form .range-inputs .form-group {\n  flex: 1;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-setup-form .range-inputs .form-group label {\n  font-size: 12px;\n  font-weight: 600;\n  color: #475569;\n}\n.cram-setup-form .range-inputs .form-group select.form-input {\n  padding: 10px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  font-size: 14px;\n  color: #1f2937;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form .modal-actions {\n  display: flex;\n  gap: 12px;\n  justify-content: center;\n}\n.cram-setup-form .modal-actions .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.cram-setup-form .modal-actions .btn-outline {\n  background: transparent;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n}\n.cram-setup-form .modal-actions .btn-outline:hover {\n  background: #f8fafc;\n}\n.cram-setup-form .modal-actions .btn-primary {\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n}\n.cram-setup-form .modal-actions .btn-primary:hover {\n  opacity: 0.95;\n}\n.cram-loading-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px;\n}\n.cram-loading-state .spinner {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(124, 58, 237, 0.1);\n  border-top-color: #7c3aed;\n  border-radius: 50%;\n  animation: spin 1s infinite linear;\n  margin-bottom: 20px;\n}\n.cram-loading-state p {\n  font-size: 14px;\n  color: #64748b;\n  font-weight: 500;\n}\n.cram-session-workspace {\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout .cram-guide-panel {\n  border-right: 1px solid #e2e8f0;\n  padding: 24px;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout .cram-guide-panel h3 {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #a855f7;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-split-layout .cram-guide-panel .markdown-body {\n  font-size: 14px;\n  color: #334155;\n  line-height: 1.6;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h1,\n.cram-split-layout .cram-guide-panel .markdown-body h2,\n.cram-split-layout .cram-guide-panel .markdown-body h3 {\n  color: #0f172a;\n  margin-top: 20px;\n  margin-bottom: 10px;\n  font-weight: 700;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h2 {\n  font-size: 16px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 4px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h3 {\n  font-size: 14px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body p {\n  margin: 0 0 10px 0;\n}\n.cram-split-layout .cram-guide-panel .markdown-body li {\n  margin-bottom: 6px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body strong {\n  color: #0f172a;\n}\n.cram-split-layout .cram-guide-panel .markdown-body code {\n  background: #f1f5f9;\n  padding: 2px 6px;\n  border-radius: 4px;\n  font-family: monospace;\n  font-size: 13px;\n}\n.cram-split-layout .cram-quiz-panel {\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout .cram-quiz-panel h3 {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #6366f1;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-question-container {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex-grow: 1;\n}\n.cram-question-container .cram-progress-stats {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n}\n.cram-question-container .cram-progress-stats .progress-bar-bg {\n  height: 6px;\n  background: #e2e8f0;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.cram-question-container .cram-progress-stats .progress-bar-bg .progress-bar-fill {\n  height: 100%;\n  background: #6366f1;\n  transition: width 0.3s ease;\n}\n.cram-question-container .cram-q-text {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 10px 0;\n}\n.cram-question-container .cram-options-grid {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-container .cram-options-grid .cram-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-container .cram-options-grid .cram-option-button .option-label-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-container .cram-options-grid .cram-option-button .option-text-lbl {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-container .cram-options-grid .cram-option-button:hover {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-container .cram-options-grid .cram-option-button.selected {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-container .cram-options-grid .cram-option-button.selected .option-label-badge {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-container .cram-options-grid .cram-option-button.correct {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-container .cram-options-grid .cram-option-button.correct .option-label-badge {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-container .cram-options-grid .cram-option-button.wrong {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-container .cram-options-grid .cram-option-button.wrong .option-label-badge {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-container .cram-explanation-block {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  border-left: 4px solid #cbd5e1;\n}\n.cram-question-container .cram-explanation-block .explanation-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n.cram-question-container .cram-explanation-block .explanation-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-container .cram-explanation-block .explanation-status .status-lbl {\n  font-weight: 700;\n  font-size: 12px;\n}\n.cram-question-container .cram-explanation-block .explanation-status .text-success {\n  color: #22c55e;\n}\n.cram-question-container .cram-explanation-block .explanation-status .text-error {\n  color: #ef4444;\n}\n.cram-question-container .cram-explanation-block .explanation-details {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-container .cram-action-footer {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 10px;\n}\n.cram-question-container .cram-action-footer .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-question-container .cram-action-footer .btn:hover {\n  opacity: 0.95;\n}\n.cram-complete-view {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  text-align: center;\n  padding: 40px;\n}\n.cram-complete-view .complete-trophy {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 16px;\n  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);\n}\n.cram-complete-view h4 {\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 10px 0;\n}\n.cram-complete-view .complete-score {\n  font-size: 15px;\n  color: #475569;\n  margin-bottom: 8px;\n}\n.cram-complete-view .complete-score strong {\n  color: #6366f1;\n  font-size: 18px;\n}\n.cram-complete-view .complete-message {\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 24px;\n}\n.cram-complete-view .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-complete-view .btn:hover {\n  opacity: 0.95;\n}\n@keyframes spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes modalSlideUp {\n  from {\n    transform: translateY(20px);\n    opacity: 0;\n  }\n  to {\n    transform: translateY(0);\n    opacity: 1;\n  }\n}\n@keyframes popIn {\n  from {\n    transform: scale(0.5);\n    opacity: 0;\n  }\n  to {\n    transform: scale(1);\n    opacity: 1;\n  }\n}\n@media (max-width: 768px) {\n  .timeline-bar-container {\n    margin: 15px 15px 0 15px;\n    padding: 12px 16px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .timeline-bar-container .timeline-left {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n  }\n  .cram-split-layout {\n    grid-template-columns: 1fr;\n  }\n  .cram-split-layout .cram-guide-panel {\n    border-right: none;\n    border-bottom: 1px solid #e2e8f0;\n    height: 50%;\n  }\n  .cram-split-layout .cram-quiz-panel {\n    height: 50%;\n  }\n}\n.daily-progress-container {\n  margin: 20px 40px 0 40px;\n  padding: 20px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n@media (max-width: 768px) {\n  .daily-progress-container {\n    margin: 15px 15px 0 15px;\n    padding: 16px;\n  }\n}\n.daily-progress-container .daily-progress-header {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin-bottom: 16px;\n}\n.daily-progress-container .daily-progress-header .progress-title-icon {\n  color: #6366f1;\n}\n.daily-progress-container .daily-progress-header h3 {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 700;\n  color: #0f172a;\n  flex-grow: 1;\n}\n.daily-progress-container .daily-progress-header .date-badge {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  background: #f1f5f9;\n  padding: 4px 10px;\n  border-radius: 9999px;\n}\n.daily-progress-container .checklist-items {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 16px;\n}\n.daily-progress-container .checklist-item {\n  display: flex;\n  align-items: flex-start;\n  gap: 12px;\n  padding: 14px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.daily-progress-container .checklist-item:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n  border-color: #cbd5e1;\n}\n.daily-progress-container .checklist-item .check-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  color: #94a3b8;\n}\n.daily-progress-container .checklist-item .item-text {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n.daily-progress-container .checklist-item .item-text .item-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.daily-progress-container .checklist-item .item-text .item-desc {\n  font-size: 12px;\n  color: #64748b;\n}\n.daily-progress-container .checklist-item.completed {\n  background: rgba(34, 197, 94, 0.04);\n  border-color: #22c55e;\n}\n.daily-progress-container .checklist-item.completed .check-icon {\n  color: #22c55e;\n}\n.daily-progress-container .checklist-item.completed .item-title {\n  color: #166534;\n  text-decoration: line-through;\n}\n.daily-progress-container .checklist-item.locked {\n  cursor: not-allowed;\n  opacity: 0.8;\n}\n.daily-progress-container .checklist-item.locked:hover {\n  transform: none;\n  box-shadow: none;\n  border-color: #e2e8f0;\n}\n.quiz-locked-notice {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  max-width: 500px;\n  margin: 40px auto;\n}\n.quiz-locked-notice .locked-icon {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #64748b;\n  margin-bottom: 20px;\n}\n.quiz-locked-notice h3 {\n  margin: 0 0 10px 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.quiz-locked-notice p {\n  margin: 0 0 24px 0;\n  font-size: 14px;\n  color: #475569;\n  line-height: 1.5;\n}\n.quiz-locked-notice button {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 10px 24px;\n  border-radius: 10px;\n  border: none;\n  background: #6366f1;\n  color: white;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n.quiz-locked-notice button:hover {\n  background: #4f46e5;\n}\n.cram-questions-list {\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-top: 16px;\n  margin-bottom: 24px;\n}\n.cram-question-card {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #f1f5f9;\n  padding: 16px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);\n}\n.cram-question-card .cram-q-text {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 0;\n}\n.cram-question-card .cram-options-grid {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-card .cram-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-card .cram-option-button .option-label-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-card .cram-option-button .option-text-lbl {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-card .cram-option-button:hover:not(:disabled) {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-card .cram-option-button.selected {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-card .cram-option-button.selected .option-label-badge {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-card .cram-option-button.correct {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-card .cram-option-button.correct .option-label-badge {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-card .cram-option-button.wrong {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-card .cram-option-button.wrong .option-label-badge {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-card .cram-explanation-block {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  margin-top: 8px;\n  border-left: 4px solid #cbd5e1;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-question-card .cram-explanation-block .explanation-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.cram-question-card .cram-explanation-block .explanation-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-card .cram-explanation-block .explanation-details {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-card .cram-explanation-block.correct-status {\n  border-left-color: #22c55e;\n}\n.cram-question-card .cram-explanation-block.correct-status .explanation-status {\n  color: #15803d;\n}\n.cram-question-card .cram-explanation-block.correct-status .explanation-status mat-icon {\n  color: #22c55e;\n}\n.cram-question-card .cram-explanation-block.wrong-status {\n  border-left-color: #ef4444;\n}\n.cram-question-card .cram-explanation-block.wrong-status .explanation-status {\n  color: #b91c1c;\n}\n.cram-question-card .cram-explanation-block.wrong-status .explanation-status mat-icon {\n  color: #ef4444;\n}\n.cram-result-banner {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n.cram-result-banner .result-icon {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.cram-result-banner .result-info {\n  flex-grow: 1;\n}\n.cram-result-banner .result-info h4 {\n  margin: 0 0 4px 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.cram-result-banner .result-info p {\n  margin: 0;\n  font-size: 13px;\n  opacity: 0.9;\n}\n.cram-result-banner.passed {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #15803d;\n}\n.cram-result-banner.passed .result-icon {\n  color: #22c55e;\n}\n.cram-result-banner.failed {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #b91c1c;\n}\n.cram-result-banner.failed .result-icon {\n  color: #ef4444;\n}\n.cram-result-banner .btn-sm {\n  padding: 6px 12px;\n  font-size: 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  cursor: pointer;\n}\n.cram-result-banner .btn-sm:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.cram-quiz-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  margin-top: 12px;\n}\n.global-streak-header-widget {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background:\n    linear-gradient(\n      135deg,\n      #fffbeb 0%,\n      #fef3c7 100%);\n  border: 1px solid #fde68a;\n  padding: 6px 14px;\n  border-radius: 20px;\n  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);\n  margin-right: 15px;\n}\n.global-streak-header-widget .streak-icon {\n  color: #d97706;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.global-streak-header-widget .streak-text {\n  display: flex;\n  flex-direction: column;\n}\n.global-streak-header-widget .streak-text .streak-value {\n  font-weight: 800;\n  color: #b45309;\n  font-size: 13px;\n  line-height: 1.2;\n}\n.global-streak-header-widget .streak-text .streak-label {\n  font-size: 9px;\n  color: #b45309;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.3px;\n}\n.class-manager-container {\n  max-width: 1200px;\n  width: 100%;\n  margin: 30px auto;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n.class-manager-container .manager-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 15px;\n  background: white;\n  border-radius: 16px;\n  padding: 24px 30px;\n  border: 1px solid #e2e8f0;\n}\n.class-manager-container .manager-header h1 {\n  margin: 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  color: #0f172a;\n}\n.class-manager-container .manager-header .subtitle {\n  margin: 4px 0 0 0;\n  color: #64748b;\n  font-size: 14px;\n}\n.class-manager-container .manager-header .btn-add-class {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 24px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  border: none;\n  border-radius: 10px;\n  font-size: 15px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.class-manager-container .manager-header .btn-add-class:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);\n}\n.empty-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  border-radius: 16px;\n  border: 2px dashed #cbd5e1;\n  background: white;\n  margin-top: 30px;\n}\n.empty-state .empty-icon {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #94a3b8;\n  margin-bottom: 20px;\n}\n.empty-state h2 {\n  font-size: 20px;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 8px 0;\n}\n.empty-state p {\n  color: #64748b;\n  font-size: 14px;\n  max-width: 400px;\n  margin: 0 0 24px 0;\n  line-height: 1.6;\n}\n.empty-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  border: none;\n  cursor: pointer;\n  background: #4f46e5;\n  color: white;\n  transition: all 0.2s;\n}\n.empty-state .btn:hover {\n  background: #4338ca;\n}\n.classes-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 25px;\n  margin-top: 30px;\n}\n.class-card {\n  position: relative;\n  border-radius: 16px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  cursor: pointer;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n  height: 200px;\n  box-sizing: border-box;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n}\n.class-card .class-card-glow {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 4px;\n  background:\n    linear-gradient(\n      90deg,\n      #6366f1,\n      #a855f7);\n  opacity: 0;\n  transition: opacity 0.3s ease;\n}\n.class-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);\n  border-color: #cbd5e1;\n}\n.class-card:hover .class-card-glow {\n  opacity: 1;\n}\n.class-card:hover .class-card-footer mat-icon {\n  transform: translateX(4px);\n}\n.class-card .class-card-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n}\n.class-card .class-card-header .class-icon {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.class-card .class-card-header .class-streak-badge {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  background: #fff5f5;\n  border: 1px solid #fee2e2;\n  padding: 4px 8px;\n  border-radius: 20px;\n  color: #ef4444;\n  font-size: 11px;\n  font-weight: 700;\n}\n.class-card .class-card-header .class-streak-badge mat-icon {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.class-card .class-card-body {\n  flex-grow: 1;\n}\n.class-card .class-card-body h3 {\n  font-size: 19px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 0 0 6px 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.class-card .class-card-body .class-id {\n  margin: 0;\n  font-size: 12px;\n  color: #94a3b8;\n  font-family: monospace;\n}\n.class-card .class-card-footer {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 12px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #4f46e5;\n}\n.class-card .class-card-footer mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n  transition: transform 0.2s ease;\n}\n.class-workspace-container {\n  width: 100%;\n  margin-top: 20px;\n}\n.class-workspace-container .class-subheader {\n  display: flex;\n  align-items: center;\n  gap: 20px;\n  margin: 0 40px 15px 40px;\n}\n.class-workspace-container .class-subheader .btn-back {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  color: #475569;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.class-workspace-container .class-subheader .btn-back mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.class-workspace-container .class-subheader .btn-back:hover {\n  background: #f8fafc;\n  color: #0f172a;\n  border-color: #cbd5e1;\n}\n.class-workspace-container .class-subheader .subheader-title {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.class-workspace-container .class-subheader .subheader-title h2 {\n  margin: 0;\n  font-size: 22px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.class-workspace-container .class-subheader .subheader-title .class-id-badge {\n  font-size: 11px;\n  font-family: monospace;\n  background: #f1f5f9;\n  color: #64748b;\n  padding: 2px 8px;\n  border-radius: 4px;\n  border: 1px solid #e2e8f0;\n}\n.syllabus-topics-card {\n  display: flex;\n  flex-direction: column;\n}\n.syllabus-topics-card .card-header-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n.syllabus-topics-card .card-header-row mat-icon {\n  color: #6366f1;\n}\n.syllabus-topics-card .loading-topics,\n.syllabus-topics-card .empty-topics {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 30px;\n  text-align: center;\n  color: #64748b;\n  font-size: 13px;\n}\n.syllabus-topics-card .loading-topics p,\n.syllabus-topics-card .empty-topics p {\n  margin: 6px 0 0 0;\n}\n.syllabus-topics-card .topic-spinner {\n  width: 24px;\n  height: 24px;\n  border: 2px solid rgba(99, 102, 241, 0.15);\n  border-top-color: #6366f1;\n  border-radius: 50%;\n  animation: spin 0.8s infinite linear;\n  margin-bottom: 10px;\n}\n.syllabus-topics-card .topics-list {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-top: 10px;\n}\n.syllabus-topics-card .topic-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #e2e8f0;\n  background: #f8fafc;\n  gap: 12px;\n  transition: all 0.2s ease;\n}\n.syllabus-topics-card .topic-item:hover {\n  background: #f1f5f9;\n}\n.syllabus-topics-card .topic-item.insufficient {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.syllabus-topics-card .topic-item.insufficient:hover {\n  background: #fffbeb;\n}\n.syllabus-topics-card .topic-item .topic-item-left {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon.sufficient-icon {\n  color: #10b981;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon.insufficient-icon {\n  color: #eab308;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-name-label {\n  font-size: 14px;\n  font-weight: 600;\n  color: #334155;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.syllabus-topics-card .topic-item .topic-item-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .warning-badge {\n  font-size: 10px;\n  font-weight: 700;\n  background: #fef08a;\n  color: #713f12;\n  padding: 2px 6px;\n  border-radius: 4px;\n  white-space: nowrap;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 10px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  font-size: 11px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials mat-icon {\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.65);\n  backdrop-filter: blur(5px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 2000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.modal-card {\n  width: 100%;\n  max-width: 550px;\n  background: white;\n  border-radius: 16px;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);\n  margin-bottom: 0 !important;\n  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);\n  display: flex;\n  flex-direction: column;\n  box-sizing: border-box;\n}\n.modal-card .modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.modal-card .modal-header .modal-title-container {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.modal-card .modal-header .modal-title-container .modal-header-icon {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.modal-card .modal-header .modal-title-container .modal-header-icon.warning-color {\n  color: #eab308;\n}\n.modal-card .modal-header .modal-title-container h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.modal-card .modal-header .btn-modal-close {\n  background: transparent;\n  border: none;\n  color: #94a3b8;\n  cursor: pointer;\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: all 0.2s;\n}\n.modal-card .modal-header .btn-modal-close:hover {\n  background: #f1f5f9;\n  color: #0f172a;\n}\n.modal-card .modal-body {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin-bottom: 24px;\n}\n.modal-card .modal-body .modal-desc {\n  margin: 0;\n  color: #64748b;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.modal-card .form-group {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card .form-group label {\n  font-size: 12px;\n  font-weight: 700;\n  color: #475569;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.modal-card .form-group input[type=text],\n.modal-card .form-group textarea {\n  padding: 12px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  outline: none;\n  box-sizing: border-box;\n  width: 100%;\n  background: #f8fafc;\n  transition: all 0.2s;\n}\n.modal-card .form-group input[type=text]:focus,\n.modal-card .form-group textarea:focus {\n  border-color: #6366f1;\n  background: white;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.modal-card .file-uploader-dropzone {\n  border: 2px dashed #cbd5e1;\n  background: #f8fafc;\n  border-radius: 10px;\n  padding: 24px;\n  text-align: center;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.modal-card .file-uploader-dropzone:hover {\n  border-color: #6366f1;\n  background: #f0f3ff;\n}\n.modal-card .file-uploader-dropzone.file-selected {\n  border-color: #10b981;\n  background: #f0fdf4;\n}\n.modal-card .file-uploader-dropzone .dropzone-content {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 8px;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-icon {\n  font-size: 36px;\n  width: 36px;\n  height: 36px;\n  color: #64748b;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text {\n  display: flex;\n  flex-direction: column;\n  font-size: 13px;\n  color: #475569;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text strong {\n  color: #0f172a;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text span {\n  font-size: 11px;\n  color: #94a3b8;\n  margin-top: 4px;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text .selected-filename {\n  color: #047857;\n  font-weight: 700;\n  font-size: 13px;\n  margin-top: 4px;\n}\n.modal-card .file-uploader-mini {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.modal-card .file-uploader-mini .btn-mini-upload {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  font-size: 12px;\n  font-weight: 700;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  background: white;\n  cursor: pointer;\n}\n.modal-card .file-uploader-mini .btn-mini-upload mat-icon {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.modal-card .file-uploader-mini .mini-upload-filename {\n  font-size: 12px;\n  color: #0f172a;\n  font-weight: 600;\n}\n.modal-card .modal-error-alert {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fef2f2;\n  border: 1px solid #fee2e2;\n  color: #991b1b;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card .modal-error-alert mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card .modal-status-alert {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card .modal-status-alert mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card .modal-status-alert.success {\n  background: #f0fdf4;\n  border: 1px solid #bbf7d0;\n  color: #166534;\n}\n.modal-card .modal-status-alert.error {\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n}\n.modal-card .modal-status-alert.info {\n  background: #f0fdfa;\n  border: 1px solid #ccfbf1;\n  color: #0f766e;\n}\n.modal-card .modal-status-alert.info mat-icon {\n  animation: spin 1s infinite linear;\n}\n.modal-card .modal-progress-container {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card .modal-progress-container mat-progress-bar {\n  border-radius: 4px;\n}\n.modal-card .modal-progress-container .progress-subtext {\n  font-size: 11px;\n  color: #64748b;\n  font-style: italic;\n}\n.modal-card .modal-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 12px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.modal-card .modal-actions .btn {\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  border: none;\n  transition: all 0.2s;\n}\n.modal-card .modal-actions .btn-secondary {\n  background: #f1f5f9;\n  color: #475569;\n}\n.modal-card .modal-actions .btn-secondary:hover {\n  background: #e2e8f0;\n}\n.modal-card .modal-actions .btn-primary {\n  background: #4f46e5;\n  color: white;\n}\n.modal-card .modal-actions .btn-primary:hover {\n  background: #4338ca;\n}\n.modal-card .modal-actions .btn-primary:disabled {\n  background: #94a3b8;\n  cursor: not-allowed;\n}\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes modalSlideUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n.scale-up {\n  animation: modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);\n}\n.weeks-accordion {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  margin-top: 15px;\n}\n.weeks-accordion .week-group {\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  background: #ffffff;\n  overflow: hidden;\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.weeks-accordion .week-group.active-week {\n  border-color: #6366f1;\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n}\n.weeks-accordion .week-group.active-week .week-group-header {\n  background: rgba(99, 102, 241, 0.04);\n  border-bottom: 1px solid rgba(99, 102, 241, 0.1);\n}\n.weeks-accordion .week-group .week-group-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 14px 18px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: background 0.2s ease;\n}\n.weeks-accordion .week-group .week-group-header:hover {\n  background: #f8fafc;\n}\n.weeks-accordion .week-group .week-group-header .week-title-label {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary span {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n  font-weight: 550;\n  padding: 3px 8px;\n  border-radius: 9999px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-sufficient {\n  background: #ecfdf5;\n  color: #065f46;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-sufficient mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-insufficient {\n  background: #fff9db;\n  color: #856404;\n  border: 1px solid #ffeeba;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-insufficient mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-empty {\n  background: #f1f5f9;\n  color: #64748b;\n}\n.weeks-accordion .week-group .week-group-content {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  background: #fafafb;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: #ffffff;\n  font-size: 13px;\n  transition: all 0.2s ease;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item:hover {\n  background: #f8fafc;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item.insufficient {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item.insufficient:hover {\n  background: #fffbeb;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-width: 0;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon.sufficient-icon {\n  color: #10b981;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon.insufficient-icon {\n  color: #eab308;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-name-label {\n  font-weight: 500;\n  color: #334155;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  background: #f1f5f9;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n  padding: 4px 8px;\n  font-size: 11px;\n  font-weight: 600;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n/*# sourceMappingURL=dashboard.component.css.map */\n'] }]
+
+<!-- STREAK SETTINGS MODAL -->
+<div *ngIf="isStreakSettingsModalOpen" class="modal-overlay fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2500; padding: 20px; box-sizing: border-box;">
+  <div class="modal-card card scale-up cosmic-modal" style="width: 100%; max-width: 500px; background: #0f172a; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 24px; box-shadow: 0 0 30px rgba(99, 102, 241, 0.2); box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; color: #f1f5f9;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
+      <div class="modal-title-container" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: #38bdf8;">
+        <mat-icon style="color: #38bdf8;">insights</mat-icon>
+        <span>Streak & Schedule Settings</span>
+      </div>
+      <button class="btn-modal-close" (click)="closeStreakSettingsModal()" style="background: transparent; border: none; cursor: pointer; color: #94a3b8;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+      <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
+        Configure your weekly learning schedule and pace for <strong>{{ selectedClass?.class_name }}</strong> to maintain your orbit.
+      </p>
+
+      <!-- Preferred Study Days -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Preferred Orbit Days</label>
+        <div class="days-checkbox-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          <label *ngFor="let day of streakSettingsDays" class="cosmic-checkbox-label" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">
+            <input type="checkbox" [(ngModel)]="day.selected" style="accent-color: #38bdf8;">
+            <span>{{ day.name }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Daily Pace -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="modalPace" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Daily Study Pace (Minutes)</label>
+        <input 
+          type="number" 
+          id="modalPace" 
+          [(ngModel)]="streakSettingsPace"
+          min="1" 
+          style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+        >
+      </div>
+
+      <!-- Course Start Date -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="modalStartDate" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Course Orbit Start Date</label>
+        <input 
+          type="date" 
+          id="modalStartDate" 
+          [(ngModel)]="streakSettingsStartDate"
+          style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+        >
+      </div>
+    </div>
+
+    <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 8px;">
+      <button class="btn btn-secondary" (click)="closeStreakSettingsModal()" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; cursor: pointer; font-weight: 600;">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="saveStreakSettings()"
+        style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
+      >
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">save</mat-icon>
+        <span>Save Orbit Plan</span>
+      </button>
+    </div>
+
+  </div>
+</div>
+`, styles: ['@import "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap";\n\n/* src/app/components/dashboard/dashboard.component.scss */\n.schedule-banner {\n  background:\n    linear-gradient(\n      135deg,\n      #f59e0b 0%,\n      #d97706 100%);\n  color: white;\n  padding: 12px 40px;\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  gap: 20px;\n  box-shadow: 0 4px 10px rgba(217, 119, 6, 0.15);\n  font-family: "Inter", sans-serif;\n  animation: slideDown 0.3s ease;\n  z-index: 1000;\n  position: relative;\n}\n.schedule-banner .banner-content {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.schedule-banner .banner-content .banner-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.schedule-banner .banner-content .banner-text {\n  font-size: 14px;\n  font-weight: 600;\n  letter-spacing: 0.2px;\n}\n.schedule-banner .btn-banner {\n  background: white;\n  color: #d97706;\n  border: none;\n  padding: 8px 16px;\n  border-radius: 6px;\n  font-size: 13px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n}\n.schedule-banner .btn-banner:hover {\n  background: #f8fafc;\n  transform: translateY(-1px);\n}\n.app-wrapper {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  background-color: #f8fafc;\n  font-family:\n    "Inter",\n    -apple-system,\n    BlinkMacSystemFont,\n    "Segoe UI",\n    Roboto,\n    Helvetica,\n    Arial,\n    sans-serif;\n  color: #1e293b;\n}\n.app-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  background-color: #ffffff;\n  padding: 16px 40px;\n  border-bottom: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  position: sticky;\n  top: 0;\n  z-index: 100;\n  flex-wrap: wrap;\n  gap: 15px;\n}\n.app-header .logo-area {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.app-header .logo-area .logo-icon {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 40px;\n  height: 40px;\n  border-radius: 10px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  box-shadow: 0 4px 10px rgba(79, 70, 229, 0.2);\n}\n.app-header .logo-area .logo-icon mat-icon {\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.app-header .logo-area .logo-text h2 {\n  margin: 0;\n  font-size: 18px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  -webkit-background-clip: text;\n  -webkit-text-fill-color: transparent;\n}\n.app-header .logo-area .logo-text span {\n  font-size: 11px;\n  font-weight: 500;\n  color: #64748b;\n}\n.app-header .tab-nav {\n  display: flex;\n  gap: 8px;\n}\n.app-header .tab-nav .nav-tab {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 18px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 600;\n  color: #64748b;\n  background: transparent;\n  border: none;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.app-header .tab-nav .nav-tab mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.app-header .tab-nav .nav-tab:hover {\n  color: #1e293b;\n  background-color: #f1f5f9;\n}\n.app-header .tab-nav .nav-tab.active {\n  color: #4f46e5;\n  background-color: #ede9fe;\n}\n.app-workspace {\n  flex-grow: 1;\n  padding: 30px 40px;\n  max-width: 1400px;\n  width: 100%;\n  margin: 0 auto;\n  box-sizing: border-box;\n}\n.tab-content {\n  animation: fadeIn 0.35s ease;\n}\n.card {\n  background-color: #ffffff;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.02);\n  margin-bottom: 25px;\n}\n.card h3 {\n  margin: 0 0 4px 0;\n  font-size: 18px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.card .section-desc {\n  margin: 0 0 20px 0;\n  font-size: 13px;\n  color: #64748b;\n  line-height: 1.5;\n}\n.syllabus-layout {\n  display: grid;\n  grid-template-columns: 380px 1fr;\n  gap: 25px;\n  align-items: start;\n}\n.syllabus-layout .sidebar-column {\n  position: sticky;\n  top: 95px;\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n}\n.tutor-tab,\n.quiz-tab {\n  max-width: 1000px;\n  margin: 0 auto;\n}\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n    transform: translateY(8px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n@keyframes slideDown {\n  from {\n    transform: translateY(-100%);\n  }\n  to {\n    transform: translateY(0);\n  }\n}\n@media (max-width: 1024px) {\n  .syllabus-layout {\n    grid-template-columns: 1fr;\n  }\n  .syllabus-layout .sidebar-column {\n    position: relative;\n    top: 0;\n  }\n}\n@media (max-width: 768px) {\n  .app-header {\n    padding: 15px 20px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .app-header .tab-nav {\n    justify-content: space-between;\n  }\n  .app-header .tab-nav .nav-tab {\n    padding: 8px 12px;\n    font-size: 12px;\n    flex-grow: 1;\n    justify-content: center;\n  }\n  .app-workspace {\n    padding: 20px 15px;\n  }\n}\n.header-right {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n}\n.btn-logout {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n  font-weight: 600;\n  color: #ef4444;\n  background: rgba(239, 68, 68, 0.08);\n  border: 1px solid rgba(239, 68, 68, 0.15);\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.btn-logout mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.btn-logout:hover {\n  background: rgba(239, 68, 68, 0.15);\n  transform: translateY(-1px);\n}\n.timeline-bar-container {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #e2e8f0;\n  margin: 20px 40px 0 40px;\n  gap: 20px;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n  flex-wrap: wrap;\n}\n.timeline-bar-container .timeline-left {\n  display: flex;\n  align-items: center;\n  gap: 24px;\n}\n.timeline-bar-container .timeline-left .streak-widget {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fff5f5;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #fee2e2;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-icon {\n  color: #ef4444;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text .streak-value {\n  font-weight: 700;\n  color: #ef4444;\n  font-size: 14px;\n}\n.timeline-bar-container .timeline-left .streak-widget .streak-text .streak-label {\n  font-size: 10px;\n  color: #991b1b;\n  font-weight: 500;\n}\n.timeline-bar-container .timeline-left .week-widget {\n  display: flex;\n  flex-direction: column;\n}\n.timeline-bar-container .timeline-left .week-widget .week-label {\n  font-size: 11px;\n  color: #64748b;\n  font-weight: 500;\n}\n.timeline-bar-container .timeline-left .week-widget .week-value {\n  font-size: 16px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.timeline-bar-container .timeline-scroll {\n  flex-grow: 1;\n  overflow-x: auto;\n  padding-bottom: 4px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks {\n  display: flex;\n  gap: 8px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  padding: 6px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: white;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  min-width: 80px;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn .week-num {\n  font-size: 13px;\n  font-weight: 700;\n  color: #475569;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn .week-status {\n  font-size: 9px;\n  font-weight: 600;\n  color: #64748b;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn:hover {\n  background: #f1f5f9;\n  border-color: #cbd5e1;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current {\n  background: #ede9fe;\n  border-color: #c084fc;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current .week-num {\n  color: #6b21a8;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.current .week-status {\n  color: #701a75;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past {\n  background: #f0fdf4;\n  border-color: #86efac;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past .week-num {\n  color: #166534;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.past .week-status {\n  color: #15803d;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future {\n  background: #f8fafc;\n  border-style: dashed;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future .week-num {\n  color: #64748b;\n}\n.timeline-bar-container .timeline-scroll .timeline-weeks .timeline-week-btn.future .week-status {\n  color: #4f46e5;\n}\n.timeline-bar-container .timeline-right {\n  display: flex;\n  align-items: center;\n}\n.timeline-bar-container .timeline-right .btn-study {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #10b981 0%,\n      #059669 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);\n  transition: all 0.2s ease;\n  margin-right: 12px;\n}\n.timeline-bar-container .timeline-right .btn-study mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container .timeline-right .btn-study:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);\n}\n.timeline-bar-container .timeline-right .btn-cram {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);\n  transition: all 0.2s ease;\n}\n.timeline-bar-container .timeline-right .btn-cram mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.timeline-bar-container .timeline-right .btn-cram:hover {\n  transform: translateY(-1px);\n  box-shadow: 0 6px 16px rgba(124, 58, 237, 0.35);\n}\n.cram-modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.6);\n  backdrop-filter: blur(4px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 1000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.cram-modal-content {\n  width: 100%;\n  max-width: 1000px;\n  height: 80vh;\n  background: white;\n  border-radius: 16px;\n  display: flex;\n  flex-direction: column;\n  overflow: hidden;\n  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);\n  animation: modalSlideUp 0.3s ease-out;\n}\n.cram-modal-content .cram-modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 16px 24px;\n  border-bottom: 1px solid #e2e8f0;\n  background: #f8fafc;\n}\n.cram-modal-content .cram-modal-header .header-icon-title {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.cram-modal-content .cram-modal-header .header-icon-title .modal-icon {\n  color: #a855f7;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.cram-modal-content .cram-modal-header .header-icon-title h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n}\n.cram-modal-content .cram-modal-header .btn-close {\n  background: transparent;\n  border: none;\n  color: #64748b;\n  cursor: pointer;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 32px;\n  height: 32px;\n  border-radius: 50%;\n  transition: all 0.2s ease;\n}\n.cram-modal-content .cram-modal-header .btn-close:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n}\n.cram-modal-content .cram-modal-body {\n  flex-grow: 1;\n  overflow: hidden;\n  position: relative;\n}\n.cram-setup-form {\n  padding: 40px;\n  max-width: 500px;\n  margin: 0 auto;\n  text-align: center;\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form .modal-desc {\n  color: #64748b;\n  font-size: 14px;\n  line-height: 1.6;\n  margin-bottom: 30px;\n}\n.cram-setup-form .range-inputs {\n  display: flex;\n  gap: 20px;\n  margin-bottom: 30px;\n}\n.cram-setup-form .range-inputs .form-group {\n  flex: 1;\n  text-align: left;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-setup-form .range-inputs .form-group label {\n  font-size: 12px;\n  font-weight: 600;\n  color: #475569;\n}\n.cram-setup-form .range-inputs .form-group select.form-input {\n  padding: 10px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  font-size: 14px;\n  color: #1f2937;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-setup-form .modal-actions {\n  display: flex;\n  gap: 12px;\n  justify-content: center;\n}\n.cram-setup-form .modal-actions .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.cram-setup-form .modal-actions .btn-outline {\n  background: transparent;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n}\n.cram-setup-form .modal-actions .btn-outline:hover {\n  background: #f8fafc;\n}\n.cram-setup-form .modal-actions .btn-primary {\n  background:\n    linear-gradient(\n      135deg,\n      #a855f7 0%,\n      #7c3aed 100%);\n  color: white;\n  border: none;\n}\n.cram-setup-form .modal-actions .btn-primary:hover {\n  opacity: 0.95;\n}\n.cram-loading-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  padding: 40px;\n}\n.cram-loading-state .spinner {\n  width: 50px;\n  height: 50px;\n  border: 4px solid rgba(124, 58, 237, 0.1);\n  border-top-color: #7c3aed;\n  border-radius: 50%;\n  animation: spin 1s infinite linear;\n  margin-bottom: 20px;\n}\n.cram-loading-state p {\n  font-size: 14px;\n  color: #64748b;\n  font-weight: 500;\n}\n.cram-session-workspace {\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  height: 100%;\n  box-sizing: border-box;\n}\n.cram-split-layout .cram-guide-panel {\n  border-right: 1px solid #e2e8f0;\n  padding: 24px;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout .cram-guide-panel h3 {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #a855f7;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-split-layout .cram-guide-panel .markdown-body {\n  font-size: 14px;\n  color: #334155;\n  line-height: 1.6;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h1,\n.cram-split-layout .cram-guide-panel .markdown-body h2,\n.cram-split-layout .cram-guide-panel .markdown-body h3 {\n  color: #0f172a;\n  margin-top: 20px;\n  margin-bottom: 10px;\n  font-weight: 700;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h2 {\n  font-size: 16px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 4px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body h3 {\n  font-size: 14px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body p {\n  margin: 0 0 10px 0;\n}\n.cram-split-layout .cram-guide-panel .markdown-body li {\n  margin-bottom: 6px;\n}\n.cram-split-layout .cram-guide-panel .markdown-body strong {\n  color: #0f172a;\n}\n.cram-split-layout .cram-guide-panel .markdown-body code {\n  background: #f1f5f9;\n  padding: 2px 6px;\n  border-radius: 4px;\n  font-family: monospace;\n  font-size: 13px;\n}\n.cram-split-layout .cram-quiz-panel {\n  padding: 24px;\n  display: flex;\n  flex-direction: column;\n  overflow-y: auto;\n  box-sizing: border-box;\n  height: 100%;\n}\n.cram-split-layout .cram-quiz-panel h3 {\n  font-size: 18px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 16px 0;\n  border-bottom: 2px solid #6366f1;\n  padding-bottom: 8px;\n  display: inline-block;\n}\n.cram-question-container {\n  display: flex;\n  flex-direction: column;\n  gap: 16px;\n  flex-grow: 1;\n}\n.cram-question-container .cram-progress-stats {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n}\n.cram-question-container .cram-progress-stats .progress-bar-bg {\n  height: 6px;\n  background: #e2e8f0;\n  border-radius: 3px;\n  overflow: hidden;\n}\n.cram-question-container .cram-progress-stats .progress-bar-bg .progress-bar-fill {\n  height: 100%;\n  background: #6366f1;\n  transition: width 0.3s ease;\n}\n.cram-question-container .cram-q-text {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 10px 0;\n}\n.cram-question-container .cram-options-grid {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-container .cram-options-grid .cram-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-container .cram-options-grid .cram-option-button .option-label-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-container .cram-options-grid .cram-option-button .option-text-lbl {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-container .cram-options-grid .cram-option-button:hover {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-container .cram-options-grid .cram-option-button.selected {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-container .cram-options-grid .cram-option-button.selected .option-label-badge {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-container .cram-options-grid .cram-option-button.correct {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-container .cram-options-grid .cram-option-button.correct .option-label-badge {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-container .cram-options-grid .cram-option-button.wrong {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-container .cram-options-grid .cram-option-button.wrong .option-label-badge {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-container .cram-explanation-block {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  border-left: 4px solid #cbd5e1;\n}\n.cram-question-container .cram-explanation-block .explanation-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n  margin-bottom: 6px;\n}\n.cram-question-container .cram-explanation-block .explanation-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-container .cram-explanation-block .explanation-status .status-lbl {\n  font-weight: 700;\n  font-size: 12px;\n}\n.cram-question-container .cram-explanation-block .explanation-status .text-success {\n  color: #22c55e;\n}\n.cram-question-container .cram-explanation-block .explanation-status .text-error {\n  color: #ef4444;\n}\n.cram-question-container .cram-explanation-block .explanation-details {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-container .cram-action-footer {\n  display: flex;\n  justify-content: flex-end;\n  margin-top: 10px;\n}\n.cram-question-container .cram-action-footer .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-question-container .cram-action-footer .btn:hover {\n  opacity: 0.95;\n}\n.cram-complete-view {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  height: 100%;\n  text-align: center;\n  padding: 40px;\n}\n.cram-complete-view .complete-trophy {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #eab308;\n  margin-bottom: 16px;\n  animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);\n}\n.cram-complete-view h4 {\n  font-size: 20px;\n  font-weight: 800;\n  color: #1e293b;\n  margin: 0 0 10px 0;\n}\n.cram-complete-view .complete-score {\n  font-size: 15px;\n  color: #475569;\n  margin-bottom: 8px;\n}\n.cram-complete-view .complete-score strong {\n  color: #6366f1;\n  font-size: 18px;\n}\n.cram-complete-view .complete-message {\n  font-size: 13px;\n  color: #64748b;\n  margin-bottom: 24px;\n}\n.cram-complete-view .btn {\n  padding: 10px 24px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  border: none;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n}\n.cram-complete-view .btn:hover {\n  opacity: 0.95;\n}\n@keyframes spin {\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes modalSlideUp {\n  from {\n    transform: translateY(20px);\n    opacity: 0;\n  }\n  to {\n    transform: translateY(0);\n    opacity: 1;\n  }\n}\n@keyframes popIn {\n  from {\n    transform: scale(0.5);\n    opacity: 0;\n  }\n  to {\n    transform: scale(1);\n    opacity: 1;\n  }\n}\n@media (max-width: 768px) {\n  .timeline-bar-container {\n    margin: 15px 15px 0 15px;\n    padding: 12px 16px;\n    flex-direction: column;\n    align-items: stretch;\n  }\n  .timeline-bar-container .timeline-left {\n    flex-direction: column;\n    align-items: flex-start;\n    gap: 10px;\n  }\n  .cram-split-layout {\n    grid-template-columns: 1fr;\n  }\n  .cram-split-layout .cram-guide-panel {\n    border-right: none;\n    border-bottom: 1px solid #e2e8f0;\n    height: 50%;\n  }\n  .cram-split-layout .cram-quiz-panel {\n    height: 50%;\n  }\n}\n.daily-progress-container {\n  margin: 20px 40px 0 40px;\n  padding: 20px 24px;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n}\n@media (max-width: 768px) {\n  .daily-progress-container {\n    margin: 15px 15px 0 15px;\n    padding: 16px;\n  }\n}\n.daily-progress-container .daily-progress-header {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  margin-bottom: 16px;\n}\n.daily-progress-container .daily-progress-header .progress-title-icon {\n  color: #6366f1;\n}\n.daily-progress-container .daily-progress-header h3 {\n  margin: 0;\n  font-size: 16px;\n  font-weight: 700;\n  color: #0f172a;\n  flex-grow: 1;\n}\n.daily-progress-container .daily-progress-header .date-badge {\n  font-size: 12px;\n  font-weight: 600;\n  color: #64748b;\n  background: #f1f5f9;\n  padding: 4px 10px;\n  border-radius: 9999px;\n}\n.daily-progress-container .checklist-items {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));\n  gap: 16px;\n}\n.daily-progress-container .checklist-item {\n  display: flex;\n  align-items: flex-start;\n  gap: 12px;\n  padding: 14px 16px;\n  background: #f8fafc;\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  cursor: pointer;\n  transition: all 0.2s ease;\n}\n.daily-progress-container .checklist-item:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n  border-color: #cbd5e1;\n}\n.daily-progress-container .checklist-item .check-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  color: #94a3b8;\n}\n.daily-progress-container .checklist-item .item-text {\n  display: flex;\n  flex-direction: column;\n  gap: 2px;\n}\n.daily-progress-container .checklist-item .item-text .item-title {\n  font-size: 14px;\n  font-weight: 700;\n  color: #1e293b;\n}\n.daily-progress-container .checklist-item .item-text .item-desc {\n  font-size: 12px;\n  color: #64748b;\n}\n.daily-progress-container .checklist-item.completed {\n  background: rgba(34, 197, 94, 0.04);\n  border-color: #22c55e;\n}\n.daily-progress-container .checklist-item.completed .check-icon {\n  color: #22c55e;\n}\n.daily-progress-container .checklist-item.completed .item-title {\n  color: #166534;\n  text-decoration: line-through;\n}\n.daily-progress-container .checklist-item.locked {\n  cursor: not-allowed;\n  opacity: 0.8;\n}\n.daily-progress-container .checklist-item.locked:hover {\n  transform: none;\n  box-shadow: none;\n  border-color: #e2e8f0;\n}\n.quiz-locked-notice {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  background: white;\n  border-radius: 16px;\n  border: 1px solid #e2e8f0;\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);\n  max-width: 500px;\n  margin: 40px auto;\n}\n.quiz-locked-notice .locked-icon {\n  font-size: 48px;\n  width: 48px;\n  height: 48px;\n  color: #64748b;\n  margin-bottom: 20px;\n}\n.quiz-locked-notice h3 {\n  margin: 0 0 10px 0;\n  font-size: 20px;\n  font-weight: 700;\n  color: #0f172a;\n}\n.quiz-locked-notice p {\n  margin: 0 0 24px 0;\n  font-size: 14px;\n  color: #475569;\n  line-height: 1.5;\n}\n.quiz-locked-notice button {\n  font-size: 14px;\n  font-weight: 600;\n  padding: 10px 24px;\n  border-radius: 10px;\n  border: none;\n  background: #6366f1;\n  color: white;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n.quiz-locked-notice button:hover {\n  background: #4f46e5;\n}\n.cram-questions-list {\n  display: flex;\n  flex-direction: column;\n  gap: 24px;\n  margin-top: 16px;\n  margin-bottom: 24px;\n}\n.cram-question-card {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  background: white;\n  border-radius: 12px;\n  border: 1px solid #f1f5f9;\n  padding: 16px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);\n}\n.cram-question-card .cram-q-text {\n  font-size: 15px;\n  font-weight: 700;\n  color: #0f172a;\n  line-height: 1.5;\n  margin: 0;\n}\n.cram-question-card .cram-options-grid {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n}\n.cram-question-card .cram-option-button {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  text-align: left;\n  cursor: pointer;\n  transition: all 0.2s ease;\n  width: 100%;\n  box-sizing: border-box;\n}\n.cram-question-card .cram-option-button .option-label-badge {\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  width: 26px;\n  height: 26px;\n  border-radius: 6px;\n  background: #f1f5f9;\n  font-weight: 700;\n  color: #475569;\n  font-size: 12px;\n  flex-shrink: 0;\n}\n.cram-question-card .cram-option-button .option-text-lbl {\n  font-size: 14px;\n  color: #334155;\n  font-weight: 500;\n}\n.cram-question-card .cram-option-button:hover:not(:disabled) {\n  background: #f8fafc;\n  border-color: #94a3b8;\n}\n.cram-question-card .cram-option-button.selected {\n  border-color: #6366f1;\n  background: #f5f3ff;\n}\n.cram-question-card .cram-option-button.selected .option-label-badge {\n  background: #e0e7ff;\n  color: #4338ca;\n}\n.cram-question-card .cram-option-button.correct {\n  border-color: #22c55e;\n  background: #f0fdf4;\n}\n.cram-question-card .cram-option-button.correct .option-label-badge {\n  background: #dcfce7;\n  color: #15803d;\n}\n.cram-question-card .cram-option-button.wrong {\n  border-color: #ef4444;\n  background: #fef2f2;\n}\n.cram-question-card .cram-option-button.wrong .option-label-badge {\n  background: #fee2e2;\n  color: #b91c1c;\n}\n.cram-question-card .cram-explanation-block {\n  background: #f8fafc;\n  border-radius: 8px;\n  padding: 12px;\n  margin-top: 8px;\n  border-left: 4px solid #cbd5e1;\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.cram-question-card .cram-explanation-block .explanation-status {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.cram-question-card .cram-explanation-block .explanation-status mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.cram-question-card .cram-explanation-block .explanation-details {\n  margin: 0;\n  font-size: 13px;\n  color: #475569;\n  line-height: 1.4;\n}\n.cram-question-card .cram-explanation-block.correct-status {\n  border-left-color: #22c55e;\n}\n.cram-question-card .cram-explanation-block.correct-status .explanation-status {\n  color: #15803d;\n}\n.cram-question-card .cram-explanation-block.correct-status .explanation-status mat-icon {\n  color: #22c55e;\n}\n.cram-question-card .cram-explanation-block.wrong-status {\n  border-left-color: #ef4444;\n}\n.cram-question-card .cram-explanation-block.wrong-status .explanation-status {\n  color: #b91c1c;\n}\n.cram-question-card .cram-explanation-block.wrong-status .explanation-status mat-icon {\n  color: #ef4444;\n}\n.cram-result-banner {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 16px;\n  border-radius: 12px;\n  border: 1px solid;\n  margin-top: 10px;\n  margin-bottom: 20px;\n}\n.cram-result-banner .result-icon {\n  font-size: 32px;\n  width: 32px;\n  height: 32px;\n}\n.cram-result-banner .result-info {\n  flex-grow: 1;\n}\n.cram-result-banner .result-info h4 {\n  margin: 0 0 4px 0;\n  font-size: 15px;\n  font-weight: 700;\n}\n.cram-result-banner .result-info p {\n  margin: 0;\n  font-size: 13px;\n  opacity: 0.9;\n}\n.cram-result-banner.passed {\n  background: #f0fdf4;\n  border-color: #bbf7d0;\n  color: #15803d;\n}\n.cram-result-banner.passed .result-icon {\n  color: #22c55e;\n}\n.cram-result-banner.failed {\n  background: #fef2f2;\n  border-color: #fca5a5;\n  color: #b91c1c;\n}\n.cram-result-banner.failed .result-icon {\n  color: #ef4444;\n}\n.cram-result-banner .btn-sm {\n  padding: 6px 12px;\n  font-size: 12px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  cursor: pointer;\n}\n.cram-result-banner .btn-sm:hover {\n  background: #f8fafc;\n  color: #0f172a;\n}\n.cram-quiz-footer {\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n  margin-top: 12px;\n}\n.global-streak-header-widget {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background:\n    linear-gradient(\n      135deg,\n      #fffbeb 0%,\n      #fef3c7 100%);\n  border: 1px solid #fde68a;\n  padding: 6px 14px;\n  border-radius: 20px;\n  box-shadow: 0 2px 4px rgba(251, 191, 36, 0.1);\n  margin-right: 15px;\n}\n.global-streak-header-widget .streak-icon {\n  color: #d97706;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.global-streak-header-widget .streak-text {\n  display: flex;\n  flex-direction: column;\n}\n.global-streak-header-widget .streak-text .streak-value {\n  font-weight: 800;\n  color: #b45309;\n  font-size: 13px;\n  line-height: 1.2;\n}\n.global-streak-header-widget .streak-text .streak-label {\n  font-size: 9px;\n  color: #b45309;\n  font-weight: 600;\n  text-transform: uppercase;\n  letter-spacing: 0.3px;\n}\n.class-manager-container {\n  max-width: 1200px;\n  width: 100%;\n  margin: 30px auto;\n  padding: 0 20px;\n  box-sizing: border-box;\n}\n.class-manager-container .manager-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  flex-wrap: wrap;\n  gap: 15px;\n  background: white;\n  border-radius: 16px;\n  padding: 24px 30px;\n  border: 1px solid #e2e8f0;\n}\n.class-manager-container .manager-header h1 {\n  margin: 0;\n  font-size: 26px;\n  font-weight: 800;\n  letter-spacing: -0.5px;\n  color: #0f172a;\n}\n.class-manager-container .manager-header .subtitle {\n  margin: 4px 0 0 0;\n  color: #64748b;\n  font-size: 14px;\n}\n.class-manager-container .manager-header .btn-add-class {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 12px 24px;\n  background:\n    linear-gradient(\n      135deg,\n      #6366f1 0%,\n      #4f46e5 100%);\n  color: white;\n  border: none;\n  border-radius: 10px;\n  font-size: 15px;\n  font-weight: 700;\n  cursor: pointer;\n  box-shadow: 0 4px 14px rgba(79, 70, 229, 0.25);\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.class-manager-container .manager-header .btn-add-class:hover {\n  transform: translateY(-2px);\n  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.35);\n}\n.empty-state {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 60px 40px;\n  text-align: center;\n  border-radius: 16px;\n  border: 2px dashed #cbd5e1;\n  background: white;\n  margin-top: 30px;\n}\n.empty-state .empty-icon {\n  font-size: 64px;\n  width: 64px;\n  height: 64px;\n  color: #94a3b8;\n  margin-bottom: 20px;\n}\n.empty-state h2 {\n  font-size: 20px;\n  font-weight: 700;\n  color: #1e293b;\n  margin: 0 0 8px 0;\n}\n.empty-state p {\n  color: #64748b;\n  font-size: 14px;\n  max-width: 400px;\n  margin: 0 0 24px 0;\n  line-height: 1.6;\n}\n.empty-state .btn {\n  display: inline-flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 20px;\n  border-radius: 8px;\n  font-size: 14px;\n  font-weight: 700;\n  border: none;\n  cursor: pointer;\n  background: #4f46e5;\n  color: white;\n  transition: all 0.2s;\n}\n.empty-state .btn:hover {\n  background: #4338ca;\n}\n.classes-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));\n  gap: 25px;\n  margin-top: 30px;\n}\n.class-card {\n  position: relative;\n  border-radius: 16px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  padding: 24px;\n  cursor: pointer;\n  overflow: hidden;\n  display: flex;\n  flex-direction: column;\n  height: 200px;\n  box-sizing: border-box;\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);\n}\n.class-card .class-card-glow {\n  position: absolute;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 4px;\n  background:\n    linear-gradient(\n      90deg,\n      #6366f1,\n      #a855f7);\n  opacity: 0;\n  transition: opacity 0.3s ease;\n}\n.class-card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);\n  border-color: #cbd5e1;\n}\n.class-card:hover .class-card-glow {\n  opacity: 1;\n}\n.class-card:hover .class-card-footer mat-icon {\n  transform: translateX(4px);\n}\n.class-card .class-card-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n}\n.class-card .class-card-header .class-icon {\n  color: #6366f1;\n  font-size: 28px;\n  width: 28px;\n  height: 28px;\n}\n.class-card .class-card-header .class-streak-badge {\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  background: #fff5f5;\n  border: 1px solid #fee2e2;\n  padding: 4px 8px;\n  border-radius: 20px;\n  color: #ef4444;\n  font-size: 11px;\n  font-weight: 700;\n}\n.class-card .class-card-header .class-streak-badge mat-icon {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.class-card .class-card-body {\n  flex-grow: 1;\n}\n.class-card .class-card-body h3 {\n  font-size: 19px;\n  font-weight: 700;\n  color: #0f172a;\n  margin: 0 0 6px 0;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.class-card .class-card-body .class-id {\n  margin: 0;\n  font-size: 12px;\n  color: #94a3b8;\n  font-family: monospace;\n}\n.class-card .class-card-footer {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 12px;\n  font-size: 12px;\n  font-weight: 600;\n  color: #4f46e5;\n}\n.class-card .class-card-footer mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n  transition: transform 0.2s ease;\n}\n.class-workspace-container {\n  width: 100%;\n  margin-top: 20px;\n}\n.class-workspace-container .class-subheader {\n  display: flex;\n  align-items: center;\n  gap: 20px;\n  margin: 0 40px 15px 40px;\n}\n.class-workspace-container .class-subheader .btn-back {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  background: white;\n  border: 1px solid #e2e8f0;\n  border-radius: 8px;\n  color: #475569;\n  font-size: 13px;\n  font-weight: 600;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.class-workspace-container .class-subheader .btn-back mat-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.class-workspace-container .class-subheader .btn-back:hover {\n  background: #f8fafc;\n  color: #0f172a;\n  border-color: #cbd5e1;\n}\n.class-workspace-container .class-subheader .subheader-title {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.class-workspace-container .class-subheader .subheader-title h2 {\n  margin: 0;\n  font-size: 22px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.class-workspace-container .class-subheader .subheader-title .class-id-badge {\n  font-size: 11px;\n  font-family: monospace;\n  background: #f1f5f9;\n  color: #64748b;\n  padding: 2px 8px;\n  border-radius: 4px;\n  border: 1px solid #e2e8f0;\n}\n.syllabus-topics-card {\n  display: flex;\n  flex-direction: column;\n}\n.syllabus-topics-card .card-header-row {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  margin-bottom: 8px;\n}\n.syllabus-topics-card .card-header-row mat-icon {\n  color: #6366f1;\n}\n.syllabus-topics-card .loading-topics,\n.syllabus-topics-card .empty-topics {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  justify-content: center;\n  padding: 30px;\n  text-align: center;\n  color: #64748b;\n  font-size: 13px;\n}\n.syllabus-topics-card .loading-topics p,\n.syllabus-topics-card .empty-topics p {\n  margin: 6px 0 0 0;\n}\n.syllabus-topics-card .topic-spinner {\n  width: 24px;\n  height: 24px;\n  border: 2px solid rgba(99, 102, 241, 0.15);\n  border-top-color: #6366f1;\n  border-radius: 50%;\n  animation: spin 0.8s infinite linear;\n  margin-bottom: 10px;\n}\n.syllabus-topics-card .topics-list {\n  display: flex;\n  flex-direction: column;\n  gap: 12px;\n  margin-top: 10px;\n}\n.syllabus-topics-card .topic-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 12px 16px;\n  border-radius: 10px;\n  border: 1px solid #e2e8f0;\n  background: #f8fafc;\n  gap: 12px;\n  transition: all 0.2s ease;\n}\n.syllabus-topics-card .topic-item:hover {\n  background: #f1f5f9;\n}\n.syllabus-topics-card .topic-item.insufficient {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.syllabus-topics-card .topic-item.insufficient:hover {\n  background: #fffbeb;\n}\n.syllabus-topics-card .topic-item .topic-item-left {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n  min-width: 0;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon.sufficient-icon {\n  color: #10b981;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-status-icon.insufficient-icon {\n  color: #eab308;\n}\n.syllabus-topics-card .topic-item .topic-item-left .topic-name-label {\n  font-size: 14px;\n  font-weight: 600;\n  color: #334155;\n  overflow: hidden;\n  text-overflow: ellipsis;\n  white-space: nowrap;\n}\n.syllabus-topics-card .topic-item .topic-item-actions {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .warning-badge {\n  font-size: 10px;\n  font-weight: 700;\n  background: #fef08a;\n  color: #713f12;\n  padding: 2px 6px;\n  border-radius: 4px;\n  white-space: nowrap;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  padding: 6px 10px;\n  border-radius: 6px;\n  border: 1px solid #cbd5e1;\n  background: white;\n  color: #475569;\n  font-size: 11px;\n  font-weight: 700;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials mat-icon {\n  font-size: 12px;\n  width: 12px;\n  height: 12px;\n}\n.syllabus-topics-card .topic-item .topic-item-actions .btn-add-materials:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.modal-overlay {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100vw;\n  height: 100vh;\n  background: rgba(15, 23, 42, 0.65);\n  backdrop-filter: blur(5px);\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  z-index: 2000;\n  padding: 20px;\n  box-sizing: border-box;\n}\n.modal-card {\n  width: 100%;\n  max-width: 550px;\n  background: white;\n  border-radius: 16px;\n  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);\n  margin-bottom: 0 !important;\n  animation: modalSlideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);\n  display: flex;\n  flex-direction: column;\n  box-sizing: border-box;\n}\n.modal-card .modal-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  margin-bottom: 20px;\n  border-bottom: 1px solid #f1f5f9;\n  padding-bottom: 12px;\n}\n.modal-card .modal-header .modal-title-container {\n  display: flex;\n  align-items: center;\n  gap: 10px;\n}\n.modal-card .modal-header .modal-title-container .modal-header-icon {\n  color: #6366f1;\n  font-size: 24px;\n  width: 24px;\n  height: 24px;\n}\n.modal-card .modal-header .modal-title-container .modal-header-icon.warning-color {\n  color: #eab308;\n}\n.modal-card .modal-header .modal-title-container h2 {\n  margin: 0;\n  font-size: 20px;\n  font-weight: 800;\n  color: #0f172a;\n}\n.modal-card .modal-header .btn-modal-close {\n  background: transparent;\n  border: none;\n  color: #94a3b8;\n  cursor: pointer;\n  width: 28px;\n  height: 28px;\n  border-radius: 50%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  transition: all 0.2s;\n}\n.modal-card .modal-header .btn-modal-close:hover {\n  background: #f1f5f9;\n  color: #0f172a;\n}\n.modal-card .modal-body {\n  display: flex;\n  flex-direction: column;\n  gap: 20px;\n  margin-bottom: 24px;\n}\n.modal-card .modal-body .modal-desc {\n  margin: 0;\n  color: #64748b;\n  font-size: 13px;\n  line-height: 1.5;\n}\n.modal-card .form-group {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card .form-group label {\n  font-size: 12px;\n  font-weight: 700;\n  color: #475569;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.modal-card .form-group input[type=text],\n.modal-card .form-group textarea {\n  padding: 12px 14px;\n  border-radius: 8px;\n  border: 1px solid #cbd5e1;\n  font-size: 14px;\n  outline: none;\n  box-sizing: border-box;\n  width: 100%;\n  background: #f8fafc;\n  transition: all 0.2s;\n}\n.modal-card .form-group input[type=text]:focus,\n.modal-card .form-group textarea:focus {\n  border-color: #6366f1;\n  background: white;\n  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);\n}\n.modal-card .file-uploader-dropzone {\n  border: 2px dashed #cbd5e1;\n  background: #f8fafc;\n  border-radius: 10px;\n  padding: 24px;\n  text-align: center;\n  cursor: pointer;\n  transition: all 0.2s;\n}\n.modal-card .file-uploader-dropzone:hover {\n  border-color: #6366f1;\n  background: #f0f3ff;\n}\n.modal-card .file-uploader-dropzone.file-selected {\n  border-color: #10b981;\n  background: #f0fdf4;\n}\n.modal-card .file-uploader-dropzone .dropzone-content {\n  display: flex;\n  flex-direction: column;\n  align-items: center;\n  gap: 8px;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-icon {\n  font-size: 36px;\n  width: 36px;\n  height: 36px;\n  color: #64748b;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text {\n  display: flex;\n  flex-direction: column;\n  font-size: 13px;\n  color: #475569;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text strong {\n  color: #0f172a;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text span {\n  font-size: 11px;\n  color: #94a3b8;\n  margin-top: 4px;\n}\n.modal-card .file-uploader-dropzone .dropzone-content .upload-text .selected-filename {\n  color: #047857;\n  font-weight: 700;\n  font-size: 13px;\n  margin-top: 4px;\n}\n.modal-card .file-uploader-mini {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n}\n.modal-card .file-uploader-mini .btn-mini-upload {\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  padding: 8px 14px;\n  font-size: 12px;\n  font-weight: 700;\n  border: 1px solid #cbd5e1;\n  border-radius: 6px;\n  background: white;\n  cursor: pointer;\n}\n.modal-card .file-uploader-mini .btn-mini-upload mat-icon {\n  font-size: 14px;\n  width: 14px;\n  height: 14px;\n}\n.modal-card .file-uploader-mini .mini-upload-filename {\n  font-size: 12px;\n  color: #0f172a;\n  font-weight: 600;\n}\n.modal-card .modal-error-alert {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  background: #fef2f2;\n  border: 1px solid #fee2e2;\n  color: #991b1b;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card .modal-error-alert mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card .modal-status-alert {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 10px 14px;\n  border-radius: 8px;\n  font-size: 13px;\n}\n.modal-card .modal-status-alert mat-icon {\n  font-size: 18px;\n  width: 18px;\n  height: 18px;\n}\n.modal-card .modal-status-alert.success {\n  background: #f0fdf4;\n  border: 1px solid #bbf7d0;\n  color: #166534;\n}\n.modal-card .modal-status-alert.error {\n  background: #fef2f2;\n  border: 1px solid #fca5a5;\n  color: #991b1b;\n}\n.modal-card .modal-status-alert.info {\n  background: #f0fdfa;\n  border: 1px solid #ccfbf1;\n  color: #0f766e;\n}\n.modal-card .modal-status-alert.info mat-icon {\n  animation: spin 1s infinite linear;\n}\n.modal-card .modal-progress-container {\n  display: flex;\n  flex-direction: column;\n  gap: 6px;\n}\n.modal-card .modal-progress-container mat-progress-bar {\n  border-radius: 4px;\n}\n.modal-card .modal-progress-container .progress-subtext {\n  font-size: 11px;\n  color: #64748b;\n  font-style: italic;\n}\n.modal-card .modal-actions {\n  display: flex;\n  justify-content: flex-end;\n  gap: 12px;\n  border-top: 1px solid #f1f5f9;\n  padding-top: 16px;\n}\n.modal-card .modal-actions .btn {\n  padding: 10px 20px;\n  font-size: 14px;\n  font-weight: 700;\n  border-radius: 8px;\n  cursor: pointer;\n  display: inline-flex;\n  align-items: center;\n  gap: 6px;\n  border: none;\n  transition: all 0.2s;\n}\n.modal-card .modal-actions .btn-secondary {\n  background: #f1f5f9;\n  color: #475569;\n}\n.modal-card .modal-actions .btn-secondary:hover {\n  background: #e2e8f0;\n}\n.modal-card .modal-actions .btn-primary {\n  background: #4f46e5;\n  color: white;\n}\n.modal-card .modal-actions .btn-primary:hover {\n  background: #4338ca;\n}\n.modal-card .modal-actions .btn-primary:disabled {\n  background: #94a3b8;\n  cursor: not-allowed;\n}\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n@keyframes modalSlideUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px) scale(0.95);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0) scale(1);\n  }\n}\n.scale-up {\n  animation: modalSlideUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);\n}\n.weeks-accordion {\n  display: flex;\n  flex-direction: column;\n  gap: 10px;\n  margin-top: 15px;\n}\n.weeks-accordion .week-group {\n  border: 1px solid #e2e8f0;\n  border-radius: 12px;\n  background: #ffffff;\n  overflow: hidden;\n  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.weeks-accordion .week-group.active-week {\n  border-color: #6366f1;\n  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.08);\n}\n.weeks-accordion .week-group.active-week .week-group-header {\n  background: rgba(99, 102, 241, 0.04);\n  border-bottom: 1px solid rgba(99, 102, 241, 0.1);\n}\n.weeks-accordion .week-group .week-group-header {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 14px 18px;\n  cursor: pointer;\n  -webkit-user-select: none;\n  user-select: none;\n  transition: background 0.2s ease;\n}\n.weeks-accordion .week-group .week-group-header:hover {\n  background: #f8fafc;\n}\n.weeks-accordion .week-group .week-group-header .week-title-label {\n  font-weight: 600;\n  font-size: 14px;\n  color: #1e293b;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary {\n  display: flex;\n  align-items: center;\n  gap: 6px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary span {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  font-size: 11px;\n  font-weight: 550;\n  padding: 3px 8px;\n  border-radius: 9999px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-sufficient {\n  background: #ecfdf5;\n  color: #065f46;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-sufficient mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-insufficient {\n  background: #fff9db;\n  color: #856404;\n  border: 1px solid #ffeeba;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-insufficient mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-header .week-badge-summary .badge-empty {\n  background: #f1f5f9;\n  color: #64748b;\n}\n.weeks-accordion .week-group .week-group-content {\n  padding: 12px 16px;\n  display: flex;\n  flex-direction: column;\n  gap: 8px;\n  background: #fafafb;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  padding: 8px 12px;\n  border-radius: 8px;\n  border: 1px solid #e2e8f0;\n  background: #ffffff;\n  font-size: 13px;\n  transition: all 0.2s ease;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item:hover {\n  background: #f8fafc;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item.insufficient {\n  border-color: #fef08a;\n  background: #fffdf5;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item.insufficient:hover {\n  background: #fffbeb;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  min-width: 0;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon {\n  font-size: 16px;\n  width: 16px;\n  height: 16px;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon.sufficient-icon {\n  color: #10b981;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-status-icon.insufficient-icon {\n  color: #eab308;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-left .topic-name-label {\n  font-weight: 500;\n  color: #334155;\n  white-space: nowrap;\n  overflow: hidden;\n  text-overflow: ellipsis;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small {\n  display: inline-flex;\n  align-items: center;\n  gap: 4px;\n  background: #f1f5f9;\n  border: 1px solid #cbd5e1;\n  color: #475569;\n  padding: 4px 8px;\n  font-size: 11px;\n  font-weight: 600;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: all 0.15s ease;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small mat-icon {\n  font-size: 13px;\n  width: 13px;\n  height: 13px;\n}\n.weeks-accordion .week-group .week-group-content .timeline-topic-item .topic-item-actions .btn-add-materials-small:hover {\n  background: #e2e8f0;\n  color: #0f172a;\n  border-color: #94a3b8;\n}\n.app-header {\n  background-color: #0b0f19 !important;\n  border-bottom: 1px solid rgba(99, 102, 241, 0.25) !important;\n  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5) !important;\n  color: #f1f5f9 !important;\n}\n.app-header .logo-area .logo-icon {\n  background:\n    linear-gradient(\n      135deg,\n      #1e1b4b 0%,\n      #312e81 100%) !important;\n  border: 1px solid rgba(99, 102, 241, 0.4);\n}\n.app-header .logo-area .logo-icon .logo-cosmic {\n  color: #38bdf8;\n  filter: drop-shadow(0 0 8px #38bdf8);\n  animation: slow-rotate 10s linear infinite;\n}\n.app-header .logo-area .logo-text h2 {\n  background:\n    linear-gradient(\n      135deg,\n      #38bdf8 0%,\n      #6366f1 100%) !important;\n  -webkit-background-clip: text !important;\n  -webkit-text-fill-color: transparent !important;\n  font-weight: 800;\n  filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.2));\n}\n.app-header .logo-area .logo-text span {\n  color: #94a3b8 !important;\n}\n.app-header .tab-nav .nav-tab {\n  color: #94a3b8;\n  border: 1px solid transparent;\n  margin: 0 2px;\n}\n.app-header .tab-nav .nav-tab:hover {\n  background-color: rgba(255, 255, 255, 0.05);\n  color: #ffffff;\n}\n.app-header .tab-nav .nav-tab.active {\n  background: rgba(99, 102, 241, 0.15) !important;\n  border: 1px solid rgba(99, 102, 241, 0.4);\n  color: #38bdf8 !important;\n  box-shadow: 0 0 12px rgba(99, 102, 241, 0.2);\n}\n.app-header .global-streak-header-widget {\n  background: rgba(255, 255, 255, 0.05);\n  border: 1px solid rgba(255, 255, 255, 0.1);\n  border-radius: 8px;\n  padding: 6px 12px;\n  display: flex;\n  align-items: center;\n  gap: 8px;\n}\n.app-header .global-streak-header-widget .streak-icon {\n  color: #a855f7;\n  filter: drop-shadow(0 0 6px #a855f7);\n}\n.app-header .global-streak-header-widget .streak-text {\n  display: flex;\n  flex-direction: column;\n}\n.app-header .global-streak-header-widget .streak-text .streak-value {\n  font-size: 13px;\n  font-weight: 800;\n  color: #f1f5f9;\n  line-height: 1.2;\n}\n.app-header .global-streak-header-widget .streak-text .streak-label {\n  font-size: 10px;\n  color: #94a3b8;\n}\n@keyframes slow-rotate {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n.header-status-area {\n  display: flex;\n  align-items: center;\n  gap: 12px;\n  margin: 0 8px;\n}\n.header-status-widget {\n  display: flex;\n  align-items: center;\n  gap: 8px;\n  padding: 6px 12px;\n  background: rgba(255, 255, 255, 0.04);\n  border: 1px solid rgba(255, 255, 255, 0.08);\n  border-radius: 8px;\n  height: 38px;\n  box-sizing: border-box;\n}\n.header-status-widget .fire-icon {\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n}\n.header-status-widget .planet-icon {\n  color: #38bdf8;\n  font-size: 20px;\n  width: 20px;\n  height: 20px;\n  filter: drop-shadow(0 0 6px #38bdf8);\n  animation: pulse-cosmic 2s infinite alternate;\n}\n.header-status-widget .widget-details {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n}\n.header-status-widget .widget-details .widget-val {\n  font-size: 12px;\n  font-weight: 700;\n  color: #f8fafc;\n  line-height: 1.2;\n}\n.header-status-widget .widget-details .widget-lbl {\n  font-size: 9px;\n  color: #94a3b8;\n  font-weight: 500;\n  letter-spacing: 0.2px;\n}\n@keyframes pulse-cosmic {\n  0% {\n    transform: scale(0.95);\n    opacity: 0.8;\n  }\n  100% {\n    transform: scale(1.05);\n    opacity: 1;\n    filter: drop-shadow(0 0 10px #38bdf8);\n  }\n}\n.cosmic-modal .form-group label {\n  font-size: 11px;\n  font-weight: 700;\n  color: #38bdf8;\n  text-transform: uppercase;\n  letter-spacing: 0.5px;\n}\n.cosmic-modal .cosmic-checkbox-label:hover {\n  background: rgba(99, 102, 241, 0.15) !important;\n  border-color: rgba(99, 102, 241, 0.4) !important;\n  color: white;\n}\n/*# sourceMappingURL=dashboard.component.css.map */\n'] }]
   }], () => [{ type: ActivatedRoute }, { type: Router }, { type: AuthService }, { type: ApiService }, { type: IngestService }], null);
 })();
 (() => {
-  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardComponent, { className: "DashboardComponent", filePath: "src/app/components/dashboard/dashboard.component.ts", lineNumber: 36 });
+  (typeof ngDevMode === "undefined" || ngDevMode) && \u0275setClassDebugInfo(DashboardComponent, { className: "DashboardComponent", filePath: "src/app/components/dashboard/dashboard.component.ts", lineNumber: 34 });
 })();
 
 // src/app/components/schedule-setup/schedule-setup.component.ts

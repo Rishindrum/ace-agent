@@ -2,38 +2,63 @@
 <header class="app-header">
   <div class="logo-area" (click)="selectClass(null)" style="cursor: pointer;">
     <div class="logo-icon">
-      <mat-icon>school</mat-icon>
+      <mat-icon class="logo-cosmic">space_dashboard</mat-icon>
     </div>
     <div class="logo-text">
       <h2>Ace Agent</h2>
-      <span>Interactive AI Study Companion</span>
+      <span>Cosmic Study Orbit</span>
     </div>
   </div>
   
   <div class="header-right">
-    <!-- Global Streak Widget at the very top -->
+    <!-- Navigation Tabs -->
+    <nav class="tab-nav" *ngIf="selectedClass">
+      <button class="nav-tab" (click)="selectClass(null)" title="Back to Classes Dashboard">
+        <mat-icon>dashboard</mat-icon> Dashboard
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
+        <mat-icon>menu_book</mat-icon> Syllabus & Graph
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'lesson'" (click)="selectTab('lesson')">
+        <mat-icon>chrome_reader_mode</mat-icon> Study Orbit
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+        <mat-icon>forum</mat-icon> Ask Ace
+      </button>
+      <button class="nav-tab btn-streak-settings" (click)="openStreakSettingsModal()" title="Modify Streak & Schedule Settings">
+        <mat-icon>insights</mat-icon> Streak Settings
+      </button>
+    </nav>
+
+    <!-- Streaks & Progress Indicators in the Taskbar -->
+    <div class="header-status-area" *ngIf="selectedClass">
+      <!-- Class Streak -->
+      <div class="header-status-widget class-streak-widget">
+        <mat-icon class="fire-icon animated-fire">local_fire_department</mat-icon>
+        <div class="widget-details">
+          <span class="widget-val">{{ currentStreak }} Days</span>
+          <span class="widget-lbl">Class Streak</span>
+        </div>
+      </div>
+
+      <!-- Current Week Progress -->
+      <div class="header-status-widget week-widget">
+        <mat-icon class="planet-icon">travel_explore</mat-icon>
+        <div class="widget-details">
+          <span class="widget-val">Week {{ selectedTimelineWeek }}</span>
+          <span class="widget-lbl">Study Orbit</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Global Streak Widget -->
     <div class="global-streak-header-widget">
-      <mat-icon class="streak-icon">local_fire_department</mat-icon>
+      <mat-icon class="streak-icon">public</mat-icon>
       <div class="streak-text">
         <span class="streak-value">{{ globalStreak }} Days</span>
         <span class="streak-label">Global Streak</span>
       </div>
     </div>
-
-    <nav class="tab-nav" *ngIf="selectedClass">
-      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
-        <mat-icon>menu_book</mat-icon> Syllabus & Graph
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'lesson'" (class.active)="activeTab === 'lesson'" (click)="selectTab('lesson')">
-        <mat-icon>chrome_reader_mode</mat-icon> Lessons
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
-        <mat-icon>forum</mat-icon> AI Tutor
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
-        <mat-icon>assignment_turned_in</mat-icon> Quizzes
-      </button>
-    </nav>
 
     <button class="btn-logout" (click)="logout()">
       <mat-icon>logout</mat-icon> Logout
@@ -169,7 +194,7 @@
             <span class="item-desc">Solve practice questions (Get >= 60% correct to pass)</span>
           </div>
         </div>
-        <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'quiz' : null">
+        <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'lesson' : null">
           <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
           <div class="item-text">
             <span class="item-title">3. Unlock Weekly Quiz</span>
@@ -271,30 +296,14 @@
         </div>
       </div>
 
-      <!-- Lesson Tab -->
+      <!-- Lesson Tab (Integrated Study & Quiz) -->
       <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
         <app-lesson-interface 
           [selectedWeek]="selectedTimelineWeek" 
           [dailyState]="dailyState"
           [classId]="selectedClass.class_id"
           (exerciseCompleted)="loadDailyState()"
-          (startQuiz)="selectTab('quiz')"
         ></app-lesson-interface>
-      </div>
-
-      <!-- Quiz Tab -->
-      <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
-        <div *ngIf="!dailyState.quiz_unlocked" class="quiz-locked-notice card">
-          <mat-icon class="locked-icon">lock</mat-icon>
-          <h3>Quiz is Locked</h3>
-          <p>You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.</p>
-          <button class="btn btn-primary" (click)="activeTab = 'lesson'">Go to Lesson</button>
-        </div>
-        <div *ngIf="dailyState.quiz_unlocked" class="quiz-layout card">
-          <h3>Adaptive Performance Quiz</h3>
-          <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
-          <app-quiz-interface [selectedWeek]="selectedTimelineWeek" [classId]="selectedClass.class_id"></app-quiz-interface>
-        </div>
       </div>
     </main>
   </div>
@@ -454,5 +463,74 @@
         <mat-icon>add_link</mat-icon> Ingest Notes
       </button>
     </div>
+  </div>
+</div>
+
+<!-- STREAK SETTINGS MODAL -->
+<div *ngIf="isStreakSettingsModalOpen" class="modal-overlay fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2500; padding: 20px; box-sizing: border-box;">
+  <div class="modal-card card scale-up cosmic-modal" style="width: 100%; max-width: 500px; background: #0f172a; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 24px; box-shadow: 0 0 30px rgba(99, 102, 241, 0.2); box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; color: #f1f5f9;">
+    
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
+      <div class="modal-title-container" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: #38bdf8;">
+        <mat-icon style="color: #38bdf8;">insights</mat-icon>
+        <span>Streak & Schedule Settings</span>
+      </div>
+      <button class="btn-modal-close" (click)="closeStreakSettingsModal()" style="background: transparent; border: none; cursor: pointer; color: #94a3b8;">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+      <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
+        Configure your weekly learning schedule and pace for <strong>{{ selectedClass?.class_name }}</strong> to maintain your orbit.
+      </p>
+
+      <!-- Preferred Study Days -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 8px;">
+        <label style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Preferred Orbit Days</label>
+        <div class="days-checkbox-grid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;">
+          <label *ngFor="let day of streakSettingsDays" class="cosmic-checkbox-label" style="display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; background: rgba(255, 255, 255, 0.05); padding: 8px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s;">
+            <input type="checkbox" [(ngModel)]="day.selected" style="accent-color: #38bdf8;">
+            <span>{{ day.name }}</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Daily Pace -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="modalPace" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Daily Study Pace (Minutes)</label>
+        <input 
+          type="number" 
+          id="modalPace" 
+          [(ngModel)]="streakSettingsPace"
+          min="1" 
+          style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+        >
+      </div>
+
+      <!-- Course Start Date -->
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="modalStartDate" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase; letter-spacing: 0.5px;">Course Orbit Start Date</label>
+        <input 
+          type="date" 
+          id="modalStartDate" 
+          [(ngModel)]="streakSettingsStartDate"
+          style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+        >
+      </div>
+    </div>
+
+    <div class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 8px;">
+      <button class="btn btn-secondary" (click)="closeStreakSettingsModal()" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; cursor: pointer; font-weight: 600;">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="saveStreakSettings()"
+        style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
+      >
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">save</mat-icon>
+        <span>Save Orbit Plan</span>
+      </button>
+    </div>
+
   </div>
 </div>

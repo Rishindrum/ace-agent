@@ -252,6 +252,102 @@ export class LessonInterfaceComponent implements OnInit {
     });
   }
 
+  // Integrated Quiz State
+  isQuizActive: boolean = false;
+  quizLoading: boolean = false;
+  quizQuestions: any[] = [];
+  quizSelectedAnswers: number[] = [];
+  quizScore: number = 0;
+  quizTotal: number = 0;
+  quizPercentage: number = 0;
+  quizFinished: boolean = false;
+  quizStatusMessage: string = '';
+
+  startIntegratedQuiz(): void {
+    this.isQuizActive = true;
+    this.quizLoading = true;
+    this.quizStatusMessage = 'Requesting 10 custom questions from Gemini...';
+    
+    this.api.generateQuiz(this.selectedWeek, 10, this.classId).subscribe({
+      next: (questions: any[]) => {
+        this.quizLoading = false;
+        if (questions && questions.length > 0) {
+          this.quizQuestions = questions.map((q: any) => ({
+            id: q.id || q.questionText || q.question_text || '',
+            question_text: q.questionText || q.question_text || 'Question',
+            options: q.options || [],
+            correct_option_index: q.correctOptionIndex !== undefined ? q.correctOptionIndex : (q.correct_option_index !== undefined ? q.correct_option_index : 0)
+          }));
+          this.quizSelectedAnswers = new Array(this.quizQuestions.length).fill(-1);
+        } else {
+          this.isQuizActive = false;
+          alert('Failed to generate a valid quiz. Ensure syllabus materials are uploaded.');
+        }
+      },
+      error: (err) => {
+        this.quizLoading = false;
+        this.isQuizActive = false;
+        alert('Error loading quiz: ' + (err.error?.message || err.message || err));
+        console.error('Quiz loading error:', err);
+      }
+    });
+  }
+
+  selectQuizOption(qIdx: number, optIdx: number): void {
+    this.quizSelectedAnswers[qIdx] = optIdx;
+  }
+
+  allQuizAnswered(): boolean {
+    return this.quizSelectedAnswers.length > 0 && this.quizSelectedAnswers.every(ans => ans !== -1);
+  }
+
+  cancelQuiz(): void {
+    this.isQuizActive = false;
+    this.quizQuestions = [];
+    this.quizSelectedAnswers = [];
+  }
+
+  submitQuizAnswers(): void {
+    this.isLoading = true;
+    this.statusMessage = 'Submitting answers and calculating your performance...';
+
+    const telemetryQuestions = this.quizQuestions.map((q, idx) => ({
+      id: q.id || q.question_text || `q-${idx}`,
+      selected_option_index: this.quizSelectedAnswers[idx],
+      correct_option_index: q.correct_option_index
+    }));
+
+    const payload = {
+      week_number: this.selectedWeek,
+      questions: telemetryQuestions
+    };
+
+    this.api.submitQuizTelemetry(payload, this.classId).subscribe({
+      next: (res) => {
+        this.isLoading = false;
+        this.quizFinished = true;
+        this.quizScore = res.score;
+        this.quizTotal = res.total_questions;
+        this.quizPercentage = res.percentage;
+        this.exerciseCompleted.emit();
+      },
+      error: (err) => {
+        this.isLoading = false;
+        alert('Error submitting quiz telemetry: ' + (err.error?.message || err.message || err));
+        console.error('Quiz submission error:', err);
+      }
+    });
+  }
+
+  finishStudySession(): void {
+    this.isQuizActive = false;
+    this.quizFinished = false;
+    this.quizQuestions = [];
+    this.quizSelectedAnswers = [];
+    this.currentStep = 1;
+    this.exerciseCompleted.emit();
+  }
+
   renderMarkdown(md: string): string {
     if (!md) return '';
     let html = md
