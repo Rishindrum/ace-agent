@@ -206,6 +206,20 @@ class JudgeResponseModel(BaseModel):
     passed: bool = Field(description="True if the generation passes the criteria, False otherwise")
     reasoning: str = Field(description="Explanation of why it passed or failed")
 
+class ConceptModel(BaseModel):
+    name: str = Field(description="Concept or Topic Name")
+    prerequisites: List[str] = Field(description="Names of other topics that are prerequisites to this one")
+
+class WeekModel(BaseModel):
+    number: int = Field(description="Week number (e.g. 1, 2, 3...)")
+    topics: List[str] = Field(description="List of topic/concept names scheduled/covered in this week")
+    exams: List[str] = Field(description="List of exam or test names scheduled in this week, or empty list if none")
+
+class SyllabusResponseModel(BaseModel):
+    concepts: List[ConceptModel] = Field(description="The graph of concepts and their prerequisites")
+    weeks: List[WeekModel] = Field(description="The weekly schedule of the course")
+
+
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
         print("[Python] Connecting to Graph Database...")
@@ -279,41 +293,40 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         # Store in our custom "ScaNN-style" store
         vector_store.add_documents(user_id, class_id, chunks)
 
-        # 3. EXTRACT GRAPH
-        print("[Python] Asking Gemini to extract graph...")
-        prompt = f"""
-        Extract the knowledge graph from this course.
-        Return JSON with this EXACT schema:
-        {{ "concepts": [ {{ "name": "Concept Name", "prerequisites": ["Prereq 1"] }} ] }}
-        Text: {full_text[:5000]}
-        """
-
-        # 3. EXTRACT GRAPH (If Neo4j is alive)
+        # 3. EXTRACT GRAPH & WEEKLY SCHEDULE (If Neo4j is alive)
         concepts = []
+        weeks = []
         if self.driver:
-            print("[Python] Extraction Graph with Gemini...")
+            print("[Python] Extracting graph and schedule with Gemini...")
             prompt = f"""
-            Extract the knowledge graph from this course.
-            Return JSON with this EXACT schema:
-            {{ "concepts": [ {{ "name": "Concept Name", "prerequisites": ["Prereq 1"] }} ] }}
-            Text: {full_text[:5000]}
+            Analyze the following syllabus text. Extract:
+            1. The knowledge graph of concepts/topics covered in the course, along with any prerequisite relationships between them.
+            2. The weekly schedule (calendar timeline), mapping week numbers to topics covered in that week, and noting any exams/tests scheduled for that week.
+            
+            Syllabus Text:
+            {full_text[:50000]}
             """
             try:
                 response = self._generate_with_retry(
                     model_name='gemini-2.5-flash-lite',
                     contents=prompt,
-                    config={'response_mime_type': 'application/json'}
+                    config={
+                        'response_mime_type': 'application/json',
+                        'response_schema': SyllabusResponseModel
+                    }
                 )
                 data = json.loads(response.text)
                 concepts = data.get("concepts", [])
+                weeks = data.get("weeks", [])
+                print(f"[Python] Extracted {len(concepts)} concepts and {len(weeks)} weeks.")
                 
                 # Write to Neo4j
                 with self.driver.session() as session:
-                    session.execute_write(self._create_dynamic_nodes, user_id, class_id, class_name, concepts)
+                    session.execute_write(self._create_dynamic_nodes, user_id, class_id, class_name, concepts, weeks)
             except Exception as e:
-                print(f"[Python] Graph Logic Error: {e}")
+                print(f"[Python] Graph/Schedule Logic Error: {e}")
         else:
-            print("[Python] Skipping Graph Extraction (DB Down)")
+            print("[Python] Skipping Graph/Schedule Extraction (DB Down)")
 
         return ace_pb2.SyllabusResponse(
             success=True,
@@ -321,6 +334,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             nodes_created=len(concepts),
             graph_json=json.dumps(concepts)
         )
+
 
     def _query_graph_context(self, user_id, class_id, user_text):
         """
@@ -1236,7 +1250,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     
     
     @staticmethod
-    def _create_dynamic_nodes(tx, user_id, class_id, class_name, concepts):
+    def _create_dynamic_nodes(tx, user_id, class_id, class_name, concepts, weeks=None):
         tx.run("""
             MERGE (u:User {id: $user_id})
             MERGE (c:Class {id: $class_id})
@@ -1245,8 +1259,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         """, user_id=user_id, class_id=class_id, class_name=class_name)
         
         for concept in concepts:
-            name = concept['name']
-            prereqs = concept.get('prerequisites', [])
+            # concept could be a dict or ConceptModel object (Gemini SDK returns parsed Pydantic objects or dicts depending on genai config)
+            if hasattr(concept, 'name'):
+                name = concept.name
+                prereqs = concept.prerequisites or []
+            else:
+                name = concept.get('name')
+                prereqs = concept.get('prerequisites', [])
+                
             tx.run("""
                 MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})
                 MERGE (t:Topic {name: $name, user_id: $user_id, class_id: $class_id})
@@ -1260,6 +1280,44 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     MERGE (c)-[:COVERS]->(p)
                     MERGE (p)-[:PREREQUISITE_TO]->(t)
                 """, user_id=user_id, class_id=class_id, name=name, p_name=p_name)
+        
+        if weeks:
+            for w in weeks:
+                if hasattr(w, 'number'):
+                    w_num = w.number
+                    w_topics = w.topics or []
+                    w_exams = w.exams or []
+                else:
+                    w_num = w.get('number')
+                    w_topics = w.get('topics', [])
+                    w_exams = w.get('exams', [])
+                
+                # 1. MERGE Week node
+                tx.run("""
+                    MERGE (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
+                    ON CREATE SET w.exams = $w_exams
+                    ON MATCH SET w.exams = $w_exams
+                """, user_id=user_id, class_id=class_id, w_num=w_num, w_exams=w_exams)
+                
+                # 2. Link Class -> Week
+                tx.run("""
+                    MATCH (c:Class {id: $class_id})
+                    MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
+                    MERGE (c)-[:HAS_SYLLABUS]->(w)
+                """, class_id=class_id, user_id=user_id, w_num=w_num)
+                
+                # 3. Link Week -> Topic
+                for topic_name in w_topics:
+                    tx.run("""
+                        MERGE (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                    """, user_id=user_id, class_id=class_id, topic_name=topic_name)
+                    
+                    tx.run("""
+                        MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
+                        MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                        MERGE (w)-[:SCHEDULED_FOR]->(t)
+                    """, user_id=user_id, class_id=class_id, w_num=w_num, topic_name=topic_name)
+
 
     def _generate_with_retry(self, model_name, contents, retries=3, delay=2, config=None):
         """

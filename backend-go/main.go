@@ -984,8 +984,30 @@ func runDailySchedulerCheck() {
 			weakTopics = []string{}
 		}
 
-		newTopics := []string{"Week 1 Core Concepts"}
+		// Calculate current week
+		currentWeek := auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
+
+		// Query Python Brain for topics sufficiency / all topics for this week
+		var newTopics []string
+		if tutorClient != nil {
+			suffResp, err := tutorClient.CheckTopicSufficiency(ctx, &pb.SufficiencyRequest{
+				UserId:     sched.UserID,
+				ClassId:    classID,
+				WeekNumber: int32(currentWeek),
+			})
+			if err != nil {
+				log.Printf("[SchedulerWorker] Warning: Failed to fetch topics from Python Brain: %v", err)
+			} else if suffResp != nil {
+				newTopics = suffResp.AllTopics
+			}
+		}
+
+		if len(newTopics) == 0 {
+			newTopics = []string{fmt.Sprintf("Week %d Core Concepts", currentWeek)}
+		}
+
 		preferredTime := "afternoon" // default
+
 
 		frontendURL := os.Getenv("FRONTEND_URL")
 		if frontendURL == "" {
@@ -1510,10 +1532,14 @@ func main() {
 	// Start BigQuery initialization in background
 	go initBigQuery()
 
-	// Initialize user database
-	auth.InitUserStore("users.json")
-	auth.InitScheduleStore("schedules.json")
-	auth.InitDailySessionStore("daily_sessions.json")
+	// Initialize user database in persistent data folder
+	if err := os.MkdirAll("data", 0755); err != nil {
+		log.Printf("[Warning] Failed to create data directory: %v", err)
+	}
+	auth.InitUserStore("data/users.json")
+	auth.InitScheduleStore("data/schedules.json")
+	auth.InitDailySessionStore("data/daily_sessions.json")
+
 
 	// Start daily background worker loop
 	startBackgroundWorker()

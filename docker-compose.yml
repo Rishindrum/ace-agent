@@ -31,6 +31,8 @@ services:
       - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
       - backend-python  # Wait for Python to start
+    volumes:
+      - ./backend-go/data:/root/data
     networks:
       - ace-network
 
