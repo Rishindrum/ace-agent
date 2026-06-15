@@ -100,6 +100,42 @@ export class ApiService {
     });
   }
 
+  getUserScheduleSettings(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/v1/user/schedule-settings`);
+  }
+
+  saveUserScheduleSettings(preferredDays: number[], dailyPace: number, currentStreak: number, courseStartDate: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/user/schedule-settings`, {
+      preferred_days: preferredDays,
+      daily_pace: dailyPace,
+      current_streak: currentStreak,
+      course_start_date: courseStartDate
+    });
+  }
+
+  generateCramSession(startWeek: number, endWeek: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/study/cram`, {
+      start_week: startWeek,
+      end_week: endWeek
+    });
+  }
+
+  getDailySessionState(): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/v1/study/today/state`);
+  }
+
+  submitExercises(answers: any[]): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/study/exercise/submit`, {
+      answers: answers
+    });
+  }
+
+  generateLesson(weekNumber: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/study/lesson`, {
+      week_number: weekNumber
+    });
+  }
+
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);
   }

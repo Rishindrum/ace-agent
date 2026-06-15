@@ -19,13 +19,16 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	TutorService_ProcessSyllabus_FullMethodName      = "/ace.TutorService/ProcessSyllabus"
-	TutorService_Chat_FullMethodName                 = "/ace.TutorService/Chat"
-	TutorService_SubmitQuizResult_FullMethodName     = "/ace.TutorService/SubmitQuizResult"
-	TutorService_GenerateAdaptiveQuiz_FullMethodName = "/ace.TutorService/GenerateAdaptiveQuiz"
-	TutorService_GetQuizScores_FullMethodName        = "/ace.TutorService/GetQuizScores"
-	TutorService_IngestMaterial_FullMethodName       = "/ace.TutorService/IngestMaterial"
-	TutorService_GenerateQuiz_FullMethodName         = "/ace.TutorService/GenerateQuiz"
+	TutorService_ProcessSyllabus_FullMethodName            = "/ace.TutorService/ProcessSyllabus"
+	TutorService_Chat_FullMethodName                       = "/ace.TutorService/Chat"
+	TutorService_SubmitQuizResult_FullMethodName           = "/ace.TutorService/SubmitQuizResult"
+	TutorService_GenerateAdaptiveQuiz_FullMethodName       = "/ace.TutorService/GenerateAdaptiveQuiz"
+	TutorService_GetQuizScores_FullMethodName              = "/ace.TutorService/GetQuizScores"
+	TutorService_IngestMaterial_FullMethodName             = "/ace.TutorService/IngestMaterial"
+	TutorService_GenerateQuiz_FullMethodName               = "/ace.TutorService/GenerateQuiz"
+	TutorService_GenerateCramSession_FullMethodName        = "/ace.TutorService/GenerateCramSession"
+	TutorService_GenerateLesson_FullMethodName             = "/ace.TutorService/GenerateLesson"
+	TutorService_GenerateLessonAndExercises_FullMethodName = "/ace.TutorService/GenerateLessonAndExercises"
 )
 
 // TutorServiceClient is the client API for TutorService service.
@@ -39,6 +42,9 @@ type TutorServiceClient interface {
 	GetQuizScores(ctx context.Context, in *GetQuizScoresRequest, opts ...grpc.CallOption) (*GetQuizScoresResponse, error)
 	IngestMaterial(ctx context.Context, in *IngestRequest, opts ...grpc.CallOption) (*IngestResponse, error)
 	GenerateQuiz(ctx context.Context, in *QuizRequest, opts ...grpc.CallOption) (*QuizResponse, error)
+	GenerateCramSession(ctx context.Context, in *CramRequest, opts ...grpc.CallOption) (*CramResponse, error)
+	GenerateLesson(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
+	GenerateLessonAndExercises(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
 }
 
 type tutorServiceClient struct {
@@ -119,6 +125,36 @@ func (c *tutorServiceClient) GenerateQuiz(ctx context.Context, in *QuizRequest, 
 	return out, nil
 }
 
+func (c *tutorServiceClient) GenerateCramSession(ctx context.Context, in *CramRequest, opts ...grpc.CallOption) (*CramResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CramResponse)
+	err := c.cc.Invoke(ctx, TutorService_GenerateCramSession_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tutorServiceClient) GenerateLesson(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LessonResponse)
+	err := c.cc.Invoke(ctx, TutorService_GenerateLesson_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tutorServiceClient) GenerateLessonAndExercises(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(LessonResponse)
+	err := c.cc.Invoke(ctx, TutorService_GenerateLessonAndExercises_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TutorServiceServer is the server API for TutorService service.
 // All implementations must embed UnimplementedTutorServiceServer
 // for forward compatibility.
@@ -130,6 +166,9 @@ type TutorServiceServer interface {
 	GetQuizScores(context.Context, *GetQuizScoresRequest) (*GetQuizScoresResponse, error)
 	IngestMaterial(context.Context, *IngestRequest) (*IngestResponse, error)
 	GenerateQuiz(context.Context, *QuizRequest) (*QuizResponse, error)
+	GenerateCramSession(context.Context, *CramRequest) (*CramResponse, error)
+	GenerateLesson(context.Context, *LessonRequest) (*LessonResponse, error)
+	GenerateLessonAndExercises(context.Context, *LessonRequest) (*LessonResponse, error)
 	mustEmbedUnimplementedTutorServiceServer()
 }
 
@@ -160,6 +199,15 @@ func (UnimplementedTutorServiceServer) IngestMaterial(context.Context, *IngestRe
 }
 func (UnimplementedTutorServiceServer) GenerateQuiz(context.Context, *QuizRequest) (*QuizResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GenerateQuiz not implemented")
+}
+func (UnimplementedTutorServiceServer) GenerateCramSession(context.Context, *CramRequest) (*CramResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateCramSession not implemented")
+}
+func (UnimplementedTutorServiceServer) GenerateLesson(context.Context, *LessonRequest) (*LessonResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateLesson not implemented")
+}
+func (UnimplementedTutorServiceServer) GenerateLessonAndExercises(context.Context, *LessonRequest) (*LessonResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GenerateLessonAndExercises not implemented")
 }
 func (UnimplementedTutorServiceServer) mustEmbedUnimplementedTutorServiceServer() {}
 func (UnimplementedTutorServiceServer) testEmbeddedByValue()                      {}
@@ -308,6 +356,60 @@ func _TutorService_GenerateQuiz_Handler(srv interface{}, ctx context.Context, de
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TutorService_GenerateCramSession_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CramRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).GenerateCramSession(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_GenerateCramSession_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).GenerateCramSession(ctx, req.(*CramRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TutorService_GenerateLesson_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).GenerateLesson(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_GenerateLesson_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).GenerateLesson(ctx, req.(*LessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TutorService_GenerateLessonAndExercises_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LessonRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).GenerateLessonAndExercises(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_GenerateLessonAndExercises_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).GenerateLessonAndExercises(ctx, req.(*LessonRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TutorService_ServiceDesc is the grpc.ServiceDesc for TutorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -342,6 +444,18 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateQuiz",
 			Handler:    _TutorService_GenerateQuiz_Handler,
+		},
+		{
+			MethodName: "GenerateCramSession",
+			Handler:    _TutorService_GenerateCramSession_Handler,
+		},
+		{
+			MethodName: "GenerateLesson",
+			Handler:    _TutorService_GenerateLesson_Handler,
+		},
+		{
+			MethodName: "GenerateLessonAndExercises",
+			Handler:    _TutorService_GenerateLessonAndExercises_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

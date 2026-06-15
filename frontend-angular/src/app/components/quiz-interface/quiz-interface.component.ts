@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -39,6 +39,13 @@ export class QuizInterfaceComponent implements OnInit {
   Math = Math;
   userId: string = 'demo_student';
   syllabusName: string = '';
+  
+  @Input() set selectedWeek(value: number) {
+    if (value) {
+      this.weekNumber = value;
+    }
+  }
+  
   weekNumber: number = 1;
   questionCount: number = 5;
   currentView: 'history' | 'quiz' = 'history';

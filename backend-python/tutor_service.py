@@ -179,6 +179,29 @@ class QuestionModel(BaseModel):
 class QuizResponseModel(BaseModel):
     questions: List[QuestionModel] = Field(description="List of questions in the generated quiz")
 
+class CramResponseModel(BaseModel):
+    dense_review_markdown: str = Field(description="A highly compressed, structured study guide summarizing all key concepts from the requested weeks. Use Markdown format.")
+    rapid_fire_quiz: List[QuestionModel] = Field(description="A list of 10 to 15 high-quality, rapid-fire multiple choice questions covering the requested weeks.")
+
+class ExerciseModel(BaseModel):
+    id: str = Field(description="Unique identifier for the exercise (e.g. ex1, ex2)")
+    question_text: str = Field(description="The multiple choice question text")
+    options: List[str] = Field(description="List of exactly 4 multiple choice options")
+    correct_option_index: int = Field(description="0-based index of the correct option in options list")
+    explanation: str = Field(description="Explanation of why the correct option is right")
+
+class LessonResponseModel(BaseModel):
+    lesson_markdown: str = Field(description="A comprehensive structured educational lesson. Use markdown syntax with clear headings, subheadings, and bullet points.")
+    exercises: List[ExerciseModel] = Field(description="List of 3 to 5 practice exercises testing concepts explained in the lesson.")
+
+class LessonAndExercisesResponseModel(BaseModel):
+    lesson_markdown: str = Field(description="A comprehensive structured educational lesson. Use markdown syntax with clear headings, subheadings, and bullet points.")
+    exercises: List[QuestionModel] = Field(description="A list of exactly 3 high-quality multiple choice practice questions testing concepts explained in the lesson.")
+
+class JudgeResponseModel(BaseModel):
+    passed: bool = Field(description="True if the generation passes the criteria, False otherwise")
+    reasoning: str = Field(description="Explanation of why it passed or failed")
+
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
         print("[Python] Connecting to Graph Database...")
@@ -187,6 +210,46 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             self.driver.verify_connectivity()
         except Exception as e:
             print(f"[Python] WARNING: Neo4j Connection FAILED.")
+
+    def _evaluate_generation(self, generated_content: str, context_chunks: str, mode: str) -> dict:
+        criteria = ""
+        if mode == "quiz":
+            criteria = "Are the questions and correct answers strictly derived from the provided Neo4j context chunks? Fail if it includes outside information."
+        elif mode == "cram":
+            criteria = "Are the summary and quiz questions strictly derived from the provided Neo4j context chunks? Fail if it includes outside information not present in the context."
+        else:
+            criteria = "Is the explanation factually accurate? It may include external facts not found in the Neo4j context, but fail it immediately if any statement is factually incorrect or contradicts the provided context."
+
+        prompt = f"""
+        You are an AI Judge quality control agent.
+        Evaluate the following generated content based on the provided context chunks and criteria.
+        
+        --- CRITERIA ---
+        {criteria}
+        
+        --- CONTEXT CHUNKS ---
+        {context_chunks}
+        
+        --- GENERATED CONTENT ---
+        {generated_content}
+        
+        Analyze the generated content step-by-step and decide if it meets the criteria.
+        """
+
+        try:
+            response = client.models.generate_content(
+                model='gemini-2.5-flash-lite',
+                contents=prompt,
+                config={
+                    'response_mime_type': 'application/json',
+                    'response_schema': JudgeResponseModel,
+                }
+            )
+            result = response.parsed
+            return {"passed": result.passed, "reasoning": result.reasoning}
+        except Exception as e:
+            print(f"[Judge] Error during evaluation: {e}")
+            return {"passed": True, "reasoning": f"Judge error: {e}"}
 
     def ProcessSyllabus(self, request, context):
         print(f"[Python] Processing syllabus: {request.file_name}")
@@ -314,36 +377,65 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
 
         print(f"[Python] Hybrid Context:\n- Graph: {graph_text}\n- Vector: {len(relevant_chunks)} chunks")
 
-        # SYNTHESIS: Feed both to Gemini
-        prompt = f"""
-        You are 'Ace', an AI Tutor. Answer the user's question using the context below.
-        
-        --- KNOWLEDGE GRAPH (Structure & Dependencies) ---
-        {graph_text}
-        
-        --- SYLLABUS TEXT (Details & Policies) ---
-        {vector_text}
-        
-        --- USER QUESTION ---
-        {request.message}
-        
-        Instructions:
-        1. If the user asks about order, prerequisites, or structure, rely on the Graph.
-        2. If the user asks about grading, dates, or definitions, rely on the Syllabus Text.
-        3. Combine both sources if needed.
-        """
-        
-        try:
-            response = client.models.generate_content(
-                model='gemini-2.5-flash-lite', 
-                contents=prompt
-            )
-            answer = response.text
-        except Exception as e:
-            print(f"[Python] Gemini Error: {e}")
-            answer = "I'm having trouble connecting to my brain right now."
+        context_chunks = f"Graph Context:\n{graph_text}\n\nSyllabus Vector Context:\n{vector_text}"
 
-        return ace_pb2.ChatResponse(response=answer)
+        attempts = 0
+        max_retries = 3
+        correction_instruction = ""
+        answer = "I'm having trouble connecting to my brain right now."
+
+        while attempts < max_retries:
+            attempts += 1
+            print(f"[Python] Chat attempt {attempts}...")
+
+            # SYNTHESIS: Feed both to Gemini
+            prompt = f"""
+            You are 'Ace', an AI Tutor. Answer the user's question using the context below.
+            
+            --- KNOWLEDGE GRAPH (Structure & Dependencies) ---
+            {graph_text}
+            
+            --- SYLLABUS TEXT (Details & Policies) ---
+            {vector_text}
+            
+            --- USER QUESTION ---
+            {request.message}
+            
+            Instructions:
+            1. If the user asks about order, prerequisites, or structure, rely on the Graph.
+            2. If the user asks about grading, dates, or definitions, rely on the Syllabus Text.
+            3. Combine both sources if needed.
+            """
+
+            if correction_instruction:
+                prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
+
+            try:
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-lite', 
+                    contents=prompt
+                )
+                answer = response.text
+            except Exception as e:
+                print(f"[Python] Gemini Error: {e}")
+                if attempts >= max_retries:
+                    return ace_pb2.ChatResponse(response=answer)
+                continue
+
+            # Pass the generated explanation to the Judge
+            judge_result = self._evaluate_generation(answer, context_chunks, "lesson")
+            print(f"[Python] Chat attempt {attempts} judge result: {judge_result}")
+
+            if judge_result.get("passed"):
+                return ace_pb2.ChatResponse(response=answer)
+
+            reasoning = judge_result.get("reasoning", "explanation contradicts context or contains errors")
+            correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this."
+
+        print(f"[Python] Chat failed all {max_retries} attempts. Returning error.")
+        context.set_code(grpc.StatusCode.INTERNAL)
+        context.set_details("Failed to generate factually accurate response after 3 attempts.")
+        return ace_pb2.ChatResponse(response="I'm sorry, I was unable to generate a factually accurate response after multiple attempts. Please try rephrasing your question.")
 
     def SubmitQuizResult(self, request, context):
         print(f"[Python] SubmitQuizResult for user {request.user_id} on topic {request.topic_name} with score {request.score}")
@@ -489,12 +581,32 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             # Graph Traversal: Pull matching failed/weak topics along with the current week's scheduled topics.
             if self.driver:
                 with self.driver.session() as session:
-                    query = """
-                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
-                    WHERE (w.number = $week_number) OR (t.name IN $weak_topics)
-                    RETURN t.name AS topic_name, m.chunks AS chunks
-                    """
-                    result = session.run(query, week_number=request.week_number, user_id=request.user_id, weak_topics=weak_topics_list)
+                    if request.week_number == -1:
+                        # Maintenance Review: strictly weak topics
+                        print(f"[Python] Maintenance Review Quiz: pulling strictly weak topics.")
+                        if not weak_topics_list:
+                            # Fallback: review all course concepts if no weak topics are recorded yet
+                            print(f"[Python] No weak topics found. Falling back to all concepts.")
+                            query = """
+                            MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                            RETURN t.name AS topic_name, m.chunks AS chunks
+                            """
+                            result = session.run(query, user_id=request.user_id)
+                        else:
+                            query = """
+                            MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                            WHERE t.name IN $weak_topics
+                            RETURN t.name AS topic_name, m.chunks AS chunks
+                            """
+                            result = session.run(query, user_id=request.user_id, weak_topics=weak_topics_list)
+                    else:
+                        query = """
+                        MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                        WHERE (w.number = $week_number) OR (t.name IN $weak_topics)
+                        RETURN t.name AS topic_name, m.chunks AS chunks
+                        """
+                        result = session.run(query, week_number=request.week_number, user_id=request.user_id, weak_topics=weak_topics_list)
+                    
                     for record in result:
                         tname = record.get("topic_name")
                         if tname and tname not in topic_names:
@@ -507,59 +619,440 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                                 chunks.append(str(rec_chunks))
             
             topics_str = ", ".join(topic_names) if topic_names else "Unknown"
+            context_chunks = "\n\n".join(chunks) if chunks else "No direct course text chunks."
             print(f"[Python] GenerateQuiz: Retrieved topics '{topics_str}' with {len(chunks)} chunks.")
             
-            # Construct prompt for LLM
-            prompt = f"""
-            You are a helpful teaching assistant.
-            Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topics.
-            
-            Week Number: {request.week_number}
-            Topics: {topics_str}
-            
-            Here are the source material text chunks to base the questions on:
-            {chr(10).join(chunks) if chunks else "No specific source material text chunks available. Please generate standard multiple choice questions for this topic."}
-            
-            Generate a set of {request.question_count} questions. For each question, make sure:
-            1. It has exactly 4 options.
-            2. The options are clear and plausible.
-            3. The correct_option_index is a 0-based index pointing to the correct answer in the options list.
-            4. The id is a unique identifier string (e.g. "q1", "q2", etc.).
-            """
-            
-            # LLM Generation: Use the google-genai SDK with gemini-2.5-flash-lite
-            response = client.models.generate_content(
-                model='gemini-2.5-flash-lite',
-                contents=prompt,
-                config={
-                    'response_mime_type': 'application/json',
-                    'response_schema': QuizResponseModel,
-                }
-            )
-            
-            # Parse the returned object
-            quiz_data = response.parsed
-            
-            # Map Pydantic response to compiled gRPC structures
-            grpc_questions = []
-            if quiz_data and hasattr(quiz_data, 'questions'):
-                for q in quiz_data.questions:
-                    grpc_questions.append(
-                        ace_pb2.Question(
-                            id=q.id,
-                            question_text=q.question_text,
-                            options=list(q.options),
-                            correct_option_index=q.correct_option_index
+            attempts = 0
+            max_retries = 3
+            correction_instruction = ""
+
+            while attempts < max_retries:
+                attempts += 1
+                print(f"[Python] GenerateQuiz attempt {attempts}...")
+
+                # Construct prompt for LLM
+                prompt = f"""
+                You are a helpful teaching assistant.
+                Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topics.
+                
+                Week Number: {request.week_number}
+                Topics: {topics_str}
+                
+                Here are the source material text chunks to base the questions on:
+                {context_chunks}
+                
+                Generate a set of {request.question_count} questions. For each question, make sure:
+                1. It has exactly 4 options.
+                2. The options are clear and plausible.
+                3. The correct_option_index is a 0-based index pointing to the correct answer in the options list.
+                4. The id is a unique identifier string (e.g. "q1", "q2", etc.).
+                """
+                
+                if correction_instruction:
+                    prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
+
+                # LLM Generation: Use the google-genai SDK with gemini-2.5-flash-lite
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-lite',
+                    contents=prompt,
+                    config={
+                        'response_mime_type': 'application/json',
+                        'response_schema': QuizResponseModel,
+                    }
+                )
+                
+                # Parse the returned object
+                quiz_data = response.parsed
+                
+                # Map Pydantic response to compiled gRPC structures
+                grpc_questions = []
+                if quiz_data and hasattr(quiz_data, 'questions'):
+                    for q in quiz_data.questions:
+                        grpc_questions.append(
+                            ace_pb2.Question(
+                                id=q.id,
+                                question_text=q.question_text,
+                                options=list(q.options),
+                                correct_option_index=q.correct_option_index
+                            )
                         )
-                    )
-            
-            return ace_pb2.QuizResponse(questions=grpc_questions)
+
+                # Format generated content string for the judge
+                generated_content_str = ""
+                for q in grpc_questions:
+                    generated_content_str += f"Q: {q.question_text}\nOptions: {q.options}\nCorrect: {q.correct_option_index}\n\n"
+
+                # Step 2: Pass generated content to the Judge
+                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "quiz")
+                print(f"[Python] GenerateQuiz attempt {attempts} judge result: {judge_result}")
+
+                # Step 3: If Judge passed, break loop and return
+                if judge_result.get("passed"):
+                    return ace_pb2.QuizResponse(questions=grpc_questions)
+                
+                # Step 4: If passed: false, append reasoning to next prompt
+                reasoning = judge_result.get("reasoning", "outside information included")
+                correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this."
+
+            print(f"[Python] GenerateQuiz failed all {max_retries} attempts. Returning error.")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to generate quiz adhering to context after 3 attempts. Please try again.")
+            return ace_pb2.QuizResponse()
             
         except Exception as e:
             print(f"[Python] GenerateQuiz Exception: {e}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"Failed to generate quiz: {str(e)}")
             return ace_pb2.QuizResponse()
+
+    def GenerateCramSession(self, request, context):
+        weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
+        print(f"[Python] GenerateCramSession for user '{request.user_id}' from Week {request.start_week} to {request.end_week}, weak topics {weak_topics_list}...")
+        try:
+            topic_names = []
+            chunks = []
+            
+            # Neo4j Range Query with isolation
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    WHERE w.number >= $start_week AND w.number <= $end_week
+                    RETURN t.name AS topic_name, m.chunks AS chunks
+                    """
+                    result = session.run(query, start_week=request.start_week, end_week=request.end_week, user_id=request.user_id)
+                    for record in result:
+                        tname = record.get("topic_name")
+                        if tname and tname not in topic_names:
+                            topic_names.append(tname)
+                        rec_chunks = record.get("chunks")
+                        if rec_chunks:
+                            if isinstance(rec_chunks, list):
+                                chunks.extend(rec_chunks)
+                            else:
+                                chunks.append(str(rec_chunks))
+            
+            topics_str = ", ".join(topic_names) if topic_names else "Unknown"
+            context_chunks = "\n\n".join(chunks) if chunks else "No course materials found for this range of weeks."
+            weak_topics_str = ", ".join(weak_topics_list) if weak_topics_list else "None"
+            print(f"[Python] GenerateCramSession: Retrieved topics '{topics_str}' with {len(chunks)} chunks.")
+            
+            attempts = 0
+            max_retries = 3
+            correction_instruction = ""
+            
+            while attempts < max_retries:
+                attempts += 1
+                print(f"[Python] GenerateCramSession attempt {attempts}...")
+                
+                prompt = f"""
+                You are a helpful teaching assistant helping a student cram for their exam.
+                Generate an Exam Cram Session packet containing a dense study guide summary and a rapid-fire quiz.
+                
+                Start Week: {request.start_week}
+                End Week: {request.end_week}
+                Covered Topics: {topics_str}
+                Student's historically weak topics to emphasize: {weak_topics_str}
+                
+                --- SOURCE MATERIAL TEXT CHUNKS ---
+                {context_chunks}
+                
+                Generate a cram session matching these instructions:
+                1. Write a dense_review_markdown text: a highly compressed, structured study guide summarizing key concepts, definitions, and formulas strictly from the source material. Use Markdown headings and bullet points.
+                2. Design 10 to 15 high-quality multiple choice questions. Focus more heavily on topics where the student struggled (weak topics). Each question must have exactly 4 options.
+                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
+                4. The id for each question should be a unique identifier string (e.g. "cq1", "cq2", etc.).
+                """
+                
+                if correction_instruction:
+                    prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
+                
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-lite',
+                    contents=prompt,
+                    config={
+                        'response_mime_type': 'application/json',
+                        'response_schema': CramResponseModel,
+                    }
+                )
+                
+                cram_data = response.parsed
+                
+                # Format generated content string for the judge
+                generated_content_str = f"Summary:\n{cram_data.dense_review_markdown}\n\nQuestions:\n"
+                for q in cram_data.rapid_fire_quiz:
+                    generated_content_str += f"Q: {q.question_text}\nOptions: {q.options}\nCorrect: {q.correct_option_index}\n\n"
+                
+                # Step 2: Pass generated content to the Judge
+                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "cram")
+                print(f"[Python] GenerateCramSession attempt {attempts} judge result: {judge_result}")
+                
+                if judge_result.get("passed"):
+                    grpc_questions = []
+                    for q in cram_data.rapid_fire_quiz:
+                        grpc_questions.append(
+                            ace_pb2.Question(
+                                id=q.id,
+                                question_text=q.question_text,
+                                options=list(q.options),
+                                correct_option_index=q.correct_option_index
+                            )
+                        )
+                    return ace_pb2.CramResponse(
+                        dense_review_markdown=cram_data.dense_review_markdown,
+                        rapid_fire_quiz=grpc_questions
+                    )
+                
+                reasoning = judge_result.get("reasoning", "hallucinations or outside info included")
+                correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this. Make sure everything is derived strictly from the provided text chunks."
+                
+            print(f"[Python] GenerateCramSession failed all {max_retries} attempts. Returning error.")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to generate factually accurate cram session after 3 attempts.")
+            return ace_pb2.CramResponse()
+            
+        except Exception as e:
+            print(f"[Python] GenerateCramSession Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Internal error during cram session generation: {str(e)}")
+            return ace_pb2.CramResponse()
+
+    def GenerateLesson(self, request, context):
+        print(f"[Python] GenerateLesson for week '{request.week_number}' for user '{request.user_id}'...")
+        try:
+            topic_names = []
+            chunks = []
+            
+            # Neo4j query with isolation
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    WHERE w.number = $week_number
+                    RETURN t.name AS topic_name, m.chunks AS chunks
+                    """
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
+                    for record in result:
+                        tname = record.get("topic_name")
+                        if tname and tname not in topic_names:
+                            topic_names.append(tname)
+                        rec_chunks = record.get("chunks")
+                        if rec_chunks:
+                            if isinstance(rec_chunks, list):
+                                chunks.extend(rec_chunks)
+                            else:
+                                chunks.append(str(rec_chunks))
+            
+            topics_str = ", ".join(topic_names) if topic_names else "Unknown"
+            context_chunks = "\n\n".join(chunks) if chunks else "No course materials found for this week."
+            print(f"[Python] GenerateLesson: Retrieved topics '{topics_str}' with {len(chunks)} chunks.")
+            
+            attempts = 0
+            max_retries = 3
+            correction_instruction = ""
+            
+            while attempts < max_retries:
+                attempts += 1
+                print(f"[Python] GenerateLesson attempt {attempts}...")
+                
+                prompt = f"""
+                You are a helpful teaching assistant helping a student learn key concepts.
+                Generate a comprehensive structured educational lesson and a set of practice exercises.
+                
+                Week Number: {request.week_number}
+                Covered Topics: {topics_str}
+                
+                --- SOURCE MATERIAL TEXT CHUNKS ---
+                {context_chunks}
+                
+                Generate a lesson matching these instructions:
+                1. Write a lesson_markdown text: a comprehensive structured lesson explaining the topics, formulas, or concepts, using markdown headers, lists, and examples.
+                2. Design 3 to 5 practice exercises testing the concepts in the lesson. Each exercise must have exactly 4 options.
+                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
+                4. The id for each exercise should be a unique identifier string (e.g. "ex1", "ex2", etc.).
+                5. Include an explanation field explaining the correct answer for each exercise.
+                """
+                
+                if correction_instruction:
+                    prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
+                
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-lite',
+                    contents=prompt,
+                    config={
+                        'response_mime_type': 'application/json',
+                        'response_schema': LessonResponseModel,
+                    }
+                )
+                
+                lesson_data = response.parsed
+                
+                # Format generated content string for the judge
+                generated_content_str = f"Lesson:\n{lesson_data.lesson_markdown}\n\nExercises:\n"
+                for e in lesson_data.exercises:
+                    generated_content_str += f"Q: {e.question_text}\nOptions: {e.options}\nCorrect: {e.correct_option_index}\n\n"
+                
+                # Step 2: Pass generated content to the Judge
+                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
+                print(f"[Python] GenerateLesson attempt {attempts} judge result: {judge_result}")
+                
+                if judge_result.get("passed"):
+                    grpc_exercises = []
+                    for e in lesson_data.exercises:
+                        grpc_exercises.append(
+                            ace_pb2.Question(
+                                id=e.id,
+                                question_text=e.question_text,
+                                options=list(e.options),
+                                correct_option_index=e.correct_option_index
+                            )
+                        )
+                    return ace_pb2.LessonResponse(
+                        lesson_markdown=lesson_data.lesson_markdown,
+                        exercises=grpc_exercises
+                    )
+                
+                reasoning = judge_result.get("reasoning", "hallucinations or outside info included")
+                correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this. Make sure everything is accurate and derived correctly."
+                
+            print(f"[Python] GenerateLesson failed all {max_retries} attempts. Returning error.")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to generate factually accurate lesson after 3 attempts.")
+            return ace_pb2.LessonResponse()
+            
+        except Exception as e:
+            print(f"[Python] GenerateLesson Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to generate lesson: {str(e)}")
+            return ace_pb2.LessonResponse()
+
+    def GenerateLessonAndExercises(self, request, context):
+        print(f"[Python] GenerateLessonAndExercises for week '{request.week_number}' for user '{request.user_id}'...")
+        try:
+            topic_names = []
+            chunks = []
+            
+            # 1. Query Neo4j for target week's chunks
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    WHERE w.number = $week_number
+                    RETURN t.name AS topic_name, m.chunks AS chunks
+                    """
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
+                    for record in result:
+                        tname = record.get("topic_name")
+                        if tname and tname not in topic_names:
+                            topic_names.append(tname)
+                        rec_chunks = record.get("chunks")
+                        if rec_chunks:
+                            if isinstance(rec_chunks, list):
+                                chunks.extend(rec_chunks)
+                            else:
+                                chunks.append(str(rec_chunks))
+            
+            # 2. Query BigQuery for weak topics
+            weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
+            try:
+                bq_scores = analytical_memory.read_quiz_scores(request.user_id)
+                topic_scores = {}
+                for s in bq_scores:
+                    topic = s["topic_name"]
+                    score = s["score"]
+                    if topic not in topic_scores:
+                        topic_scores[topic] = []
+                    topic_scores[topic].append(score)
+                for topic, s_list in topic_scores.items():
+                    avg_score = sum(s_list) / len(s_list)
+                    if avg_score < 70 and topic not in weak_topics_list:
+                        weak_topics_list.append(topic)
+            except Exception as e:
+                print(f"[Python] Error fetching scores from BigQuery: {e}")
+
+            topics_str = ", ".join(topic_names) if topic_names else "Unknown"
+            weak_topics_str = ", ".join(weak_topics_list) if weak_topics_list else "None"
+            context_chunks = "\n\n".join(chunks) if chunks else "No course materials found for this week."
+            print(f"[Python] GenerateLessonAndExercises: Week topics '{topics_str}', weak topics '{weak_topics_str}' with {len(chunks)} chunks.")
+            
+            attempts = 0
+            max_retries = 3
+            correction_instruction = ""
+            
+            while attempts < max_retries:
+                attempts += 1
+                print(f"[Python] GenerateLessonAndExercises attempt {attempts}...")
+                
+                prompt = f"""
+                You are a helpful teaching assistant helping a student learn key concepts.
+                Generate a detailed structured educational lesson and exactly 3 practice questions.
+                
+                Week Number: {request.week_number}
+                Covered Topics: {topics_str}
+                Student's Weak Topics to address: {weak_topics_str}
+                
+                --- SOURCE MATERIAL TEXT CHUNKS ---
+                {context_chunks}
+                
+                Generate a lesson matching these instructions:
+                1. Write a lesson_markdown text: a detailed structured lesson explaining the topics, formulas, or concepts, using markdown headers, lists, and examples. Focus heavily on addressing the student's weak topics if they overlap.
+                2. Design exactly 3 practice questions testing the concepts in the lesson. Each question must have exactly 4 options.
+                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
+                4. The id for each question should be a unique identifier string (e.g. "ex1", "ex2", "ex3").
+                """
+                
+                if correction_instruction:
+                    prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
+                
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-lite',
+                    contents=prompt,
+                    config={
+                        'response_mime_type': 'application/json',
+                        'response_schema': LessonAndExercisesResponseModel,
+                    }
+                )
+                
+                lesson_data = response.parsed
+                
+                # Format generated content string for the judge
+                generated_content_str = f"Lesson:\n{lesson_data.lesson_markdown}\n\nExercises:\n"
+                for e in lesson_data.exercises:
+                    generated_content_str += f"Q: {e.question_text}\nOptions: {e.options}\nCorrect: {e.correct_option_index}\n\n"
+                
+                # Step 2: Pass generated content to the Judge
+                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
+                print(f"[Python] GenerateLessonAndExercises attempt {attempts} judge result: {judge_result}")
+                
+                if judge_result.get("passed"):
+                    grpc_exercises = []
+                    for e in lesson_data.exercises:
+                        grpc_exercises.append(
+                            ace_pb2.Question(
+                                id=e.id,
+                                question_text=e.question_text,
+                                options=list(e.options),
+                                correct_option_index=e.correct_option_index
+                            )
+                        )
+                    return ace_pb2.LessonResponse(
+                        lesson_markdown=lesson_data.lesson_markdown,
+                        exercises=grpc_exercises
+                    )
+                
+                reasoning = judge_result.get("reasoning", "hallucinations or outside info included")
+                correction_instruction = f"Previous attempt failed because: {reasoning}. Fix this. Make sure everything is accurate and derived correctly."
+                
+            print(f"[Python] GenerateLessonAndExercises failed all {max_retries} attempts. Returning error.")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details("Failed to generate factually accurate lesson and exercises after 3 attempts.")
+            return ace_pb2.LessonResponse()
+            
+        except Exception as e:
+            print(f"[Python] GenerateLessonAndExercises Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to generate lesson: {str(e)}")
+            return ace_pb2.LessonResponse()
     
     
     

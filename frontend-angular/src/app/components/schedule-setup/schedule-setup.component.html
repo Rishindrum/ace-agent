@@ -15,40 +15,57 @@
     </div>
 
     <form (ngSubmit)="onSubmit()" #setupForm="ngForm" class="setup-form">
-      <!-- Preferred Study Times -->
+      <!-- Preferred Study Days -->
       <div class="form-group">
-        <label>Preferred Study Times</label>
-        <p class="field-desc">Select when you usually focus best during the day (select all that apply).</p>
+        <label>Preferred Study Days</label>
+        <p class="field-desc">Select which days you want to study each week (select all that apply).</p>
         <div class="times-grid">
-          <label *ngFor="let time of preferredStudyTimes; let idx = index" class="time-checkbox-wrapper">
+          <label *ngFor="let day of preferredDays; let idx = index" class="time-checkbox-wrapper">
             <input 
               type="checkbox" 
-              [name]="'time-' + idx" 
-              [(ngModel)]="time.selected"
+              [name]="'day-' + idx" 
+              [(ngModel)]="day.selected"
               class="time-checkbox" 
             />
-            <span class="time-label">{{ time.name }}</span>
+            <span class="time-label">{{ day.name }}</span>
           </label>
         </div>
       </div>
 
-      <!-- Weekly Commitment Target -->
+      <!-- Daily Pace -->
       <div class="form-group">
-        <label for="weeklyCommitment">Weekly Commitment Target</label>
-        <p class="field-desc">How many hours or quizzes do you commit to complete each week?</p>
+        <label for="dailyPace">Daily Study Pace</label>
+        <p class="field-desc">How many minutes of study session would you like per study day?</p>
         <div class="input-wrapper">
           <input 
             type="number" 
-            id="weeklyCommitment" 
-            name="weeklyCommitment" 
-            [(ngModel)]="weeklyCommitment" 
-            min="1" 
-            max="168"
+            id="dailyPace" 
+            name="dailyPace" 
+            [(ngModel)]="dailyPace" 
+            min="5" 
+            max="480"
             required 
             class="form-input"
             [disabled]="isLoading"
           />
-          <span class="input-suffix">per week</span>
+          <span class="input-suffix">minutes</span>
+        </div>
+      </div>
+
+      <!-- Course Start Date -->
+      <div class="form-group">
+        <label for="courseStartDate">Course Start Date</label>
+        <p class="field-desc">When does your course start? Chronological study weeks will be computed relative to this date.</p>
+        <div class="input-wrapper">
+          <input 
+            type="date" 
+            id="courseStartDate" 
+            name="courseStartDate" 
+            [(ngModel)]="courseStartDate" 
+            required 
+            class="form-input"
+            [disabled]="isLoading"
+          />
         </div>
       </div>
 

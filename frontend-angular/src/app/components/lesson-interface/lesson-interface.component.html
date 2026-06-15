@@ -1,0 +1,100 @@
+<div class="lesson-wrapper">
+  <!-- Status alerts -->
+  <div *ngIf="isLoading" class="loading-state card">
+    <div class="spinner"></div>
+    <p>{{ statusMessage }}</p>
+  </div>
+
+  <div *ngIf="errorMessage" class="error-alert">
+    <mat-icon>error_outline</mat-icon>
+    <span>{{ errorMessage }}</span>
+    <button class="btn btn-outline" (click)="loadLesson()">Retry</button>
+  </div>
+
+  <!-- Lesson Content & Exercises -->
+  <div *ngIf="!isLoading && lessonMarkdown" class="lesson-content-container fade-in">
+    <div class="lesson-header card">
+      <div class="lesson-meta">
+        <mat-icon class="header-icon">chrome_reader_mode</mat-icon>
+        <h2>Week {{ selectedWeek }} Study Lesson</h2>
+      </div>
+      <button class="btn btn-outline btn-refresh" (click)="loadLesson()">
+        <mat-icon>refresh</mat-icon> Regenerate Lesson
+      </button>
+    </div>
+
+    <div class="lesson-body-split">
+      <!-- Left Column: Lesson Content -->
+      <div class="lesson-text-panel card scrollable-y">
+        <div class="markdown-body" [innerHTML]="renderMarkdown(lessonMarkdown)"></div>
+      </div>
+
+      <!-- Right Column: Exercises Gating -->
+      <div class="exercises-panel card">
+        <div class="exercises-header">
+          <h3>Practice Exercises</h3>
+          <p class="desc">Solve the following questions to unlock this week's quiz.</p>
+        </div>
+
+        <div class="exercises-list scrollable-y">
+          <div *ngFor="let ex of exercises; let exIdx = index" class="exercise-item">
+            <h4 class="ex-question">{{ exIdx + 1 }}. {{ ex.question_text }}</h4>
+            
+            <div class="ex-options-grid">
+              <button 
+                *ngFor="let option of ex.options; let optIdx = index"
+                class="ex-option-button"
+                [class.selected]="ex.selected_option_index === optIdx"
+                [class.correct]="exerciseAnswersSubmitted && optIdx === ex.correct_option_index"
+                [class.wrong]="exerciseAnswersSubmitted && ex.selected_option_index === optIdx && optIdx !== ex.correct_option_index"
+                (click)="selectOption(exIdx, optIdx)"
+                [disabled]="exerciseAnswersSubmitted"
+              >
+                <span class="option-badge">{{ ['A', 'B', 'C', 'D'][optIdx] }}</span>
+                <span class="option-text">{{ option }}</span>
+              </button>
+            </div>
+
+            <!-- Explanation -->
+            <div *ngIf="exerciseAnswersSubmitted" class="explanation-box fade-in" 
+                 [class.correct-box]="ex.selected_option_index === ex.correct_option_index"
+                 [class.wrong-box]="ex.selected_option_index !== ex.correct_option_index">
+              <div class="exp-status">
+                <mat-icon *ngIf="ex.selected_option_index === ex.correct_option_index">check_circle</mat-icon>
+                <mat-icon *ngIf="ex.selected_option_index !== ex.correct_option_index">cancel</mat-icon>
+                <span>{{ ex.selected_option_index === ex.correct_option_index ? 'Correct!' : 'Incorrect' }}</span>
+              </div>
+              <p class="exp-text">{{ ex.explanation }}</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit actions / results -->
+        <div class="exercises-footer">
+          <div *ngIf="!exerciseAnswersSubmitted" class="submit-actions">
+            <button 
+              class="btn btn-primary btn-block" 
+              [disabled]="!allExercisesAnswered()" 
+              (click)="submitAnswers()"
+            >
+              Submit Practice Answers
+            </button>
+          </div>
+
+          <div *ngIf="exerciseAnswersSubmitted" class="result-box fade-in" [class.passed]="exercisePassed" [class.failed]="!exercisePassed">
+            <mat-icon class="result-icon">{{ exercisePassed ? 'verified' : 'highlight_off' }}</mat-icon>
+            <div class="result-text">
+              <h4>{{ exercisePassed ? 'Exercises Passed!' : 'Practice Passed' }}</h4>
+              <p>Score: {{ correctAnswersCount }}/{{ exercises.length }} ({{ scorePercentage }}%)</p>
+              <p class="note">{{ exercisePassed ? 'Daily Quiz is now unlocked!' : 'Score at least 60% to pass. Try again.' }}</p>
+            </div>
+            
+            <button *ngIf="!exercisePassed" class="btn btn-primary" (click)="resetExercises()">
+              Try Again
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

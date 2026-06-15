@@ -69,6 +69,21 @@ class TutorServiceStub:
                 request_serializer=ace__pb2.QuizRequest.SerializeToString,
                 response_deserializer=ace__pb2.QuizResponse.FromString,
                 _registered_method=True)
+        self.GenerateCramSession = channel.unary_unary(
+                '/ace.TutorService/GenerateCramSession',
+                request_serializer=ace__pb2.CramRequest.SerializeToString,
+                response_deserializer=ace__pb2.CramResponse.FromString,
+                _registered_method=True)
+        self.GenerateLesson = channel.unary_unary(
+                '/ace.TutorService/GenerateLesson',
+                request_serializer=ace__pb2.LessonRequest.SerializeToString,
+                response_deserializer=ace__pb2.LessonResponse.FromString,
+                _registered_method=True)
+        self.GenerateLessonAndExercises = channel.unary_unary(
+                '/ace.TutorService/GenerateLessonAndExercises',
+                request_serializer=ace__pb2.LessonRequest.SerializeToString,
+                response_deserializer=ace__pb2.LessonResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer:
@@ -116,6 +131,24 @@ class TutorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GenerateCramSession(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GenerateLesson(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GenerateLessonAndExercises(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -153,6 +186,21 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.GenerateQuiz,
                     request_deserializer=ace__pb2.QuizRequest.FromString,
                     response_serializer=ace__pb2.QuizResponse.SerializeToString,
+            ),
+            'GenerateCramSession': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateCramSession,
+                    request_deserializer=ace__pb2.CramRequest.FromString,
+                    response_serializer=ace__pb2.CramResponse.SerializeToString,
+            ),
+            'GenerateLesson': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateLesson,
+                    request_deserializer=ace__pb2.LessonRequest.FromString,
+                    response_serializer=ace__pb2.LessonResponse.SerializeToString,
+            ),
+            'GenerateLessonAndExercises': grpc.unary_unary_rpc_method_handler(
+                    servicer.GenerateLessonAndExercises,
+                    request_deserializer=ace__pb2.LessonRequest.FromString,
+                    response_serializer=ace__pb2.LessonResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -344,6 +392,87 @@ class TutorService:
             '/ace.TutorService/GenerateQuiz',
             ace__pb2.QuizRequest.SerializeToString,
             ace__pb2.QuizResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateCramSession(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GenerateCramSession',
+            ace__pb2.CramRequest.SerializeToString,
+            ace__pb2.CramResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateLesson(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GenerateLesson',
+            ace__pb2.LessonRequest.SerializeToString,
+            ace__pb2.LessonResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GenerateLessonAndExercises(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GenerateLessonAndExercises',
+            ace__pb2.LessonRequest.SerializeToString,
+            ace__pb2.LessonResponse.FromString,
             options,
             channel_credentials,
             insecure,

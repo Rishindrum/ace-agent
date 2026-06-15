@@ -12,6 +12,9 @@ service TutorService {
   rpc GetQuizScores (GetQuizScoresRequest) returns (GetQuizScoresResponse);
   rpc IngestMaterial (IngestRequest) returns (IngestResponse);
   rpc GenerateQuiz (QuizRequest) returns (QuizResponse);
+  rpc GenerateCramSession (CramRequest) returns (CramResponse);
+  rpc GenerateLesson (LessonRequest) returns (LessonResponse);
+  rpc GenerateLessonAndExercises (LessonRequest) returns (LessonResponse);
 }
 
 message SyllabusRequest {
@@ -104,4 +107,27 @@ message Question {
 
 message QuizResponse {
   repeated Question questions = 1;
+}
+
+message CramRequest {
+  string user_id = 1;
+  int32 start_week = 2;
+  int32 end_week = 3;
+  repeated string weak_topics = 4;
+}
+
+message CramResponse {
+  string dense_review_markdown = 1;
+  repeated Question rapid_fire_quiz = 2;
+}
+
+message LessonRequest {
+  int32 week_number = 1;
+  string user_id = 2;
+  repeated string weak_topics = 3;
+}
+
+message LessonResponse {
+  string lesson_markdown = 1;
+  repeated Question exercises = 2;
 }

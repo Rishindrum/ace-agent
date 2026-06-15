@@ -921,6 +921,238 @@ func (x *QuizResponse) GetQuestions() []*Question {
 	return nil
 }
 
+type CramRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	StartWeek     int32                  `protobuf:"varint,2,opt,name=start_week,json=startWeek,proto3" json:"start_week,omitempty"`
+	EndWeek       int32                  `protobuf:"varint,3,opt,name=end_week,json=endWeek,proto3" json:"end_week,omitempty"`
+	WeakTopics    []string               `protobuf:"bytes,4,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CramRequest) Reset() {
+	*x = CramRequest{}
+	mi := &file_proto_ace_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CramRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CramRequest) ProtoMessage() {}
+
+func (x *CramRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CramRequest.ProtoReflect.Descriptor instead.
+func (*CramRequest) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *CramRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *CramRequest) GetStartWeek() int32 {
+	if x != nil {
+		return x.StartWeek
+	}
+	return 0
+}
+
+func (x *CramRequest) GetEndWeek() int32 {
+	if x != nil {
+		return x.EndWeek
+	}
+	return 0
+}
+
+func (x *CramRequest) GetWeakTopics() []string {
+	if x != nil {
+		return x.WeakTopics
+	}
+	return nil
+}
+
+type CramResponse struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	DenseReviewMarkdown string                 `protobuf:"bytes,1,opt,name=dense_review_markdown,json=denseReviewMarkdown,proto3" json:"dense_review_markdown,omitempty"`
+	RapidFireQuiz       []*Question            `protobuf:"bytes,2,rep,name=rapid_fire_quiz,json=rapidFireQuiz,proto3" json:"rapid_fire_quiz,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *CramResponse) Reset() {
+	*x = CramResponse{}
+	mi := &file_proto_ace_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CramResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CramResponse) ProtoMessage() {}
+
+func (x *CramResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CramResponse.ProtoReflect.Descriptor instead.
+func (*CramResponse) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *CramResponse) GetDenseReviewMarkdown() string {
+	if x != nil {
+		return x.DenseReviewMarkdown
+	}
+	return ""
+}
+
+func (x *CramResponse) GetRapidFireQuiz() []*Question {
+	if x != nil {
+		return x.RapidFireQuiz
+	}
+	return nil
+}
+
+type LessonRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	WeakTopics    []string               `protobuf:"bytes,3,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *LessonRequest) Reset() {
+	*x = LessonRequest{}
+	mi := &file_proto_ace_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LessonRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LessonRequest) ProtoMessage() {}
+
+func (x *LessonRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LessonRequest.ProtoReflect.Descriptor instead.
+func (*LessonRequest) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *LessonRequest) GetWeekNumber() int32 {
+	if x != nil {
+		return x.WeekNumber
+	}
+	return 0
+}
+
+func (x *LessonRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *LessonRequest) GetWeakTopics() []string {
+	if x != nil {
+		return x.WeakTopics
+	}
+	return nil
+}
+
+type LessonResponse struct {
+	state          protoimpl.MessageState `protogen:"open.v1"`
+	LessonMarkdown string                 `protobuf:"bytes,1,opt,name=lesson_markdown,json=lessonMarkdown,proto3" json:"lesson_markdown,omitempty"`
+	Exercises      []*Question            `protobuf:"bytes,2,rep,name=exercises,proto3" json:"exercises,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *LessonResponse) Reset() {
+	*x = LessonResponse{}
+	mi := &file_proto_ace_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *LessonResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*LessonResponse) ProtoMessage() {}
+
+func (x *LessonResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use LessonResponse.ProtoReflect.Descriptor instead.
+func (*LessonResponse) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *LessonResponse) GetLessonMarkdown() string {
+	if x != nil {
+		return x.LessonMarkdown
+	}
+	return ""
+}
+
+func (x *LessonResponse) GetExercises() []*Question {
+	if x != nil {
+		return x.Exercises
+	}
+	return nil
+}
+
 var File_proto_ace_proto protoreflect.FileDescriptor
 
 const file_proto_ace_proto_rawDesc = "" +
@@ -989,7 +1221,26 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\aoptions\x18\x03 \x03(\tR\aoptions\x120\n" +
 	"\x14correct_option_index\x18\x04 \x01(\x05R\x12correctOptionIndex\";\n" +
 	"\fQuizResponse\x12+\n" +
-	"\tquestions\x18\x01 \x03(\v2\r.ace.QuestionR\tquestions2\xc5\x03\n" +
+	"\tquestions\x18\x01 \x03(\v2\r.ace.QuestionR\tquestions\"\x81\x01\n" +
+	"\vCramRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
+	"\n" +
+	"start_week\x18\x02 \x01(\x05R\tstartWeek\x12\x19\n" +
+	"\bend_week\x18\x03 \x01(\x05R\aendWeek\x12\x1f\n" +
+	"\vweak_topics\x18\x04 \x03(\tR\n" +
+	"weakTopics\"y\n" +
+	"\fCramResponse\x122\n" +
+	"\x15dense_review_markdown\x18\x01 \x01(\tR\x13denseReviewMarkdown\x125\n" +
+	"\x0frapid_fire_quiz\x18\x02 \x03(\v2\r.ace.QuestionR\rrapidFireQuiz\"j\n" +
+	"\rLessonRequest\x12\x1f\n" +
+	"\vweek_number\x18\x01 \x01(\x05R\n" +
+	"weekNumber\x12\x17\n" +
+	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1f\n" +
+	"\vweak_topics\x18\x03 \x03(\tR\n" +
+	"weakTopics\"f\n" +
+	"\x0eLessonResponse\x12'\n" +
+	"\x0flesson_markdown\x18\x01 \x01(\tR\x0elessonMarkdown\x12+\n" +
+	"\texercises\x18\x02 \x03(\v2\r.ace.QuestionR\texercises2\x83\x05\n" +
 	"\fTutorService\x12>\n" +
 	"\x0fProcessSyllabus\x12\x14.ace.SyllabusRequest\x1a\x15.ace.SyllabusResponse\x12+\n" +
 	"\x04Chat\x12\x10.ace.ChatRequest\x1a\x11.ace.ChatResponse\x12C\n" +
@@ -997,7 +1248,10 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\x14GenerateAdaptiveQuiz\x12\x18.ace.AdaptiveQuizRequest\x1a\x19.ace.AdaptiveQuizResponse\x12F\n" +
 	"\rGetQuizScores\x12\x19.ace.GetQuizScoresRequest\x1a\x1a.ace.GetQuizScoresResponse\x129\n" +
 	"\x0eIngestMaterial\x12\x12.ace.IngestRequest\x1a\x13.ace.IngestResponse\x123\n" +
-	"\fGenerateQuiz\x12\x10.ace.QuizRequest\x1a\x11.ace.QuizResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
+	"\fGenerateQuiz\x12\x10.ace.QuizRequest\x1a\x11.ace.QuizResponse\x12:\n" +
+	"\x13GenerateCramSession\x12\x10.ace.CramRequest\x1a\x11.ace.CramResponse\x129\n" +
+	"\x0eGenerateLesson\x12\x12.ace.LessonRequest\x1a\x13.ace.LessonResponse\x12E\n" +
+	"\x1aGenerateLessonAndExercises\x12\x12.ace.LessonRequest\x1a\x13.ace.LessonResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
 
 var (
 	file_proto_ace_proto_rawDescOnce sync.Once
@@ -1011,7 +1265,7 @@ func file_proto_ace_proto_rawDescGZIP() []byte {
 	return file_proto_ace_proto_rawDescData
 }
 
-var file_proto_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 16)
+var file_proto_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
 var file_proto_ace_proto_goTypes = []any{
 	(*SyllabusRequest)(nil),       // 0: ace.SyllabusRequest
 	(*SyllabusResponse)(nil),      // 1: ace.SyllabusResponse
@@ -1029,29 +1283,41 @@ var file_proto_ace_proto_goTypes = []any{
 	(*QuizRequest)(nil),           // 13: ace.QuizRequest
 	(*Question)(nil),              // 14: ace.Question
 	(*QuizResponse)(nil),          // 15: ace.QuizResponse
+	(*CramRequest)(nil),           // 16: ace.CramRequest
+	(*CramResponse)(nil),          // 17: ace.CramResponse
+	(*LessonRequest)(nil),         // 18: ace.LessonRequest
+	(*LessonResponse)(nil),        // 19: ace.LessonResponse
 }
 var file_proto_ace_proto_depIdxs = []int32{
 	9,  // 0: ace.GetQuizScoresResponse.scores:type_name -> ace.QuizScoreRecord
 	14, // 1: ace.QuizResponse.questions:type_name -> ace.Question
-	0,  // 2: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
-	2,  // 3: ace.TutorService.Chat:input_type -> ace.ChatRequest
-	4,  // 4: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
-	6,  // 5: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
-	8,  // 6: ace.TutorService.GetQuizScores:input_type -> ace.GetQuizScoresRequest
-	11, // 7: ace.TutorService.IngestMaterial:input_type -> ace.IngestRequest
-	13, // 8: ace.TutorService.GenerateQuiz:input_type -> ace.QuizRequest
-	1,  // 9: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
-	3,  // 10: ace.TutorService.Chat:output_type -> ace.ChatResponse
-	5,  // 11: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
-	7,  // 12: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
-	10, // 13: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
-	12, // 14: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
-	15, // 15: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
-	9,  // [9:16] is the sub-list for method output_type
-	2,  // [2:9] is the sub-list for method input_type
-	2,  // [2:2] is the sub-list for extension type_name
-	2,  // [2:2] is the sub-list for extension extendee
-	0,  // [0:2] is the sub-list for field type_name
+	14, // 2: ace.CramResponse.rapid_fire_quiz:type_name -> ace.Question
+	14, // 3: ace.LessonResponse.exercises:type_name -> ace.Question
+	0,  // 4: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
+	2,  // 5: ace.TutorService.Chat:input_type -> ace.ChatRequest
+	4,  // 6: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
+	6,  // 7: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
+	8,  // 8: ace.TutorService.GetQuizScores:input_type -> ace.GetQuizScoresRequest
+	11, // 9: ace.TutorService.IngestMaterial:input_type -> ace.IngestRequest
+	13, // 10: ace.TutorService.GenerateQuiz:input_type -> ace.QuizRequest
+	16, // 11: ace.TutorService.GenerateCramSession:input_type -> ace.CramRequest
+	18, // 12: ace.TutorService.GenerateLesson:input_type -> ace.LessonRequest
+	18, // 13: ace.TutorService.GenerateLessonAndExercises:input_type -> ace.LessonRequest
+	1,  // 14: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
+	3,  // 15: ace.TutorService.Chat:output_type -> ace.ChatResponse
+	5,  // 16: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
+	7,  // 17: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
+	10, // 18: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
+	12, // 19: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
+	15, // 20: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
+	17, // 21: ace.TutorService.GenerateCramSession:output_type -> ace.CramResponse
+	19, // 22: ace.TutorService.GenerateLesson:output_type -> ace.LessonResponse
+	19, // 23: ace.TutorService.GenerateLessonAndExercises:output_type -> ace.LessonResponse
+	14, // [14:24] is the sub-list for method output_type
+	4,  // [4:14] is the sub-list for method input_type
+	4,  // [4:4] is the sub-list for extension type_name
+	4,  // [4:4] is the sub-list for extension extendee
+	0,  // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_proto_ace_proto_init() }
@@ -1065,7 +1331,7 @@ func file_proto_ace_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_ace_proto_rawDesc), len(file_proto_ace_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   16,
+			NumMessages:   20,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

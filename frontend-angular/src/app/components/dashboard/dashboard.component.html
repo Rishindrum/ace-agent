@@ -23,6 +23,9 @@
         <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
           <mat-icon>menu_book</mat-icon> Syllabus & Graph
         </button>
+        <button class="nav-tab" [class.active]="activeTab === 'lesson'" (click)="selectTab('lesson')">
+          <mat-icon>chrome_reader_mode</mat-icon> Lessons
+        </button>
         <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
           <mat-icon>forum</mat-icon> AI Tutor
         </button>
@@ -35,6 +38,85 @@
       </button>
     </div>
   </header>
+
+  <!-- Course Timeline & Streak Bar -->
+  <div class="timeline-bar-container card">
+    <div class="timeline-left">
+      <div class="streak-widget">
+        <mat-icon class="streak-icon">local_fire_department</mat-icon>
+        <div class="streak-text">
+          <span class="streak-value">{{ currentStreak }} Days</span>
+          <span class="streak-label">Study Streak</span>
+        </div>
+      </div>
+      <div class="week-widget">
+        <span class="week-label">Current Calendar Week:</span>
+        <span class="week-value">Week {{ currentWeek }}</span>
+      </div>
+    </div>
+    
+    <div class="timeline-scroll">
+      <div class="timeline-weeks">
+        <button 
+          *ngFor="let week of weeks" 
+          class="timeline-week-btn" 
+          [class.current]="week === currentWeek"
+          [class.past]="week < currentWeek"
+          [class.future]="week > currentWeek"
+          (click)="selectTimelineWeek(week)"
+          title="Click to initiate study quiz for this week"
+        >
+          <span class="week-num">W{{ week }}</span>
+          <span class="week-status">
+            <span *ngIf="week === currentWeek">Active</span>
+            <span *ngIf="week < currentWeek">Completed</span>
+            <span *ngIf="week > currentWeek">Get Ahead</span>
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="timeline-right">
+      <button class="btn-study" (click)="selectTimelineWeek(currentWeek)">
+        <mat-icon>local_library</mat-icon> Study
+      </button>
+      <button class="btn-cram" (click)="openCramModal()">
+        <mat-icon>offline_bolt</mat-icon> Cram for Exam
+      </button>
+    </div>
+  </div>
+
+  <!-- Daily Gating Progress Bar -->
+  <div class="daily-progress-container card fade-in">
+    <div class="daily-progress-header">
+      <mat-icon class="progress-title-icon">today</mat-icon>
+      <h3>Today's Study Checklist</h3>
+      <span class="date-badge">{{ todayDateString }}</span>
+    </div>
+    <div class="checklist-items">
+      <div class="checklist-item" [class.completed]="dailyState.lesson_completed" (click)="activeTab = 'lesson'">
+        <mat-icon class="check-icon">{{ dailyState.lesson_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        <div class="item-text">
+          <span class="item-title">1. Read Today's Lesson</span>
+          <span class="item-desc">Learn the core concepts for this week</span>
+        </div>
+      </div>
+      <div class="checklist-item" [class.completed]="dailyState.exercises_completed" (click)="activeTab = 'lesson'">
+        <mat-icon class="check-icon">{{ dailyState.exercises_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+        <div class="item-text">
+          <span class="item-title">2. Complete Practice Exercises</span>
+          <span class="item-desc">Solve practice questions (Get >= 60% correct to pass)</span>
+        </div>
+      </div>
+      <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'quiz' : null">
+        <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
+        <div class="item-text">
+          <span class="item-title">3. Unlock Weekly Quiz</span>
+          <span class="item-desc">{{ dailyState.quiz_unlocked ? 'Quiz is unlocked! Take it now to extend your study streak' : 'Locked: Complete exercises first' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <!-- Content Workspace -->
   <main class="app-workspace">
@@ -71,13 +153,143 @@
       </div>
     </div>
 
+    <!-- Lesson Tab -->
+    <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
+      <app-lesson-interface [selectedWeek]="selectedTimelineWeek" (exerciseCompleted)="loadDailyState()"></app-lesson-interface>
+    </div>
+
     <!-- Quiz Tab -->
     <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
-      <div class="quiz-layout card">
+      <div *ngIf="!dailyState.quiz_unlocked" class="quiz-locked-notice card">
+        <mat-icon class="locked-icon">lock</mat-icon>
+        <h3>Quiz is Locked</h3>
+        <p>You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.</p>
+        <button class="btn btn-primary" (click)="activeTab = 'lesson'">Go to Lesson</button>
+      </div>
+      <div *ngIf="dailyState.quiz_unlocked" class="quiz-layout card">
         <h3>Adaptive Performance Quiz</h3>
         <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
-        <app-quiz-interface></app-quiz-interface>
+        <app-quiz-interface [selectedWeek]="selectedTimelineWeek"></app-quiz-interface>
       </div>
     </div>
   </main>
+</div>
+
+<!-- Exam Cram Modal Overlay -->
+<div *ngIf="isCramModalOpen" class="cram-modal-overlay fade-in">
+  <div class="cram-modal-content card">
+    <div class="cram-modal-header">
+      <div class="header-icon-title">
+        <mat-icon class="modal-icon">offline_bolt</mat-icon>
+        <h2>Exam Cram Mode</h2>
+      </div>
+      <button class="btn-close" (click)="closeCramModal()">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="cram-modal-body">
+      <!-- Cram Setup Form -->
+      <div *ngIf="!cramData && !isCramLoading" class="cram-setup-form">
+        <p class="modal-desc font-accent">Select a range of weeks to generate a compressed study guide and a 10-15 question rapid-fire review quiz focusing on historically weak areas.</p>
+        
+        <div class="range-inputs">
+          <div class="form-group select-wrapper">
+            <label for="cramStart">Start Week</label>
+            <select id="cramStart" [(ngModel)]="cramStartWeek" class="form-input">
+              <option *ngFor="let w of weeks" [value]="w">Week {{ w }}</option>
+            </select>
+          </div>
+          <div class="form-group select-wrapper">
+            <label for="cramEnd">End Week</label>
+            <select id="cramEnd" [(ngModel)]="cramEndWeek" class="form-input">
+              <option *ngFor="let w of weeks" [value]="w">Week {{ w }}</option>
+            </select>
+          </div>
+        </div>
+        
+        <div *ngIf="cramError" class="error-alert">
+          <mat-icon>error_outline</mat-icon>
+          <span>{{ cramError }}</span>
+        </div>
+
+        <div class="modal-actions">
+          <button class="btn btn-outline" (click)="closeCramModal()">Cancel</button>
+          <button class="btn btn-primary" (click)="startCramSession()">Generate Cram Guide</button>
+        </div>
+      </div>
+
+      <!-- Loading State -->
+      <div *ngIf="isCramLoading" class="cram-loading-state">
+        <div class="spinner"></div>
+        <p>Synthesizing course materials and generating study guide...</p>
+      </div>
+
+      <!-- Cram Session Workspace -->
+      <div *ngIf="cramData" class="cram-session-workspace">
+        <div class="cram-split-layout">
+          <!-- Left Study Guide Panel -->
+          <div class="cram-guide-panel scrollable-y">
+            <h3>Dense Review Sheet</h3>
+            <div class="markdown-body" [innerHTML]="renderMarkdown(cramData.dense_review_markdown)"></div>
+          </div>
+          
+          <!-- Right Quiz Panel -->
+          <div class="cram-quiz-panel">
+            <h3>Rapid-Fire Review Quiz</h3>
+            
+            <div *ngIf="!cramFinished" class="cram-question-container">
+              <div class="cram-progress-stats">
+                <span class="progress-txt">Question {{ currentCramQuestionIndex + 1 }} of {{ cramData.rapid_fire_quiz.length }}</span>
+                <div class="progress-bar-bg">
+                  <div class="progress-bar-fill" [style.width.%]="((currentCramQuestionIndex + 1) / cramData.rapid_fire_quiz.length) * 100"></div>
+                </div>
+              </div>
+              
+              <h4 class="cram-q-text">{{ cramData.rapid_fire_quiz[currentCramQuestionIndex].question_text }}</h4>
+              
+              <div class="cram-options-grid">
+                <button 
+                  *ngFor="let option of cramData.rapid_fire_quiz[currentCramQuestionIndex].options; let idx = index"
+                  class="cram-option-button"
+                  [class.selected]="selectedCramOptionIndex === idx"
+                  [class.correct]="selectedCramOptionIndex !== null && idx === cramData.rapid_fire_quiz[currentCramQuestionIndex].correct_option_index"
+                  [class.wrong]="selectedCramOptionIndex === idx && idx !== cramData.rapid_fire_quiz[currentCramQuestionIndex].correct_option_index"
+                  (click)="selectCramOption(idx)"
+                  [disabled]="selectedCramOptionIndex !== null"
+                >
+                  <span class="option-label-badge">{{ ['A', 'B', 'C', 'D'][idx] }}</span>
+                  <span class="option-text-lbl">{{ option }}</span>
+                </button>
+              </div>
+              
+              <div *ngIf="showCramExplanation" class="cram-explanation-block fade-in">
+                <div class="explanation-status">
+                  <mat-icon *ngIf="selectedCramOptionIndex === cramData.rapid_fire_quiz[currentCramQuestionIndex].correct_option_index" class="text-success">check_circle</mat-icon>
+                  <mat-icon *ngIf="selectedCramOptionIndex !== cramData.rapid_fire_quiz[currentCramQuestionIndex].correct_option_index" class="text-error">cancel</mat-icon>
+                  <span class="status-lbl">{{ selectedCramOptionIndex === cramData.rapid_fire_quiz[currentCramQuestionIndex].correct_option_index ? 'Correct Answer!' : 'Incorrect' }}</span>
+                </div>
+                <p class="explanation-details">{{ cramData.rapid_fire_quiz[currentCramQuestionIndex].explanation || 'Correct option is marked in green.' }}</p>
+              </div>
+
+              <div class="cram-action-footer" *ngIf="selectedCramOptionIndex !== null">
+                <button class="btn btn-primary" (click)="nextCramQuestion()">
+                  {{ currentCramQuestionIndex < cramData.rapid_fire_quiz.length - 1 ? 'Next Question' : 'Finish Review' }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Quiz Finish Results -->
+            <div *ngIf="cramFinished" class="cram-complete-view fade-in">
+              <mat-icon class="complete-trophy">emoji_events</mat-icon>
+              <h4>Exam Review Completed!</h4>
+              <p class="complete-score">Final score: <strong>{{ cramCorrectAnswersCount }}</strong> / {{ cramData.rapid_fire_quiz.length }} correct answers</p>
+              <p class="complete-message">Review the study sheet on the left to reinforce weak topics.</p>
+              <button class="btn btn-primary" (click)="closeCramModal()">Close Cram Session</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
