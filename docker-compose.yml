@@ -25,6 +25,10 @@ services:
     environment:
       # THE MAGIC: We tell Go to look for "backend-python", not "localhost"
       - TUTOR_SERVICE_ADDR=backend-python:50051
+      - GOOGLE_CLIENT_ID=${GOOGLE_CLIENT_ID}
+      - GOOGLE_CLIENT_SECRET=${GOOGLE_CLIENT_SECRET}
+      - OAUTH_REDIRECT_URL=${OAUTH_REDIRECT_URL}
+      - FRONTEND_URL=${FRONTEND_URL}
     depends_on:
       - backend-python  # Wait for Python to start
     networks:

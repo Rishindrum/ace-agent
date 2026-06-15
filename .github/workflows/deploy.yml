@@ -61,8 +61,8 @@ jobs:
           service: backend-go
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-go:latest
           region: us-central1
-          # Use env_vars to explicitly pass the URL captured in Step 5
-          flags: --update-env-vars=PYTHON_SERVICE_URL=${{ env.PYTHON_URL }},TUTOR_SERVICE_ADDR=backend-python:443
+          # Use env_vars to explicitly pass the URL captured in Step 5 and the Google OAuth secrets
+          flags: --update-env-vars=PYTHON_SERVICE_URL=${{ env.PYTHON_URL }},TUTOR_SERVICE_ADDR=backend-python:443,GOOGLE_CLIENT_ID=${{ secrets.GOOGLE_CLIENT_ID }},GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }},OAUTH_REDIRECT_URL=${{ secrets.OAUTH_REDIRECT_URL }},FRONTEND_URL=${{ secrets.FRONTEND_URL }}
       
       # 7. Get Go Gateway URL
       - name: Get Go URL
