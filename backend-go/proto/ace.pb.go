@@ -701,6 +701,8 @@ type IngestRequest struct {
 	UserId        string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	ClassName     string                 `protobuf:"bytes,6,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
+	FileData      []byte                 `protobuf:"bytes,7,opt,name=file_data,json=fileData,proto3" json:"file_data,omitempty"`
+	FileName      string                 `protobuf:"bytes,8,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -773,6 +775,20 @@ func (x *IngestRequest) GetClassId() string {
 func (x *IngestRequest) GetClassName() string {
 	if x != nil {
 		return x.ClassName
+	}
+	return ""
+}
+
+func (x *IngestRequest) GetFileData() []byte {
+	if x != nil {
+		return x.FileData
+	}
+	return nil
+}
+
+func (x *IngestRequest) GetFileName() string {
+	if x != nil {
+		return x.FileName
 	}
 	return ""
 }
@@ -1479,7 +1495,7 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\x15GetQuizScoresResponse\x12,\n" +
 	"\x06scores\x18\x01 \x03(\v2\x14.ace.QuizScoreRecordR\x06scores\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\xbd\x01\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xf7\x01\n" +
 	"\rIngestRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12\x1d\n" +
@@ -1489,7 +1505,9 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\auser_id\x18\x04 \x01(\tR\x06userId\x12\x19\n" +
 	"\bclass_id\x18\x05 \x01(\tR\aclassId\x12\x1d\n" +
 	"\n" +
-	"class_name\x18\x06 \x01(\tR\tclassName\"D\n" +
+	"class_name\x18\x06 \x01(\tR\tclassName\x12\x1b\n" +
+	"\tfile_data\x18\a \x01(\fR\bfileData\x12\x1b\n" +
+	"\tfile_name\x18\b \x01(\tR\bfileName\"D\n" +
 	"\x0eIngestResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\"\xfb\x01\n" +

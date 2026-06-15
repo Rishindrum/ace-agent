@@ -11,12 +11,15 @@ export class IngestService {
 
   constructor(private http: HttpClient) { }
 
-  ingestMaterial(weekNumber: number, topicName: string, rawText: string, classId?: string): Observable<any> {
+  ingestMaterial(weekNumber: number, topicName: string, rawText: string, classId?: string, file?: File | null): Observable<any> {
     const cid = classId || 'default_class';
-    return this.http.post(`${this.baseUrl}/api/v1/classes/${cid}/materials/upload`, {
-      week_number: weekNumber,
-      topic_name: topicName,
-      raw_text: rawText
-    });
+    const formData = new FormData();
+    formData.append('week_number', weekNumber.toString());
+    formData.append('topic_name', topicName);
+    formData.append('raw_text', rawText);
+    if (file) {
+      formData.append('file', file);
+    }
+    return this.http.post(`${this.baseUrl}/api/v1/classes/${cid}/materials/upload`, formData);
   }
 }

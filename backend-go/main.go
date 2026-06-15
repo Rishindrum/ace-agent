@@ -442,7 +442,7 @@ func generateAdaptiveQuizHandler(w http.ResponseWriter, r *http.Request) {
 func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -453,39 +453,76 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var req struct {
-		WeekNumber int32  `json:"week_number"`
-		TopicName  string `json:"topic_name"`
-		RawText    string `json:"raw_text"`
-		ClassID    string `json:"class_id"`
-		ClassName  string `json:"class_name"`
-	}
-
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid request body", http.StatusBadRequest)
-		return
-	}
-
 	userID := auth.GetUserID(r.Context())
 	classID := r.PathValue("class_id")
-	if classID == "" {
-		classID = req.ClassID
+
+	var weekNum int
+	var topicName string
+	var rawText string
+	var className string
+	var fileBytes []byte
+	var fileName string
+
+	if strings.HasPrefix(r.Header.Get("Content-Type"), "multipart/form-data") {
+		err := r.ParseMultipartForm(32 << 20) // 32MB
+		if err != nil {
+			http.Error(w, "Failed to parse multipart form: "+err.Error(), http.StatusBadRequest)
+			return
+		}
+		
+		fmt.Sscanf(r.FormValue("week_number"), "%d", &weekNum)
+		topicName = r.FormValue("topic_name")
+		rawText = r.FormValue("raw_text")
+		className = r.FormValue("class_name")
+		
+		file, header, err := r.FormFile("file")
+		if err == nil {
+			defer file.Close()
+			fileName = header.Filename
+			fileBytes = make([]byte, header.Size)
+			_, err = file.Read(fileBytes)
+			if err != nil {
+				http.Error(w, "Failed to read uploaded file: "+err.Error(), http.StatusInternalServerError)
+				return
+			}
+		}
+	} else {
+		var req struct {
+			WeekNumber int32  `json:"week_number"`
+			TopicName  string `json:"topic_name"`
+			RawText    string `json:"raw_text"`
+			ClassID    string `json:"class_id"`
+			ClassName  string `json:"class_name"`
+		}
+		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+			http.Error(w, "Invalid request body", http.StatusBadRequest)
+			return
+		}
+		weekNum = int(req.WeekNumber)
+		topicName = req.TopicName
+		rawText = req.RawText
+		className = req.ClassName
+		if classID == "" {
+			classID = req.ClassID
+		}
 	}
+
 	if classID == "" {
 		classID = "default_class"
 	}
-	className := req.ClassName
 	if className == "" {
 		className = "Default Class"
 	}
 
 	grpcReq := &pb.IngestRequest{
-		WeekNumber: req.WeekNumber,
-		TopicName:  req.TopicName,
-		RawText:    req.RawText,
+		WeekNumber: int32(weekNum),
+		TopicName:  topicName,
+		RawText:    rawText,
 		UserId:     userID,
 		ClassId:    classID,
 		ClassName:  className,
+		FileData:   fileBytes,
+		FileName:   fileName,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)

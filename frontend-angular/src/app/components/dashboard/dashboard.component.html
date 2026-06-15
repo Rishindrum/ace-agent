@@ -186,42 +186,61 @@
         <div class="syllabus-layout">
           <div class="sidebar-column">
             
-            <!-- Syllabus Topics Sufficiency Checklist -->
+            <!-- Syllabus Timeline (All Weeks & Topics) -->
             <div class="syllabus-topics-card card">
               <div class="card-header-row">
-                <mat-icon>checklist</mat-icon>
-                <h3>Week {{ selectedTimelineWeek }} Topics</h3>
+                <mat-icon>calendar_view_week</mat-icon>
+                <h3>Course Syllabus Timeline</h3>
               </div>
-              <p class="section-desc">Topic sufficiency evaluation based on uploaded slides, transcripts, or notes.</p>
+              <p class="section-desc">Review topics, sufficiency statuses, and upload course materials (PDF, PPTX, TXT) per week.</p>
               
-              <div *ngIf="topicSufficiencyLoading" class="loading-topics">
+              <div *ngIf="allWeeksLoading" class="loading-topics">
                 <div class="topic-spinner"></div>
-                <span>Analyzing materials sufficiency...</span>
+                <span>Analyzing course timeline...</span>
               </div>
               
-              <div *ngIf="!topicSufficiencyLoading && allTopics.length === 0" class="empty-topics">
+              <div *ngIf="!allWeeksLoading && (!allWeeksData || weeks.length === 0)" class="empty-topics">
                 <mat-icon>info_outline</mat-icon>
-                <p>No topics loaded for Week {{ selectedTimelineWeek }}. Please ensure syllabus parser completed correctly.</p>
+                <p>No timeline or week schedule has been extracted yet. Please verify your syllabus PDF was parsed successfully.</p>
               </div>
 
-              <div *ngIf="!topicSufficiencyLoading && allTopics.length > 0" class="topics-list">
-                <div *ngFor="let topic of allTopics" class="topic-item" [class.insufficient]="insufficientTopics.includes(topic)">
-                  <div class="topic-item-left">
-                    <mat-icon class="topic-status-icon" [ngClass]="{'insufficient-icon': insufficientTopics.includes(topic), 'sufficient-icon': !insufficientTopics.includes(topic)}">
-                      {{ insufficientTopics.includes(topic) ? 'warning' : 'check_circle' }}
-                    </mat-icon>
-                    <span class="topic-name-label">{{ topic }}</span>
+              <div *ngIf="!allWeeksLoading && weeks.length > 0" class="weeks-accordion">
+                <div *ngFor="let wKey of weeks" class="week-group" [class.active-week]="selectedTimelineWeek === wKey">
+                  <div class="week-group-header" (click)="selectTimelineWeek(wKey)">
+                    <span class="week-title-label">Week {{ wKey }}</span>
+                    <span class="week-badge-summary">
+                      <span class="badge-sufficient" *ngIf="allWeeksData[wKey] && allWeeksData[wKey].topics.length > 0 && allWeeksData[wKey].insufficient.length === 0">
+                        <mat-icon>check_circle</mat-icon> Covered
+                      </span>
+                      <span class="badge-insufficient" *ngIf="allWeeksData[wKey] && allWeeksData[wKey].insufficient.length > 0">
+                        <mat-icon>warning</mat-icon> {{ allWeeksData[wKey].insufficient.length }} Warning(s)
+                      </span>
+                      <span class="badge-empty" *ngIf="!allWeeksData[wKey] || allWeeksData[wKey].topics.length === 0">
+                        No topics
+                      </span>
+                    </span>
                   </div>
                   
-                  <div class="topic-item-actions">
-                    <!-- Warning Flag UI -->
-                    <span *ngIf="insufficientTopics.includes(topic)" class="warning-badge" title="Insufficient study materials uploaded for this topic.">
-                      Insufficient Materials
-                    </span>
-                    <!-- Add Materials Button -->
-                    <button class="btn btn-add-materials" (click)="openAddMaterials(topic)" title="Upload raw text notes to clear warnings">
-                      <mat-icon>cloud_upload</mat-icon> Add Materials
-                    </button>
+                  <div class="week-group-content" *ngIf="selectedTimelineWeek === wKey">
+                    <div *ngIf="allWeeksData[wKey] && allWeeksData[wKey].topics.length > 0; else noTopicsInWeek">
+                      <div *ngFor="let topic of allWeeksData[wKey].topics" class="timeline-topic-item" [class.insufficient]="allWeeksData[wKey].insufficient.includes(topic)">
+                        <div class="topic-item-left">
+                          <mat-icon class="topic-status-icon" [ngClass]="{'insufficient-icon': allWeeksData[wKey].insufficient.includes(topic), 'sufficient-icon': !allWeeksData[wKey].insufficient.includes(topic)}">
+                            {{ allWeeksData[wKey].insufficient.includes(topic) ? 'warning' : 'check_circle' }}
+                          </mat-icon>
+                          <span class="topic-name-label" [title]="topic">{{ topic }}</span>
+                        </div>
+                        
+                        <div class="topic-item-actions">
+                          <button class="btn btn-add-materials-small" (click)="openAddMaterials(topic); $event.stopPropagation()" title="Upload raw text notes or PPTX/PDF to clear warnings">
+                            <mat-icon>cloud_upload</mat-icon> Upload
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                    <ng-template #noTopicsInWeek>
+                      <p class="empty-desc" style="font-size: 12px; color: #94a3b8; margin: 0; padding: 4px;">No topics parsed for this week.</p>
+                    </ng-template>
                   </div>
                 </div>
               </div>

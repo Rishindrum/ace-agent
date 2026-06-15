@@ -134,7 +134,11 @@ export class LessonInterfaceComponent implements OnInit {
       error: (err) => {
         this.isLoading = false;
         this.statusMessage = '';
-        this.errorMessage = 'Error loading lesson: ' + (err.error?.message || err.message || err);
+        if (err.status === 404 || err.error?.code === 'NO_MATERIALS_FOUND') {
+          this.errorMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!";
+        } else {
+          this.errorMessage = 'Error loading lesson: ' + (err.error?.message || err.message || err);
+        }
         console.error('Lesson generation error:', err);
       }
     });
@@ -176,7 +180,11 @@ export class LessonInterfaceComponent implements OnInit {
         this.isRegenerating = false;
         this.isRegenModalOpen = false;
         this.statusMessage = '';
-        this.errorMessage = 'Error regenerating lesson: ' + (err.error?.message || err.message || err);
+        if (err.status === 404 || err.error?.code === 'NO_MATERIALS_FOUND') {
+          this.errorMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!";
+        } else {
+          this.errorMessage = 'Error regenerating lesson: ' + (err.error?.message || err.message || err);
+        }
         console.error('Lesson regeneration error:', err);
       }
     });

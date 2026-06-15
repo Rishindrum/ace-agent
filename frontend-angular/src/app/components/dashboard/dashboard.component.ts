@@ -55,6 +55,8 @@ export class DashboardComponent implements OnInit {
   allTopics: string[] = [];
   insufficientTopics: string[] = [];
   topicSufficiencyLoading: boolean = false;
+  allWeeksData: { [key: number]: { topics: string[], insufficient: string[] } } = {};
+  allWeeksLoading: boolean = false;
   addingMaterialTopic: string | null = null;
   newMaterialText: string = '';
   newMaterialFile: File | null = null;
@@ -123,12 +125,12 @@ export class DashboardComponent implements OnInit {
         this.classes = res || [];
         this.globalStreak = this.classes.reduce((max, c) => c.global_streak > max ? c.global_streak : max, 0);
         
-        // If a class is selected, update its reference to get fresh streaks
         if (this.selectedClass) {
           const updated = this.classes.find(c => c.class_id === this.selectedClass.class_id);
           if (updated) {
             this.selectedClass = updated;
             this.currentStreak = updated.class_streak || updated.current_streak || 0;
+            this.loadAllTopicsSufficiency();
           }
         }
       },
@@ -157,6 +159,7 @@ export class DashboardComponent implements OnInit {
     this.selectedTimelineWeek = this.currentWeek;
     this.loadDailyState(classObj.class_id);
     this.loadTopicSufficiency(classObj.class_id, this.selectedTimelineWeek);
+    this.loadAllTopicsSufficiency();
     this.activeTab = 'syllabus';
   }
 
@@ -220,6 +223,55 @@ export class DashboardComponent implements OnInit {
       error: (err) => {
         console.warn('Could not load topic sufficiency checks:', err);
         this.topicSufficiencyLoading = false;
+      }
+    });
+  }
+
+  loadAllTopicsSufficiency(): void {
+    if (!this.selectedClass) return;
+    this.allWeeksLoading = true;
+    this.api.checkTopicSufficiency(this.selectedClass.class_id, 0).subscribe({
+      next: (res: any) => {
+        this.allWeeksLoading = false;
+        const temp: { [key: number]: { topics: string[], insufficient: string[] } } = {};
+        
+        for (let i = 1; i <= 12; i++) {
+          temp[i] = { topics: [], insufficient: [] };
+        }
+        
+        const all = res.all_topics || [];
+        const insufficient = res.insufficient_topics || [];
+        
+        all.forEach((item: string) => {
+          const idx = item.indexOf(':');
+          if (idx !== -1) {
+            const wNum = parseInt(item.substring(0, idx), 10);
+            const topic = item.substring(idx + 1);
+            if (!isNaN(wNum)) {
+              if (!temp[wNum]) {
+                temp[wNum] = { topics: [], insufficient: [] };
+              }
+              temp[wNum].topics.push(topic);
+            }
+          }
+        });
+        
+        insufficient.forEach((item: string) => {
+          const idx = item.indexOf(':');
+          if (idx !== -1) {
+            const wNum = parseInt(item.substring(0, idx), 10);
+            const topic = item.substring(idx + 1);
+            if (!isNaN(wNum) && temp[wNum]) {
+              temp[wNum].insufficient.push(topic);
+            }
+          }
+        });
+        
+        this.allWeeksData = temp;
+      },
+      error: (err) => {
+        console.warn('Could not load all topics sufficiency:', err);
+        this.allWeeksLoading = false;
       }
     });
   }
@@ -312,17 +364,22 @@ export class DashboardComponent implements OnInit {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
       this.newMaterialFile = file;
-      const reader = new FileReader();
-      reader.onload = (e: any) => {
-        this.newMaterialText = e.target.result || '';
-      };
-      reader.readAsText(file);
+      const ext = file.name.split('.').pop()?.toLowerCase();
+      if (ext === 'txt') {
+        const reader = new FileReader();
+        reader.onload = (e: any) => {
+          this.newMaterialText = e.target.result || '';
+        };
+        reader.readAsText(file);
+      } else {
+        this.newMaterialText = `[File Upload: ${file.name}]`;
+      }
     }
   }
 
   submitMaterials(): void {
-    if (!this.newMaterialText.trim() || !this.addingMaterialTopic || !this.selectedClass) {
-      this.ingestMessage = 'Please enter raw text or select a valid notes text file.';
+    if ((!this.newMaterialText.trim() && !this.newMaterialFile) || !this.addingMaterialTopic || !this.selectedClass) {
+      this.ingestMessage = 'Please enter raw text or select a valid file.';
       this.ingestSuccess = false;
       return;
     }
@@ -334,13 +391,15 @@ export class DashboardComponent implements OnInit {
       this.selectedTimelineWeek,
       this.addingMaterialTopic,
       this.newMaterialText,
-      this.selectedClass.class_id
+      this.selectedClass.class_id,
+      this.newMaterialFile
     ).subscribe({
       next: (res: any) => {
         this.isIngestingMaterial = false;
         this.ingestSuccess = true;
         this.ingestMessage = 'Material successfully ingested!';
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
+        this.loadAllTopicsSufficiency();
         setTimeout(() => {
           this.closeAddMaterials();
         }, 1500);

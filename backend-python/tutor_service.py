@@ -585,9 +585,53 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_name = request.class_name if request.class_name else "Default Class"
         print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}' for user '{request.user_id}' and class '{class_id}'...")
         try:
+            import zipfile
+            import xml.etree.ElementTree as ET
+            
+            content = request.raw_text
+            if request.file_data and request.file_name:
+                filename = request.file_name.lower()
+                if filename.endswith(".pdf"):
+                    try:
+                        reader = PdfReader(io.BytesIO(request.file_data))
+                        pdf_text = ""
+                        for page in reader.pages:
+                            pdf_text += page.extract_text() + "\n"
+                        content = pdf_text
+                        print(f"[Python] Extracted {len(content)} characters from PDF: {request.file_name}")
+                    except Exception as pdf_err:
+                        print(f"[Python] Failed to extract text from PDF: {pdf_err}")
+                elif filename.endswith(".pptx") or filename.endswith(".ppt"):
+                    try:
+                        text_runs = []
+                        with zipfile.ZipFile(io.BytesIO(request.file_data)) as z:
+                            slide_files = sorted([f for f in z.namelist() if f.startswith("ppt/slides/slide") and f.endswith(".xml")])
+                            for slide_file in slide_files:
+                                slide_xml = z.read(slide_file)
+                                root = ET.fromstring(slide_xml)
+                                namespaces = {
+                                    'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+                                    'p': 'http://schemas.openxmlformats.org/presentationml/2006/main'
+                                }
+                                for t in root.findall('.//a:t', namespaces):
+                                    if t.text:
+                                        text_runs.append(t.text)
+                        content = "\n".join(text_runs)
+                        print(f"[Python] Extracted {len(content)} characters from PPTX: {request.file_name}")
+                    except Exception as pptx_err:
+                        print(f"[Python] Failed to extract text from PPTX: {pptx_err}")
+                else:
+                    try:
+                        content = request.file_data.decode("utf-8")
+                    except Exception:
+                        try:
+                            content = request.file_data.decode("latin-1")
+                        except Exception:
+                            pass
+
             import ingestion_service
             success = ingestion_service.ingest_material(
-                content=request.raw_text,
+                content=content,
                 topic_name=request.topic_name,
                 week_number=str(request.week_number),
                 user_id=request.user_id,
@@ -601,6 +645,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         except Exception as e:
             print(f"[Python] IngestMaterial Exception: {e}")
             return ace_pb2.IngestResponse(success=False, message=f"Internal Server Error: {str(e)}")
+
             
     def GenerateQuiz(self, request, context):
         weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
@@ -1350,22 +1395,42 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         all_topics = []
         if self.driver:
             with self.driver.session() as session:
-                query = """
-                MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
-                WHERE w.number = $week_number
-                OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
-                RETURN t.name AS topic_name, collect(m.content) AS contents
-                """
-                result = session.run(query, week_number=week_number, user_id=user_id, class_id=class_id)
-                for record in result:
-                    tname = record.get("topic_name")
-                    if tname:
-                        if tname not in all_topics:
-                            all_topics.append(tname)
-                        contents = record.get("contents") or []
-                        total_len = sum(len(c) for c in contents if c is not None)
-                        if total_len < 1000:
-                            insufficient_topics.append(tname)
+                if week_number == 0:
+                    query = """
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+                    OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
+                    RETURN w.number AS week_num, t.name AS topic_name, collect(m.content) AS contents
+                    ORDER BY w.number, t.name
+                    """
+                    result = session.run(query, user_id=user_id, class_id=class_id)
+                    for record in result:
+                        wnum = record.get("week_num")
+                        tname = record.get("topic_name")
+                        if wnum is not None and tname:
+                            formatted = f"{wnum}:{tname}"
+                            if formatted not in all_topics:
+                                all_topics.append(formatted)
+                            contents = record.get("contents") or []
+                            total_len = sum(len(c) for c in contents if c is not None)
+                            if total_len < 1000:
+                                insufficient_topics.append(formatted)
+                else:
+                    query = """
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+                    WHERE w.number = $week_number
+                    OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
+                    RETURN t.name AS topic_name, collect(m.content) AS contents
+                    """
+                    result = session.run(query, week_number=week_number, user_id=user_id, class_id=class_id)
+                    for record in result:
+                        tname = record.get("topic_name")
+                        if tname:
+                            if tname not in all_topics:
+                                all_topics.append(tname)
+                            contents = record.get("contents") or []
+                            total_len = sum(len(c) for c in contents if c is not None)
+                            if total_len < 1000:
+                                insufficient_topics.append(tname)
         return len(insufficient_topics) > 0, insufficient_topics, all_topics
 
     def CheckTopicSufficiency(self, request, context):

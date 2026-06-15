@@ -96,6 +96,8 @@ message IngestRequest {
   string user_id = 4;
   string class_id = 5;
   string class_name = 6;
+  bytes file_data = 7;
+  string file_name = 8;
 }
 
 message IngestResponse {
