@@ -15,11 +15,15 @@ service TutorService {
   rpc GenerateCramSession (CramRequest) returns (CramResponse);
   rpc GenerateLesson (LessonRequest) returns (LessonResponse);
   rpc GenerateLessonAndExercises (LessonRequest) returns (LessonResponse);
+  rpc CheckTopicSufficiency (SufficiencyRequest) returns (SufficiencyResponse);
 }
 
 message SyllabusRequest {
   string file_name = 1;
   bytes file_data = 2;
+  string user_id = 3;
+  string class_id = 4;
+  string class_name = 5;
 }
 
 message SyllabusResponse {
@@ -32,6 +36,8 @@ message SyllabusResponse {
 message ChatRequest {
   string message = 1;      // The user's question
   string session_id = 2;   // To track conversation history later
+  string user_id = 3;
+  string class_id = 4;
 }
 
 message ChatResponse {
@@ -43,6 +49,7 @@ message QuizResultRequest {
   string user_id = 1;
   string topic_name = 2;
   int32 score = 3; 
+  string class_id = 4;
 }
 
 message QuizResultResponse {
@@ -54,6 +61,7 @@ message QuizResultResponse {
 message AdaptiveQuizRequest {
   string user_id = 1;
   string syllabus_name = 2; // Which class are they studying for?
+  string class_id = 3;
 }
 
 // We can reuse ChatResponse for the quiz return, or make a specific one:
@@ -64,6 +72,7 @@ message AdaptiveQuizResponse {
 // Sent by UI to read student performance/scores
 message GetQuizScoresRequest {
   string user_id = 1;
+  string class_id = 2;
 }
 
 message QuizScoreRecord {
@@ -71,6 +80,7 @@ message QuizScoreRecord {
   string topic_name = 2;
   int32 score = 3;
   string timestamp = 4;
+  string class_id = 5;
 }
 
 message GetQuizScoresResponse {
@@ -84,6 +94,8 @@ message IngestRequest {
   string topic_name = 2;
   string raw_text = 3;
   string user_id = 4;
+  string class_id = 5;
+  string class_name = 6;
 }
 
 message IngestResponse {
@@ -96,6 +108,7 @@ message QuizRequest {
   int32 question_count = 2;
   string user_id = 3;
   repeated string weak_topics = 4;
+  string class_id = 5;
 }
 
 message Question {
@@ -114,6 +127,7 @@ message CramRequest {
   int32 start_week = 2;
   int32 end_week = 3;
   repeated string weak_topics = 4;
+  string class_id = 5;
 }
 
 message CramResponse {
@@ -125,9 +139,23 @@ message LessonRequest {
   int32 week_number = 1;
   string user_id = 2;
   repeated string weak_topics = 3;
+  string class_id = 4;
 }
 
 message LessonResponse {
   string lesson_markdown = 1;
   repeated Question exercises = 2;
+  bool insufficient_materials = 3;
+}
+
+message SufficiencyRequest {
+  string user_id = 1;
+  string class_id = 2;
+  int32 week_number = 3;
+}
+
+message SufficiencyResponse {
+  bool insufficient_materials = 1;
+  repeated string insufficient_topics = 2;
+  repeated string all_topics = 3;
 }

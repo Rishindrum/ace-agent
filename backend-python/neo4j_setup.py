@@ -24,19 +24,31 @@ def get_driver():
 
 def create_constraints():
     """
-    Creates uniqueness constraints on the 'name' property for Week, Topic, and Material node labels.
+    Creates uniqueness constraints on composite properties for Week, Topic, and Material node labels.
     Uses 'IF NOT EXISTS' to ensure idempotency.
     """
     print("[Neo4j Setup] Creating Uniqueness Constraints...")
     driver = get_driver()
     
+    # First drop old global constraints if they exist
+    drop_queries = [
+        "DROP CONSTRAINT week_name_unique IF EXISTS",
+        "DROP CONSTRAINT topic_name_unique IF EXISTS",
+        "DROP CONSTRAINT material_name_unique IF EXISTS"
+    ]
+    
     constraints = [
-        "CREATE CONSTRAINT week_name_unique IF NOT EXISTS FOR (w:Week) REQUIRE w.name IS UNIQUE",
-        "CREATE CONSTRAINT topic_name_unique IF NOT EXISTS FOR (t:Topic) REQUIRE t.name IS UNIQUE",
-        "CREATE CONSTRAINT material_name_unique IF NOT EXISTS FOR (m:Material) REQUIRE m.name IS UNIQUE"
+        "CREATE CONSTRAINT week_identity_unique IF NOT EXISTS FOR (w:Week) REQUIRE (w.user_id, w.class_id, w.number) IS UNIQUE",
+        "CREATE CONSTRAINT topic_identity_unique IF NOT EXISTS FOR (t:Topic) REQUIRE (t.user_id, t.class_id, t.name) IS UNIQUE",
+        "CREATE CONSTRAINT material_identity_unique IF NOT EXISTS FOR (m:Material) REQUIRE (m.user_id, m.class_id, m.name) IS UNIQUE"
     ]
     
     with driver.session() as session:
+        for query in drop_queries:
+            try:
+                session.run(query)
+            except Exception as e:
+                print(f"Failed to drop constraint: {e}")
         for query in constraints:
             try:
                 print(f"Executing: {query}")

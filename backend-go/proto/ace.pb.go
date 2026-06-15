@@ -25,6 +25,9 @@ type SyllabusRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	FileName      string                 `protobuf:"bytes,1,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
 	FileData      []byte                 `protobuf:"bytes,2,opt,name=file_data,json=fileData,proto3" json:"file_data,omitempty"`
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassName     string                 `protobuf:"bytes,5,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -71,6 +74,27 @@ func (x *SyllabusRequest) GetFileData() []byte {
 		return x.FileData
 	}
 	return nil
+}
+
+func (x *SyllabusRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *SyllabusRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (x *SyllabusRequest) GetClassName() string {
+	if x != nil {
+		return x.ClassName
+	}
+	return ""
 }
 
 type SyllabusResponse struct {
@@ -145,6 +169,8 @@ type ChatRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Message       string                 `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`                      // The user's question
 	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"` // To track conversation history later
+	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -189,6 +215,20 @@ func (x *ChatRequest) GetMessage() string {
 func (x *ChatRequest) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
+	}
+	return ""
+}
+
+func (x *ChatRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *ChatRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
 	}
 	return ""
 }
@@ -243,6 +283,7 @@ type QuizResultRequest struct {
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	TopicName     string                 `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
 	Score         int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
+	ClassId       string                 `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -296,6 +337,13 @@ func (x *QuizResultRequest) GetScore() int32 {
 		return x.Score
 	}
 	return 0
+}
+
+func (x *QuizResultRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
 }
 
 type QuizResultResponse struct {
@@ -355,6 +403,7 @@ type AdaptiveQuizRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	SyllabusName  string                 `protobuf:"bytes,2,opt,name=syllabus_name,json=syllabusName,proto3" json:"syllabus_name,omitempty"` // Which class are they studying for?
+	ClassId       string                 `protobuf:"bytes,3,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -399,6 +448,13 @@ func (x *AdaptiveQuizRequest) GetUserId() string {
 func (x *AdaptiveQuizRequest) GetSyllabusName() string {
 	if x != nil {
 		return x.SyllabusName
+	}
+	return ""
+}
+
+func (x *AdaptiveQuizRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
 	}
 	return ""
 }
@@ -452,6 +508,7 @@ func (x *AdaptiveQuizResponse) GetQuizJson() string {
 type GetQuizScoresRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -493,12 +550,20 @@ func (x *GetQuizScoresRequest) GetUserId() string {
 	return ""
 }
 
+func (x *GetQuizScoresRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
 type QuizScoreRecord struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	TopicName     string                 `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
 	Score         int32                  `protobuf:"varint,3,opt,name=score,proto3" json:"score,omitempty"`
 	Timestamp     string                 `protobuf:"bytes,4,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
+	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -557,6 +622,13 @@ func (x *QuizScoreRecord) GetScore() int32 {
 func (x *QuizScoreRecord) GetTimestamp() string {
 	if x != nil {
 		return x.Timestamp
+	}
+	return ""
+}
+
+func (x *QuizScoreRecord) GetClassId() string {
+	if x != nil {
+		return x.ClassId
 	}
 	return ""
 }
@@ -627,6 +699,8 @@ type IngestRequest struct {
 	TopicName     string                 `protobuf:"bytes,2,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
 	RawText       string                 `protobuf:"bytes,3,opt,name=raw_text,json=rawText,proto3" json:"raw_text,omitempty"`
 	UserId        string                 `protobuf:"bytes,4,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	ClassName     string                 `protobuf:"bytes,6,opt,name=class_name,json=className,proto3" json:"class_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -689,6 +763,20 @@ func (x *IngestRequest) GetUserId() string {
 	return ""
 }
 
+func (x *IngestRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (x *IngestRequest) GetClassName() string {
+	if x != nil {
+		return x.ClassName
+	}
+	return ""
+}
+
 type IngestResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
@@ -747,6 +835,7 @@ type QuizRequest struct {
 	QuestionCount int32                  `protobuf:"varint,2,opt,name=question_count,json=questionCount,proto3" json:"question_count,omitempty"`
 	UserId        string                 `protobuf:"bytes,3,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	WeakTopics    []string               `protobuf:"bytes,4,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -807,6 +896,13 @@ func (x *QuizRequest) GetWeakTopics() []string {
 		return x.WeakTopics
 	}
 	return nil
+}
+
+func (x *QuizRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
 }
 
 type Question struct {
@@ -927,6 +1023,7 @@ type CramRequest struct {
 	StartWeek     int32                  `protobuf:"varint,2,opt,name=start_week,json=startWeek,proto3" json:"start_week,omitempty"`
 	EndWeek       int32                  `protobuf:"varint,3,opt,name=end_week,json=endWeek,proto3" json:"end_week,omitempty"`
 	WeakTopics    []string               `protobuf:"bytes,4,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	ClassId       string                 `protobuf:"bytes,5,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -989,6 +1086,13 @@ func (x *CramRequest) GetWeakTopics() []string {
 	return nil
 }
 
+func (x *CramRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
 type CramResponse struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	DenseReviewMarkdown string                 `protobuf:"bytes,1,opt,name=dense_review_markdown,json=denseReviewMarkdown,proto3" json:"dense_review_markdown,omitempty"`
@@ -1046,6 +1150,7 @@ type LessonRequest struct {
 	WeekNumber    int32                  `protobuf:"varint,1,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
 	UserId        string                 `protobuf:"bytes,2,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
 	WeakTopics    []string               `protobuf:"bytes,3,rep,name=weak_topics,json=weakTopics,proto3" json:"weak_topics,omitempty"`
+	ClassId       string                 `protobuf:"bytes,4,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1101,12 +1206,20 @@ func (x *LessonRequest) GetWeakTopics() []string {
 	return nil
 }
 
+func (x *LessonRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
 type LessonResponse struct {
-	state          protoimpl.MessageState `protogen:"open.v1"`
-	LessonMarkdown string                 `protobuf:"bytes,1,opt,name=lesson_markdown,json=lessonMarkdown,proto3" json:"lesson_markdown,omitempty"`
-	Exercises      []*Question            `protobuf:"bytes,2,rep,name=exercises,proto3" json:"exercises,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	LessonMarkdown        string                 `protobuf:"bytes,1,opt,name=lesson_markdown,json=lessonMarkdown,proto3" json:"lesson_markdown,omitempty"`
+	Exercises             []*Question            `protobuf:"bytes,2,rep,name=exercises,proto3" json:"exercises,omitempty"`
+	InsufficientMaterials bool                   `protobuf:"varint,3,opt,name=insufficient_materials,json=insufficientMaterials,proto3" json:"insufficient_materials,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *LessonResponse) Reset() {
@@ -1153,94 +1266,248 @@ func (x *LessonResponse) GetExercises() []*Question {
 	return nil
 }
 
+func (x *LessonResponse) GetInsufficientMaterials() bool {
+	if x != nil {
+		return x.InsufficientMaterials
+	}
+	return false
+}
+
+type SufficiencyRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	WeekNumber    int32                  `protobuf:"varint,3,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SufficiencyRequest) Reset() {
+	*x = SufficiencyRequest{}
+	mi := &file_proto_ace_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SufficiencyRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SufficiencyRequest) ProtoMessage() {}
+
+func (x *SufficiencyRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SufficiencyRequest.ProtoReflect.Descriptor instead.
+func (*SufficiencyRequest) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *SufficiencyRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *SufficiencyRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (x *SufficiencyRequest) GetWeekNumber() int32 {
+	if x != nil {
+		return x.WeekNumber
+	}
+	return 0
+}
+
+type SufficiencyResponse struct {
+	state                 protoimpl.MessageState `protogen:"open.v1"`
+	InsufficientMaterials bool                   `protobuf:"varint,1,opt,name=insufficient_materials,json=insufficientMaterials,proto3" json:"insufficient_materials,omitempty"`
+	InsufficientTopics    []string               `protobuf:"bytes,2,rep,name=insufficient_topics,json=insufficientTopics,proto3" json:"insufficient_topics,omitempty"`
+	AllTopics             []string               `protobuf:"bytes,3,rep,name=all_topics,json=allTopics,proto3" json:"all_topics,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *SufficiencyResponse) Reset() {
+	*x = SufficiencyResponse{}
+	mi := &file_proto_ace_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SufficiencyResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SufficiencyResponse) ProtoMessage() {}
+
+func (x *SufficiencyResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_proto_ace_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SufficiencyResponse.ProtoReflect.Descriptor instead.
+func (*SufficiencyResponse) Descriptor() ([]byte, []int) {
+	return file_proto_ace_proto_rawDescGZIP(), []int{21}
+}
+
+func (x *SufficiencyResponse) GetInsufficientMaterials() bool {
+	if x != nil {
+		return x.InsufficientMaterials
+	}
+	return false
+}
+
+func (x *SufficiencyResponse) GetInsufficientTopics() []string {
+	if x != nil {
+		return x.InsufficientTopics
+	}
+	return nil
+}
+
+func (x *SufficiencyResponse) GetAllTopics() []string {
+	if x != nil {
+		return x.AllTopics
+	}
+	return nil
+}
+
 var File_proto_ace_proto protoreflect.FileDescriptor
 
 const file_proto_ace_proto_rawDesc = "" +
 	"\n" +
-	"\x0fproto/ace.proto\x12\x03ace\"K\n" +
+	"\x0fproto/ace.proto\x12\x03ace\"\x9e\x01\n" +
 	"\x0fSyllabusRequest\x12\x1b\n" +
 	"\tfile_name\x18\x01 \x01(\tR\bfileName\x12\x1b\n" +
-	"\tfile_data\x18\x02 \x01(\fR\bfileData\"\x8a\x01\n" +
+	"\tfile_data\x18\x02 \x01(\fR\bfileData\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x04 \x01(\tR\aclassId\x12\x1d\n" +
+	"\n" +
+	"class_name\x18\x05 \x01(\tR\tclassName\"\x8a\x01\n" +
 	"\x10SyllabusResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
 	"\amessage\x18\x02 \x01(\tR\amessage\x12#\n" +
 	"\rnodes_created\x18\x03 \x01(\x05R\fnodesCreated\x12\x1d\n" +
 	"\n" +
-	"graph_json\x18\x04 \x01(\tR\tgraphJson\"F\n" +
+	"graph_json\x18\x04 \x01(\tR\tgraphJson\"z\n" +
 	"\vChatRequest\x12\x18\n" +
 	"\amessage\x18\x01 \x01(\tR\amessage\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x02 \x01(\tR\tsessionId\"*\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\x12\x17\n" +
+	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x04 \x01(\tR\aclassId\"*\n" +
 	"\fChatResponse\x12\x1a\n" +
-	"\bresponse\x18\x01 \x01(\tR\bresponse\"a\n" +
+	"\bresponse\x18\x01 \x01(\tR\bresponse\"|\n" +
 	"\x11QuizResultRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"topic_name\x18\x02 \x01(\tR\ttopicName\x12\x14\n" +
-	"\x05score\x18\x03 \x01(\x05R\x05score\"H\n" +
+	"\x05score\x18\x03 \x01(\x05R\x05score\x12\x19\n" +
+	"\bclass_id\x18\x04 \x01(\tR\aclassId\"H\n" +
 	"\x12QuizResultResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"S\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"n\n" +
 	"\x13AdaptiveQuizRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12#\n" +
-	"\rsyllabus_name\x18\x02 \x01(\tR\fsyllabusName\"3\n" +
+	"\rsyllabus_name\x18\x02 \x01(\tR\fsyllabusName\x12\x19\n" +
+	"\bclass_id\x18\x03 \x01(\tR\aclassId\"3\n" +
 	"\x14AdaptiveQuizResponse\x12\x1b\n" +
-	"\tquiz_json\x18\x01 \x01(\tR\bquizJson\"/\n" +
+	"\tquiz_json\x18\x01 \x01(\tR\bquizJson\"J\n" +
 	"\x14GetQuizScoresRequest\x12\x17\n" +
-	"\auser_id\x18\x01 \x01(\tR\x06userId\"}\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x02 \x01(\tR\aclassId\"\x98\x01\n" +
 	"\x0fQuizScoreRecord\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"topic_name\x18\x02 \x01(\tR\ttopicName\x12\x14\n" +
 	"\x05score\x18\x03 \x01(\x05R\x05score\x12\x1c\n" +
-	"\ttimestamp\x18\x04 \x01(\tR\ttimestamp\"y\n" +
+	"\ttimestamp\x18\x04 \x01(\tR\ttimestamp\x12\x19\n" +
+	"\bclass_id\x18\x05 \x01(\tR\aclassId\"y\n" +
 	"\x15GetQuizScoresResponse\x12,\n" +
 	"\x06scores\x18\x01 \x03(\v2\x14.ace.QuizScoreRecordR\x06scores\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\x83\x01\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\xbd\x01\n" +
 	"\rIngestRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12\x1d\n" +
 	"\n" +
 	"topic_name\x18\x02 \x01(\tR\ttopicName\x12\x19\n" +
 	"\braw_text\x18\x03 \x01(\tR\arawText\x12\x17\n" +
-	"\auser_id\x18\x04 \x01(\tR\x06userId\"D\n" +
+	"\auser_id\x18\x04 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x05 \x01(\tR\aclassId\x12\x1d\n" +
+	"\n" +
+	"class_name\x18\x06 \x01(\tR\tclassName\"D\n" +
 	"\x0eIngestResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage\"\x8f\x01\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"\xaa\x01\n" +
 	"\vQuizRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12%\n" +
 	"\x0equestion_count\x18\x02 \x01(\x05R\rquestionCount\x12\x17\n" +
 	"\auser_id\x18\x03 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vweak_topics\x18\x04 \x03(\tR\n" +
-	"weakTopics\"\x8b\x01\n" +
+	"weakTopics\x12\x19\n" +
+	"\bclass_id\x18\x05 \x01(\tR\aclassId\"\x8b\x01\n" +
 	"\bQuestion\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\tR\x02id\x12#\n" +
 	"\rquestion_text\x18\x02 \x01(\tR\fquestionText\x12\x18\n" +
 	"\aoptions\x18\x03 \x03(\tR\aoptions\x120\n" +
 	"\x14correct_option_index\x18\x04 \x01(\x05R\x12correctOptionIndex\";\n" +
 	"\fQuizResponse\x12+\n" +
-	"\tquestions\x18\x01 \x03(\v2\r.ace.QuestionR\tquestions\"\x81\x01\n" +
+	"\tquestions\x18\x01 \x03(\v2\r.ace.QuestionR\tquestions\"\x9c\x01\n" +
 	"\vCramRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x1d\n" +
 	"\n" +
 	"start_week\x18\x02 \x01(\x05R\tstartWeek\x12\x19\n" +
 	"\bend_week\x18\x03 \x01(\x05R\aendWeek\x12\x1f\n" +
 	"\vweak_topics\x18\x04 \x03(\tR\n" +
-	"weakTopics\"y\n" +
+	"weakTopics\x12\x19\n" +
+	"\bclass_id\x18\x05 \x01(\tR\aclassId\"y\n" +
 	"\fCramResponse\x122\n" +
 	"\x15dense_review_markdown\x18\x01 \x01(\tR\x13denseReviewMarkdown\x125\n" +
-	"\x0frapid_fire_quiz\x18\x02 \x03(\v2\r.ace.QuestionR\rrapidFireQuiz\"j\n" +
+	"\x0frapid_fire_quiz\x18\x02 \x03(\v2\r.ace.QuestionR\rrapidFireQuiz\"\x85\x01\n" +
 	"\rLessonRequest\x12\x1f\n" +
 	"\vweek_number\x18\x01 \x01(\x05R\n" +
 	"weekNumber\x12\x17\n" +
 	"\auser_id\x18\x02 \x01(\tR\x06userId\x12\x1f\n" +
 	"\vweak_topics\x18\x03 \x03(\tR\n" +
-	"weakTopics\"f\n" +
+	"weakTopics\x12\x19\n" +
+	"\bclass_id\x18\x04 \x01(\tR\aclassId\"\x9d\x01\n" +
 	"\x0eLessonResponse\x12'\n" +
 	"\x0flesson_markdown\x18\x01 \x01(\tR\x0elessonMarkdown\x12+\n" +
-	"\texercises\x18\x02 \x03(\v2\r.ace.QuestionR\texercises2\x83\x05\n" +
+	"\texercises\x18\x02 \x03(\v2\r.ace.QuestionR\texercises\x125\n" +
+	"\x16insufficient_materials\x18\x03 \x01(\bR\x15insufficientMaterials\"i\n" +
+	"\x12SufficiencyRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x02 \x01(\tR\aclassId\x12\x1f\n" +
+	"\vweek_number\x18\x03 \x01(\x05R\n" +
+	"weekNumber\"\x9c\x01\n" +
+	"\x13SufficiencyResponse\x125\n" +
+	"\x16insufficient_materials\x18\x01 \x01(\bR\x15insufficientMaterials\x12/\n" +
+	"\x13insufficient_topics\x18\x02 \x03(\tR\x12insufficientTopics\x12\x1d\n" +
+	"\n" +
+	"all_topics\x18\x03 \x03(\tR\tallTopics2\xcf\x05\n" +
 	"\fTutorService\x12>\n" +
 	"\x0fProcessSyllabus\x12\x14.ace.SyllabusRequest\x1a\x15.ace.SyllabusResponse\x12+\n" +
 	"\x04Chat\x12\x10.ace.ChatRequest\x1a\x11.ace.ChatResponse\x12C\n" +
@@ -1251,7 +1518,8 @@ const file_proto_ace_proto_rawDesc = "" +
 	"\fGenerateQuiz\x12\x10.ace.QuizRequest\x1a\x11.ace.QuizResponse\x12:\n" +
 	"\x13GenerateCramSession\x12\x10.ace.CramRequest\x1a\x11.ace.CramResponse\x129\n" +
 	"\x0eGenerateLesson\x12\x12.ace.LessonRequest\x1a\x13.ace.LessonResponse\x12E\n" +
-	"\x1aGenerateLessonAndExercises\x12\x12.ace.LessonRequest\x1a\x13.ace.LessonResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
+	"\x1aGenerateLessonAndExercises\x12\x12.ace.LessonRequest\x1a\x13.ace.LessonResponse\x12J\n" +
+	"\x15CheckTopicSufficiency\x12\x17.ace.SufficiencyRequest\x1a\x18.ace.SufficiencyResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
 
 var (
 	file_proto_ace_proto_rawDescOnce sync.Once
@@ -1265,7 +1533,7 @@ func file_proto_ace_proto_rawDescGZIP() []byte {
 	return file_proto_ace_proto_rawDescData
 }
 
-var file_proto_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_proto_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
 var file_proto_ace_proto_goTypes = []any{
 	(*SyllabusRequest)(nil),       // 0: ace.SyllabusRequest
 	(*SyllabusResponse)(nil),      // 1: ace.SyllabusResponse
@@ -1287,6 +1555,8 @@ var file_proto_ace_proto_goTypes = []any{
 	(*CramResponse)(nil),          // 17: ace.CramResponse
 	(*LessonRequest)(nil),         // 18: ace.LessonRequest
 	(*LessonResponse)(nil),        // 19: ace.LessonResponse
+	(*SufficiencyRequest)(nil),    // 20: ace.SufficiencyRequest
+	(*SufficiencyResponse)(nil),   // 21: ace.SufficiencyResponse
 }
 var file_proto_ace_proto_depIdxs = []int32{
 	9,  // 0: ace.GetQuizScoresResponse.scores:type_name -> ace.QuizScoreRecord
@@ -1303,18 +1573,20 @@ var file_proto_ace_proto_depIdxs = []int32{
 	16, // 11: ace.TutorService.GenerateCramSession:input_type -> ace.CramRequest
 	18, // 12: ace.TutorService.GenerateLesson:input_type -> ace.LessonRequest
 	18, // 13: ace.TutorService.GenerateLessonAndExercises:input_type -> ace.LessonRequest
-	1,  // 14: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
-	3,  // 15: ace.TutorService.Chat:output_type -> ace.ChatResponse
-	5,  // 16: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
-	7,  // 17: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
-	10, // 18: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
-	12, // 19: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
-	15, // 20: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
-	17, // 21: ace.TutorService.GenerateCramSession:output_type -> ace.CramResponse
-	19, // 22: ace.TutorService.GenerateLesson:output_type -> ace.LessonResponse
-	19, // 23: ace.TutorService.GenerateLessonAndExercises:output_type -> ace.LessonResponse
-	14, // [14:24] is the sub-list for method output_type
-	4,  // [4:14] is the sub-list for method input_type
+	20, // 14: ace.TutorService.CheckTopicSufficiency:input_type -> ace.SufficiencyRequest
+	1,  // 15: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
+	3,  // 16: ace.TutorService.Chat:output_type -> ace.ChatResponse
+	5,  // 17: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
+	7,  // 18: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
+	10, // 19: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
+	12, // 20: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
+	15, // 21: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
+	17, // 22: ace.TutorService.GenerateCramSession:output_type -> ace.CramResponse
+	19, // 23: ace.TutorService.GenerateLesson:output_type -> ace.LessonResponse
+	19, // 24: ace.TutorService.GenerateLessonAndExercises:output_type -> ace.LessonResponse
+	21, // 25: ace.TutorService.CheckTopicSufficiency:output_type -> ace.SufficiencyResponse
+	15, // [15:26] is the sub-list for method output_type
+	4,  // [4:15] is the sub-list for method input_type
 	4,  // [4:4] is the sub-list for extension type_name
 	4,  // [4:4] is the sub-list for extension extendee
 	0,  // [0:4] is the sub-list for field type_name
@@ -1331,7 +1603,7 @@ func file_proto_ace_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_proto_ace_proto_rawDesc), len(file_proto_ace_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   20,
+			NumMessages:   22,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

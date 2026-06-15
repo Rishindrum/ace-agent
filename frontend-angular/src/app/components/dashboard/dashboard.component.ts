@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
-import { UploadComponent } from '../upload/upload.component';
 import { GraphVisualizerComponent } from '../graph-visualizer/graph-visualizer.component';
 import { ChatInterfaceComponent } from '../chat-interface/chat-interface.component';
 import { QuizInterfaceComponent } from '../quiz-interface/quiz-interface.component';
@@ -12,6 +12,7 @@ import { LessonInterfaceComponent } from '../lesson-interface/lesson-interface.c
 import { CramExamComponent } from '../cram-exam/cram-exam.component';
 import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
+import { IngestService } from '../../services/ingest.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -19,9 +20,8 @@ import { ApiService } from '../../services/api.service';
   imports: [
     CommonModule,
     MatIconModule,
-    RouterLink,
+    MatProgressBarModule,
     FormsModule,
-    UploadComponent,
     GraphVisualizerComponent,
     ChatInterfaceComponent,
     QuizInterfaceComponent,
@@ -30,6 +30,7 @@ import { ApiService } from '../../services/api.service';
     CramExamComponent
   ],
   templateUrl: './dashboard.component.html',
+
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
@@ -37,6 +38,29 @@ export class DashboardComponent implements OnInit {
   
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
+
+  // Multi-Class Management
+  classes: any[] = [];
+  selectedClass: any = null;
+  globalStreak: number = 0;
+
+  // Add Class Modal Flow
+  isAddClassModalOpen: boolean = false;
+  newClassName: string = '';
+  newClassSyllabusFile: File | null = null;
+  addClassErrorMessage: string = '';
+  isAddingClass: boolean = false;
+
+  // Topic Warnings & Materials
+  allTopics: string[] = [];
+  insufficientTopics: string[] = [];
+  topicSufficiencyLoading: boolean = false;
+  addingMaterialTopic: string | null = null;
+  newMaterialText: string = '';
+  newMaterialFile: File | null = null;
+  isIngestingMaterial: boolean = false;
+  ingestMessage: string = '';
+  ingestSuccess: boolean = false;
 
   // Daily session gating state
   dailyState: any = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
@@ -55,8 +79,10 @@ export class DashboardComponent implements OnInit {
     private route: ActivatedRoute, 
     private router: Router, 
     private authService: AuthService,
-    private api: ApiService
+    private api: ApiService,
+    private ingestService: IngestService
   ) {}
+
 
   ngOnInit(): void {
     if (!this.authService.isAuthenticated()) {
@@ -65,7 +91,7 @@ export class DashboardComponent implements OnInit {
     }
 
     this.todayDateString = new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    this.loadDailyState();
+    this.loadClasses();
 
     this.calendarConnected = localStorage.getItem('calendar_connected') === 'true';
     this.isScheduleConfigured = 
@@ -83,21 +109,49 @@ export class DashboardComponent implements OnInit {
         });
       }
     });
+  }
 
-    // Fetch user schedule settings to get start date and streak
-    this.api.getUserScheduleSettings().subscribe({
-      next: (sched) => {
-        if (sched) {
-          if (sched.course_start_date) {
-            this.currentWeek = this.calculateCurrentWeek(sched.course_start_date);
+  loadClasses(): void {
+    this.api.listClasses().subscribe({
+      next: (res: any[]) => {
+        this.classes = res || [];
+        this.globalStreak = this.classes.reduce((max, c) => c.global_streak > max ? c.global_streak : max, 0);
+        
+        // If a class is selected, update its reference to get fresh streaks
+        if (this.selectedClass) {
+          const updated = this.classes.find(c => c.class_id === this.selectedClass.class_id);
+          if (updated) {
+            this.selectedClass = updated;
+            this.currentStreak = updated.class_streak || updated.current_streak || 0;
           }
-          this.currentStreak = sched.current_streak || 0;
         }
       },
       error: (err) => {
-        console.warn('Could not load user schedule settings on dashboard:', err);
+        console.warn('Could not load enrolled classes:', err);
       }
     });
+  }
+
+  selectClass(classObj: any): void {
+    this.selectedClass = classObj;
+    if (!classObj) {
+      this.allTopics = [];
+      this.insufficientTopics = [];
+      return;
+    }
+
+    // Set class-specific values
+    this.currentStreak = classObj.class_streak || classObj.current_streak || 0;
+    if (classObj.course_start_date) {
+      this.currentWeek = this.calculateCurrentWeek(classObj.course_start_date);
+    } else {
+      this.currentWeek = 1;
+    }
+    
+    this.selectedTimelineWeek = this.currentWeek;
+    this.loadDailyState(classObj.class_id);
+    this.loadTopicSufficiency(classObj.class_id, this.selectedTimelineWeek);
+    this.activeTab = 'syllabus';
   }
 
   calculateCurrentWeek(startDateStr: string): number {
@@ -111,7 +165,10 @@ export class DashboardComponent implements OnInit {
 
   selectTimelineWeek(week: number) {
     this.selectedTimelineWeek = week;
-    this.api.getDailySessionState().subscribe({
+    if (!this.selectedClass) return;
+
+    this.loadTopicSufficiency(this.selectedClass.class_id, week);
+    this.api.getDailySessionState(this.selectedClass.class_id).subscribe({
       next: (state) => {
         if (state) {
           this.dailyState = state;
@@ -129,8 +186,11 @@ export class DashboardComponent implements OnInit {
     this.activeTab = tab;
   }
 
-  loadDailyState(): void {
-    this.api.getDailySessionState().subscribe({
+  loadDailyState(classId?: string): void {
+    const cid = classId || this.selectedClass?.class_id;
+    if (!cid) return;
+
+    this.api.getDailySessionState(cid).subscribe({
       next: (state) => {
         if (state) {
           this.dailyState = state;
@@ -138,6 +198,151 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.warn('Could not load daily session state:', err);
+      }
+    });
+  }
+
+  loadTopicSufficiency(classId: string, weekNumber?: number): void {
+    const week = weekNumber || this.selectedTimelineWeek;
+    this.topicSufficiencyLoading = true;
+    this.api.checkTopicSufficiency(classId, week).subscribe({
+      next: (res: any) => {
+        this.allTopics = res.all_topics || [];
+        this.insufficientTopics = res.insufficient_topics || [];
+        this.topicSufficiencyLoading = false;
+      },
+      error: (err) => {
+        console.warn('Could not load topic sufficiency checks:', err);
+        this.topicSufficiencyLoading = false;
+      }
+    });
+  }
+
+  // Add Class Actions
+  openAddClassModal(): void {
+    this.newClassName = '';
+    this.newClassSyllabusFile = null;
+    this.addClassErrorMessage = '';
+    this.isAddingClass = false;
+    this.isAddClassModalOpen = true;
+  }
+
+  closeAddClassModal(): void {
+    this.isAddClassModalOpen = false;
+  }
+
+  onAddClassFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      this.newClassSyllabusFile = event.target.files[0];
+    }
+  }
+
+  createClass(): void {
+    if (!this.newClassName.trim() || !this.newClassSyllabusFile) {
+      this.addClassErrorMessage = 'Class Name and Syllabus PDF are required.';
+      return;
+    }
+
+    this.isAddingClass = true;
+    this.addClassErrorMessage = '';
+    const classId = 'class_' + new Date().getTime();
+
+    // 1. Upload Syllabus first
+    this.api.uploadSyllabus(this.newClassSyllabusFile, classId, this.newClassName).subscribe({
+      next: (uploadRes: any) => {
+        if (!uploadRes || uploadRes.status === 'error') {
+          this.isAddingClass = false;
+          this.addClassErrorMessage = uploadRes?.message || 'Failed to upload syllabus PDF.';
+          return;
+        }
+
+        // 2. Initialize default schedule settings for this class to create the record
+        const today = new Date().toISOString().split('T')[0];
+        this.api.saveUserScheduleSettings([2, 4], 1, 0, today, classId, this.newClassName).subscribe({
+          next: (schedRes: any) => {
+            this.isAddingClass = false;
+            this.isAddClassModalOpen = false;
+            this.loadClasses(); // Refresh grid
+            
+            // Auto-select the newly created class
+            const newClass = {
+              class_id: classId,
+              class_name: this.newClassName,
+              class_streak: 0,
+              current_streak: 0,
+              global_streak: this.globalStreak,
+              course_start_date: today
+            };
+            this.selectClass(newClass);
+          },
+          error: (schedErr) => {
+            this.isAddingClass = false;
+            this.addClassErrorMessage = 'Syllabus uploaded, but failed to create class schedule: ' + (schedErr.error?.message || schedErr.message || schedErr);
+          }
+        });
+      },
+      error: (uploadErr) => {
+        this.isAddingClass = false;
+        this.addClassErrorMessage = 'Syllabus upload failed: ' + (uploadErr.error?.message || uploadErr.message || uploadErr);
+      }
+    });
+  }
+
+  // Ingest Materials Actions
+  openAddMaterials(topic: string): void {
+    this.addingMaterialTopic = topic;
+    this.newMaterialText = '';
+    this.newMaterialFile = null;
+    this.ingestMessage = '';
+    this.isIngestingMaterial = false;
+    this.ingestSuccess = false;
+  }
+
+  closeAddMaterials(): void {
+    this.addingMaterialTopic = null;
+  }
+
+  onMaterialFileSelected(event: any): void {
+    if (event.target.files && event.target.files.length > 0) {
+      const file = event.target.files[0];
+      this.newMaterialFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.newMaterialText = e.target.result || '';
+      };
+      reader.readAsText(file);
+    }
+  }
+
+  submitMaterials(): void {
+    if (!this.newMaterialText.trim() || !this.addingMaterialTopic || !this.selectedClass) {
+      this.ingestMessage = 'Please enter raw text or select a valid notes text file.';
+      this.ingestSuccess = false;
+      return;
+    }
+
+    this.isIngestingMaterial = true;
+    this.ingestMessage = 'Uploading and ingesting study materials...';
+
+    this.ingestService.ingestMaterial(
+      this.selectedTimelineWeek,
+      this.addingMaterialTopic,
+      this.newMaterialText,
+      this.selectedClass.class_id
+    ).subscribe({
+      next: (res: any) => {
+        this.isIngestingMaterial = false;
+        this.ingestSuccess = true;
+        this.ingestMessage = 'Material successfully ingested!';
+        this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
+        setTimeout(() => {
+          this.closeAddMaterials();
+        }, 1500);
+      },
+      error: (err) => {
+        this.isIngestingMaterial = false;
+        this.ingestSuccess = false;
+        this.ingestMessage = 'Ingestion failed: ' + (err.error?.message || err.message || err);
       }
     });
   }
@@ -156,3 +361,4 @@ export class DashboardComponent implements OnInit {
     this.isCramModalOpen = false;
   }
 }
+

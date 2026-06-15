@@ -1,185 +1,435 @@
-<div *ngIf="calendarConnected && !isScheduleConfigured" class="schedule-banner">
-  <div class="banner-content">
-    <mat-icon class="banner-icon">warning</mat-icon>
-    <span class="banner-text">Action Required: Complete your Schedule Setup to enable AI calendar invites.</span>
+<!-- Top Navigation Bar -->
+<header class="app-header">
+  <div class="logo-area" (click)="selectClass(null)" style="cursor: pointer;">
+    <div class="logo-icon">
+      <mat-icon>school</mat-icon>
+    </div>
+    <div class="logo-text">
+      <h2>Ace Agent</h2>
+      <span>Interactive AI Study Companion</span>
+    </div>
   </div>
-  <button class="btn-banner" routerLink="/schedule-setup">Configure Schedule</button>
-</div>
+  
+  <div class="header-right">
+    <!-- Global Streak Widget at the very top -->
+    <div class="global-streak-header-widget">
+      <mat-icon class="streak-icon">local_fire_department</mat-icon>
+      <div class="streak-text">
+        <span class="streak-value">{{ globalStreak }} Days</span>
+        <span class="streak-label">Global Streak</span>
+      </div>
+    </div>
+
+    <nav class="tab-nav" *ngIf="selectedClass">
+      <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
+        <mat-icon>menu_book</mat-icon> Syllabus & Graph
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'lesson'" (class.active)="activeTab === 'lesson'" (click)="selectTab('lesson')">
+        <mat-icon>chrome_reader_mode</mat-icon> Lessons
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+        <mat-icon>forum</mat-icon> AI Tutor
+      </button>
+      <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
+        <mat-icon>assignment_turned_in</mat-icon> Quizzes
+      </button>
+    </nav>
+
+    <button class="btn-logout" (click)="logout()">
+      <mat-icon>logout</mat-icon> Logout
+    </button>
+  </div>
+</header>
 
 <div class="app-wrapper">
-  <!-- Top Navigation Bar -->
-  <header class="app-header">
-    <div class="logo-area">
-      <div class="logo-icon">
-        <mat-icon>school</mat-icon>
+  <!-- 1. CLASS LIST VIEW (selectedClass is null) -->
+  <div *ngIf="!selectedClass" class="class-manager-container fade-in">
+    <div class="manager-header card">
+      <div class="header-details">
+        <h1>My Classes</h1>
+        <p class="subtitle">Select a course to start your daily study loop, check syllabus completeness, and take quizzes.</p>
       </div>
-      <div class="logo-text">
-        <h2>Ace Agent</h2>
-        <span>Interactive AI Study Companion</span>
-      </div>
-    </div>
-    <div class="header-right">
-      <nav class="tab-nav">
-        <button class="nav-tab" [class.active]="activeTab === 'syllabus'" (click)="selectTab('syllabus')">
-          <mat-icon>menu_book</mat-icon> Syllabus & Graph
-        </button>
-        <button class="nav-tab" [class.active]="activeTab === 'lesson'" (click)="selectTab('lesson')">
-          <mat-icon>chrome_reader_mode</mat-icon> Lessons
-        </button>
-        <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
-          <mat-icon>forum</mat-icon> AI Tutor
-        </button>
-        <button class="nav-tab" [class.active]="activeTab === 'quiz'" (click)="selectTab('quiz')">
-          <mat-icon>assignment_turned_in</mat-icon> Quizzes
-        </button>
-      </nav>
-      <button class="btn-logout" (click)="logout()">
-        <mat-icon>logout</mat-icon> Logout
+      <button class="btn-add-class" (click)="openAddClassModal()">
+        <mat-icon>add</mat-icon> Add Class
       </button>
     </div>
-  </header>
 
-  <!-- Course Timeline & Streak Bar -->
-  <div class="timeline-bar-container card">
-    <div class="timeline-left">
-      <div class="streak-widget">
-        <mat-icon class="streak-icon">local_fire_department</mat-icon>
-        <div class="streak-text">
-          <span class="streak-value">{{ currentStreak }} Days</span>
-          <span class="streak-label">Study Streak</span>
-        </div>
-      </div>
-      <div class="week-widget">
-        <span class="week-label">Current Calendar Week:</span>
-        <span class="week-value">Week {{ currentWeek }}</span>
-      </div>
-    </div>
-    
-    <div class="timeline-scroll">
-      <div class="timeline-weeks">
-        <button 
-          *ngFor="let week of weeks" 
-          class="timeline-week-btn" 
-          [class.current]="week === currentWeek"
-          [class.past]="week < currentWeek"
-          [class.future]="week > currentWeek"
-          (click)="selectTimelineWeek(week)"
-          title="Click to initiate study quiz for this week"
-        >
-          <span class="week-num">W{{ week }}</span>
-          <span class="week-status">
-            <span *ngIf="week === currentWeek">Active</span>
-            <span *ngIf="week < currentWeek">Completed</span>
-            <span *ngIf="week > currentWeek">Get Ahead</span>
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <div class="timeline-right">
-      <button class="btn-study" (click)="selectTimelineWeek(currentWeek)">
-        <mat-icon>local_library</mat-icon> Study
-      </button>
-      <button class="btn-cram" (click)="openCramModal()">
-        <mat-icon>offline_bolt</mat-icon> Cram for Exam
+    <!-- Empty State -->
+    <div *ngIf="classes.length === 0" class="empty-state card fade-in">
+      <mat-icon class="empty-icon">school</mat-icon>
+      <h2>No classes added.</h2>
+      <p>To begin, create your first class by providing a class name and uploading its syllabus PDF.</p>
+      <button class="btn btn-primary" (click)="openAddClassModal()">
+        <mat-icon>add</mat-icon> Add Class Now
       </button>
     </div>
-  </div>
 
-  <!-- Daily Gating Progress Bar -->
-  <div class="daily-progress-container card fade-in">
-    <div class="daily-progress-header">
-      <mat-icon class="progress-title-icon">today</mat-icon>
-      <h3>Today's Study Checklist</h3>
-      <span class="date-badge">{{ todayDateString }}</span>
-    </div>
-    <div class="checklist-items">
-      <div class="checklist-item" [class.completed]="dailyState.lesson_completed" (click)="activeTab = 'lesson'">
-        <mat-icon class="check-icon">{{ dailyState.lesson_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-        <div class="item-text">
-          <span class="item-title">1. Read Today's Lesson</span>
-          <span class="item-desc">Learn the core concepts for this week</span>
+    <!-- Classes Grid -->
+    <div *ngIf="classes.length > 0" class="classes-grid">
+      <div *ngFor="let classObj of classes" class="class-card card" (click)="selectClass(classObj)">
+        <div class="class-card-glow"></div>
+        <div class="class-card-header">
+          <mat-icon class="class-icon">menu_book</mat-icon>
+          <div class="class-streak-badge">
+            <mat-icon>local_fire_department</mat-icon>
+            <span>{{ classObj.class_streak || classObj.current_streak || 0 }} Days</span>
+          </div>
         </div>
-      </div>
-      <div class="checklist-item" [class.completed]="dailyState.exercises_completed" (click)="activeTab = 'lesson'">
-        <mat-icon class="check-icon">{{ dailyState.exercises_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
-        <div class="item-text">
-          <span class="item-title">2. Complete Practice Exercises</span>
-          <span class="item-desc">Solve practice questions (Get >= 60% correct to pass)</span>
+        <div class="class-card-body">
+          <h3>{{ classObj.class_name }}</h3>
+          <p class="class-id">ID: {{ classObj.class_id }}</p>
         </div>
-      </div>
-      <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'quiz' : null">
-        <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
-        <div class="item-text">
-          <span class="item-title">3. Unlock Weekly Quiz</span>
-          <span class="item-desc">{{ dailyState.quiz_unlocked ? 'Quiz is unlocked! Take it now to extend your study streak' : 'Locked: Complete exercises first' }}</span>
+        <div class="class-card-footer">
+          <span>Enter Course Workspace</span>
+          <mat-icon>arrow_forward</mat-icon>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Content Workspace -->
-  <main class="app-workspace">
-    <!-- Syllabus & Knowledge Graph Tab -->
-    <div *ngIf="activeTab === 'syllabus'" class="tab-content fade-in">
-      <div class="syllabus-layout">
-        <div class="sidebar-column">
-          <div class="upload-section card">
-            <h3>Syllabus Upload</h3>
-            <p class="section-desc">Upload your course syllabus PDF to extract key topics, concepts, and relationships.</p>
-            <app-upload></app-upload>
-          </div>
-          
-          <div class="ingest-section card">
-            <h3>Material Ingestion</h3>
-            <p class="section-desc">Ingest slides, transcripts, or notes for scheduled course topics.</p>
-            <app-ingest></app-ingest>
+  <!-- 2. SPECIFIC CLASS WORKSPACE VIEW (selectedClass is not null) -->
+  <div *ngIf="selectedClass" class="class-workspace-container fade-in">
+    <!-- Sub-header navigation -->
+    <div class="class-subheader">
+      <button class="btn-back" (click)="selectClass(null)">
+        <mat-icon>arrow_back</mat-icon> Back to Classes
+      </button>
+      <div class="subheader-title">
+        <h2>{{ selectedClass.class_name }}</h2>
+        <span class="class-id-badge">ID: {{ selectedClass.class_id }}</span>
+      </div>
+    </div>
+
+    <!-- Course Timeline & Streak Bar -->
+    <div class="timeline-bar-container card">
+      <div class="timeline-left">
+        <div class="streak-widget">
+          <mat-icon class="streak-icon">local_fire_department</mat-icon>
+          <div class="streak-text">
+            <span class="streak-value">{{ currentStreak }} Days</span>
+            <span class="streak-label">Class Streak</span>
           </div>
         </div>
-        <div class="graph-section card">
-          <h3>Knowledge Graph</h3>
-          <p class="section-desc">Visual representation of course prerequisites and topic dependencies extracted by Gemini.</p>
-          <app-graph-visualizer></app-graph-visualizer>
+        <div class="week-widget">
+          <span class="week-label">Current Calendar Week:</span>
+          <span class="week-value">Week {{ currentWeek }}</span>
+        </div>
+      </div>
+      
+      <div class="timeline-scroll">
+        <div class="timeline-weeks">
+          <button 
+            *ngFor="let week of weeks" 
+            class="timeline-week-btn" 
+            [class.current]="week === currentWeek"
+            [class.past]="week < currentWeek"
+            [class.future]="week > currentWeek"
+            (click)="selectTimelineWeek(week)"
+            title="Click to study topics for this week"
+          >
+            <span class="week-num">W{{ week }}</span>
+            <span class="week-status">
+              <span *ngIf="week === currentWeek">Active</span>
+              <span *ngIf="week < currentWeek">Completed</span>
+              <span *ngIf="week > currentWeek">Get Ahead</span>
+            </span>
+          </button>
+        </div>
+      </div>
+
+      <div class="timeline-right">
+        <button class="btn-study" (click)="selectTimelineWeek(currentWeek)">
+          <mat-icon>local_library</mat-icon> Study
+        </button>
+        <button class="btn-cram" (click)="openCramModal()">
+          <mat-icon>offline_bolt</mat-icon> Cram for Exam
+        </button>
+      </div>
+    </div>
+
+    <!-- Daily Gating Progress Bar -->
+    <div class="daily-progress-container card fade-in">
+      <div class="daily-progress-header">
+        <mat-icon class="progress-title-icon">today</mat-icon>
+        <h3>Today's Study Checklist</h3>
+        <span class="date-badge">{{ todayDateString }}</span>
+      </div>
+      <div class="checklist-items">
+        <div class="checklist-item" [class.completed]="dailyState.lesson_completed" (click)="activeTab = 'lesson'">
+          <mat-icon class="check-icon">{{ dailyState.lesson_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          <div class="item-text">
+            <span class="item-title">1. Read Today's Lesson</span>
+            <span class="item-desc">Learn the core concepts for this week</span>
+          </div>
+        </div>
+        <div class="checklist-item" [class.completed]="dailyState.exercises_completed" (click)="activeTab = 'lesson'">
+          <mat-icon class="check-icon">{{ dailyState.exercises_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+          <div class="item-text">
+            <span class="item-title">2. Complete Practice Exercises</span>
+            <span class="item-desc">Solve practice questions (Get >= 60% correct to pass)</span>
+          </div>
+        </div>
+        <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked" (click)="dailyState.quiz_unlocked ? activeTab = 'quiz' : null">
+          <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
+          <div class="item-text">
+            <span class="item-title">3. Unlock Weekly Quiz</span>
+            <span class="item-desc">{{ dailyState.quiz_unlocked ? 'Quiz is unlocked! Take it now to extend your study streak' : 'Locked: Complete exercises first' }}</span>
+          </div>
         </div>
       </div>
     </div>
 
-    <!-- AI Tutor Chat Tab -->
-    <div *ngIf="activeTab === 'tutor'" class="tab-content fade-in tutor-tab">
-      <div class="chat-layout card">
-        <h3>Ask Ace</h3>
-        <p class="section-desc">Ask questions about policies, prerequisites, syllabus content, or educational topics.</p>
-        <app-chat-interface></app-chat-interface>
-      </div>
-    </div>
+    <!-- Content Workspace -->
+    <main class="app-workspace">
+      <!-- Syllabus & Knowledge Graph Tab -->
+      <div *ngIf="activeTab === 'syllabus'" class="tab-content fade-in">
+        <div class="syllabus-layout">
+          <div class="sidebar-column">
+            
+            <!-- Syllabus Topics Sufficiency Checklist -->
+            <div class="syllabus-topics-card card">
+              <div class="card-header-row">
+                <mat-icon>checklist</mat-icon>
+                <h3>Week {{ selectedTimelineWeek }} Topics</h3>
+              </div>
+              <p class="section-desc">Topic sufficiency evaluation based on uploaded slides, transcripts, or notes.</p>
+              
+              <div *ngIf="topicSufficiencyLoading" class="loading-topics">
+                <div class="topic-spinner"></div>
+                <span>Analyzing materials sufficiency...</span>
+              </div>
+              
+              <div *ngIf="!topicSufficiencyLoading && allTopics.length === 0" class="empty-topics">
+                <mat-icon>info_outline</mat-icon>
+                <p>No topics loaded for Week {{ selectedTimelineWeek }}. Please ensure syllabus parser completed correctly.</p>
+              </div>
 
-    <!-- Lesson Tab -->
-    <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
-      <app-lesson-interface 
-        [selectedWeek]="selectedTimelineWeek" 
-        [dailyState]="dailyState"
-        (exerciseCompleted)="loadDailyState()"
-        (startQuiz)="selectTab('quiz')"
-      ></app-lesson-interface>
-    </div>
+              <div *ngIf="!topicSufficiencyLoading && allTopics.length > 0" class="topics-list">
+                <div *ngFor="let topic of allTopics" class="topic-item" [class.insufficient]="insufficientTopics.includes(topic)">
+                  <div class="topic-item-left">
+                    <mat-icon class="topic-status-icon" [ngClass]="{'insufficient-icon': insufficientTopics.includes(topic), 'sufficient-icon': !insufficientTopics.includes(topic)}">
+                      {{ insufficientTopics.includes(topic) ? 'warning' : 'check_circle' }}
+                    </mat-icon>
+                    <span class="topic-name-label">{{ topic }}</span>
+                  </div>
+                  
+                  <div class="topic-item-actions">
+                    <!-- Warning Flag UI -->
+                    <span *ngIf="insufficientTopics.includes(topic)" class="warning-badge" title="Insufficient study materials uploaded for this topic.">
+                      Insufficient Materials
+                    </span>
+                    <!-- Add Materials Button -->
+                    <button class="btn btn-add-materials" (click)="openAddMaterials(topic)" title="Upload raw text notes to clear warnings">
+                      <mat-icon>cloud_upload</mat-icon> Add Materials
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
 
-    <!-- Quiz Tab -->
-    <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
-      <div *ngIf="!dailyState.quiz_unlocked" class="quiz-locked-notice card">
-        <mat-icon class="locked-icon">lock</mat-icon>
-        <h3>Quiz is Locked</h3>
-        <p>You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.</p>
-        <button class="btn btn-primary" (click)="activeTab = 'lesson'">Go to Lesson</button>
+            <!-- Material Ingestion Card -->
+            <div class="ingest-section card">
+              <h3>General Material Ingestion</h3>
+              <p class="section-desc">Ingest general slides, transcripts, or notes by selecting a week number and topic name.</p>
+              <app-ingest [classId]="selectedClass.class_id"></app-ingest>
+            </div>
+          </div>
+
+          <div class="graph-section card">
+            <h3>Knowledge Graph</h3>
+            <p class="section-desc">Visual representation of course prerequisites and topic dependencies extracted by Gemini.</p>
+            <app-graph-visualizer></app-graph-visualizer>
+          </div>
+        </div>
       </div>
-      <div *ngIf="dailyState.quiz_unlocked" class="quiz-layout card">
-        <h3>Adaptive Performance Quiz</h3>
-        <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
-        <app-quiz-interface [selectedWeek]="selectedTimelineWeek"></app-quiz-interface>
+
+      <!-- AI Tutor Chat Tab -->
+      <div *ngIf="activeTab === 'tutor'" class="tab-content fade-in tutor-tab">
+        <div class="chat-layout card">
+          <h3>Ask Ace</h3>
+          <p class="section-desc">Ask questions about policies, prerequisites, syllabus content, or educational topics.</p>
+          <app-chat-interface [classId]="selectedClass.class_id"></app-chat-interface>
+        </div>
       </div>
-    </div>
-  </main>
+
+      <!-- Lesson Tab -->
+      <div *ngIf="activeTab === 'lesson'" class="tab-content fade-in lesson-tab">
+        <app-lesson-interface 
+          [selectedWeek]="selectedTimelineWeek" 
+          [dailyState]="dailyState"
+          [classId]="selectedClass.class_id"
+          (exerciseCompleted)="loadDailyState()"
+          (startQuiz)="selectTab('quiz')"
+        ></app-lesson-interface>
+      </div>
+
+      <!-- Quiz Tab -->
+      <div *ngIf="activeTab === 'quiz'" class="tab-content fade-in quiz-tab">
+        <div *ngIf="!dailyState.quiz_unlocked" class="quiz-locked-notice card">
+          <mat-icon class="locked-icon">lock</mat-icon>
+          <h3>Quiz is Locked</h3>
+          <p>You must complete today's lesson and score at least 60% on the practice exercises to unlock this quiz.</p>
+          <button class="btn btn-primary" (click)="activeTab = 'lesson'">Go to Lesson</button>
+        </div>
+        <div *ngIf="dailyState.quiz_unlocked" class="quiz-layout card">
+          <h3>Adaptive Performance Quiz</h3>
+          <p class="section-desc">Test your knowledge. Gemini generates quizzes adapting to your BigQuery performance history.</p>
+          <app-quiz-interface [selectedWeek]="selectedTimelineWeek" [classId]="selectedClass.class_id"></app-quiz-interface>
+        </div>
+      </div>
+    </main>
+  </div>
 </div>
 
 <!-- Exam Cram Modal Overlay -->
-<app-cram-exam *ngIf="isCramModalOpen" [weeks]="weeks" [cramStartWeek]="currentWeek" [cramEndWeek]="currentWeek" (close)="closeCramModal()"></app-cram-exam>
+<app-cram-exam *ngIf="isCramModalOpen" [weeks]="weeks" [cramStartWeek]="currentWeek" [cramEndWeek]="currentWeek" [classId]="selectedClass?.class_id || 'default_class'" (close)="closeCramModal()"></app-cram-exam>
 
+<!-- strict ADD CLASS MODAL OVERLAY -->
+<div *ngIf="isAddClassModalOpen" class="modal-overlay fade-in">
+  <div class="modal-card card scale-up">
+    <div class="modal-header">
+      <div class="modal-title-container">
+        <mat-icon class="modal-header-icon">school</mat-icon>
+        <h2>Create New Class</h2>
+      </div>
+      <button class="btn-modal-close" (click)="closeAddClassModal()" [disabled]="isAddingClass">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-desc">
+        To register a class, enter a class name and upload its Syllabus or Class Calendar PDF. Ace Agent will parse key topics, weekly timelines, and dependent structures.
+      </p>
+
+      <div class="form-group">
+        <label for="newClassName">Class Name</label>
+        <input 
+          type="text" 
+          id="newClassName" 
+          [(ngModel)]="newClassName" 
+          placeholder="e.g. Intro to Artificial Intelligence" 
+          [disabled]="isAddingClass"
+          required 
+        />
+      </div>
+
+      <div class="form-group">
+        <label>Syllabus / Class Calendar PDF</label>
+        <div class="file-uploader-dropzone" [class.file-selected]="newClassSyllabusFile">
+          <input 
+            type="file" 
+            id="newClassSyllabus" 
+            (change)="onAddClassFileSelected($event)" 
+            accept=".pdf" 
+            [disabled]="isAddingClass"
+            hidden
+            #classSyllabusInput 
+          />
+          <div class="dropzone-content" (click)="classSyllabusInput.click()">
+            <mat-icon class="upload-icon">cloud_upload</mat-icon>
+            <div class="upload-text" *ngIf="!newClassSyllabusFile">
+              <strong>Click to upload PDF</strong> or drag and drop
+              <span>Only PDF format allowed</span>
+            </div>
+            <div class="upload-text" *ngIf="newClassSyllabusFile">
+              <strong>Syllabus PDF Selected:</strong>
+              <span class="selected-filename">{{ newClassSyllabusFile.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Add Class Error Message -->
+      <div *ngIf="addClassErrorMessage" class="modal-error-alert">
+        <mat-icon>error_outline</mat-icon>
+        <span>{{ addClassErrorMessage }}</span>
+      </div>
+
+      <!-- Ingest Progress Bar -->
+      <div *ngIf="isAddingClass" class="modal-progress-container">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="progress-subtext">AI Brain parsing syllabus and mapping knowledge graph nodes...</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeAddClassModal()" [disabled]="isAddingClass">Cancel</button>
+      <button 
+        class="btn btn-primary btn-submit-class" 
+        (click)="createClass()" 
+        [disabled]="isAddingClass || !newClassName.trim() || !newClassSyllabusFile"
+      >
+        <mat-icon>add_circle</mat-icon> Create Class
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ADD MATERIALS FOR SPECIFIC TOPIC MODAL -->
+<div *ngIf="addingMaterialTopic" class="modal-overlay fade-in">
+  <div class="modal-card card scale-up">
+    <div class="modal-header">
+      <div class="modal-title-container">
+        <mat-icon class="modal-header-icon warning-color">warning</mat-icon>
+        <h2>Add Materials: {{ addingMaterialTopic }}</h2>
+      </div>
+      <button class="btn-modal-close" (click)="closeAddMaterials()" [disabled]="isIngestingMaterial">
+        <mat-icon>close</mat-icon>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <p class="modal-desc">
+        Provide course slides text transcripts, lecture notes, or text documents for this topic to clear the "insufficient materials" warning.
+      </p>
+
+      <div class="form-group">
+        <label for="materialText">Notes & Text Content</label>
+        <textarea 
+          id="materialText" 
+          [(ngModel)]="newMaterialText" 
+          placeholder="Paste notes, transcripts, or reference text here..." 
+          rows="8"
+          [disabled]="isIngestingMaterial"
+          required
+        ></textarea>
+      </div>
+
+      <div class="form-group">
+        <label>Optional: Import Text File</label>
+        <div class="file-uploader-mini">
+          <input 
+            type="file" 
+            (change)="onMaterialFileSelected($event)" 
+            accept=".txt,.md,.json" 
+            [disabled]="isIngestingMaterial"
+            hidden
+            #materialFileInput 
+          />
+          <button class="btn btn-secondary btn-mini-upload" (click)="materialFileInput.click()" [disabled]="isIngestingMaterial">
+            <mat-icon>attach_file</mat-icon> Load from file (.txt, .md)
+          </button>
+          <span class="mini-upload-filename" *ngIf="newMaterialFile">{{ newMaterialFile.name }}</span>
+        </div>
+      </div>
+
+      <!-- Ingest Status Message -->
+      <div *ngIf="ingestMessage" class="modal-status-alert" [ngClass]="{'success': ingestSuccess, 'error': !ingestSuccess && !isIngestingMaterial, 'info': isIngestingMaterial}">
+        <mat-icon>{{ ingestSuccess ? 'check_circle' : (!ingestSuccess && !isIngestingMaterial ? 'error' : 'sync') }}</mat-icon>
+        <span>{{ ingestMessage }}</span>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn btn-secondary" (click)="closeAddMaterials()" [disabled]="isIngestingMaterial">Cancel</button>
+      <button 
+        class="btn btn-primary" 
+        (click)="submitMaterials()" 
+        [disabled]="isIngestingMaterial || !newMaterialText.trim()"
+      >
+        <mat-icon>add_link</mat-icon> Ingest Notes
+      </button>
+    </div>
+  </div>
+</div>

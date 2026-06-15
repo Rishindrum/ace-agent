@@ -40,6 +40,8 @@ export class LessonInterfaceComponent implements OnInit {
   @Output() exerciseCompleted = new EventEmitter<void>();
   @Output() startQuiz = new EventEmitter<void>();
 
+  @Input() classId: string = 'default_class';
+
   private _dailyState: any = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
 
   @Input() set dailyState(value: any) {
@@ -112,7 +114,7 @@ export class LessonInterfaceComponent implements OnInit {
     this.exercises = [];
     this.exerciseAnswersSubmitted = false;
 
-    this.api.generateLesson(this.selectedWeek).subscribe({
+    this.api.generateLesson(this.selectedWeek, this.classId).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         this.statusMessage = '';
@@ -156,7 +158,8 @@ export class LessonInterfaceComponent implements OnInit {
       correct_option_index: e.correct_option_index
     }));
 
-    this.api.submitExercises(payload).subscribe({
+    this.api.submitExercises(payload, this.classId).subscribe({
+
       next: (res: any) => {
         this.isLoading = false;
         this.statusMessage = '';

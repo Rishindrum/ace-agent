@@ -29,6 +29,7 @@ const (
 	TutorService_GenerateCramSession_FullMethodName        = "/ace.TutorService/GenerateCramSession"
 	TutorService_GenerateLesson_FullMethodName             = "/ace.TutorService/GenerateLesson"
 	TutorService_GenerateLessonAndExercises_FullMethodName = "/ace.TutorService/GenerateLessonAndExercises"
+	TutorService_CheckTopicSufficiency_FullMethodName      = "/ace.TutorService/CheckTopicSufficiency"
 )
 
 // TutorServiceClient is the client API for TutorService service.
@@ -45,6 +46,7 @@ type TutorServiceClient interface {
 	GenerateCramSession(ctx context.Context, in *CramRequest, opts ...grpc.CallOption) (*CramResponse, error)
 	GenerateLesson(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
 	GenerateLessonAndExercises(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
+	CheckTopicSufficiency(ctx context.Context, in *SufficiencyRequest, opts ...grpc.CallOption) (*SufficiencyResponse, error)
 }
 
 type tutorServiceClient struct {
@@ -155,6 +157,16 @@ func (c *tutorServiceClient) GenerateLessonAndExercises(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *tutorServiceClient) CheckTopicSufficiency(ctx context.Context, in *SufficiencyRequest, opts ...grpc.CallOption) (*SufficiencyResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(SufficiencyResponse)
+	err := c.cc.Invoke(ctx, TutorService_CheckTopicSufficiency_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TutorServiceServer is the server API for TutorService service.
 // All implementations must embed UnimplementedTutorServiceServer
 // for forward compatibility.
@@ -169,6 +181,7 @@ type TutorServiceServer interface {
 	GenerateCramSession(context.Context, *CramRequest) (*CramResponse, error)
 	GenerateLesson(context.Context, *LessonRequest) (*LessonResponse, error)
 	GenerateLessonAndExercises(context.Context, *LessonRequest) (*LessonResponse, error)
+	CheckTopicSufficiency(context.Context, *SufficiencyRequest) (*SufficiencyResponse, error)
 	mustEmbedUnimplementedTutorServiceServer()
 }
 
@@ -208,6 +221,9 @@ func (UnimplementedTutorServiceServer) GenerateLesson(context.Context, *LessonRe
 }
 func (UnimplementedTutorServiceServer) GenerateLessonAndExercises(context.Context, *LessonRequest) (*LessonResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method GenerateLessonAndExercises not implemented")
+}
+func (UnimplementedTutorServiceServer) CheckTopicSufficiency(context.Context, *SufficiencyRequest) (*SufficiencyResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method CheckTopicSufficiency not implemented")
 }
 func (UnimplementedTutorServiceServer) mustEmbedUnimplementedTutorServiceServer() {}
 func (UnimplementedTutorServiceServer) testEmbeddedByValue()                      {}
@@ -410,6 +426,24 @@ func _TutorService_GenerateLessonAndExercises_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TutorService_CheckTopicSufficiency_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SufficiencyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).CheckTopicSufficiency(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_CheckTopicSufficiency_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).CheckTopicSufficiency(ctx, req.(*SufficiencyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TutorService_ServiceDesc is the grpc.ServiceDesc for TutorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -456,6 +490,10 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GenerateLessonAndExercises",
 			Handler:    _TutorService_GenerateLessonAndExercises_Handler,
+		},
+		{
+			MethodName: "CheckTopicSufficiency",
+			Handler:    _TutorService_CheckTopicSufficiency_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

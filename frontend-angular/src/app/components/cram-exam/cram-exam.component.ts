@@ -15,6 +15,7 @@ export class CramExamComponent implements OnInit {
   @Input() weeks: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12];
   @Input() cramStartWeek: number = 1;
   @Input() cramEndWeek: number = 4;
+  @Input() classId: string = 'default_class';
   @Output() close = new EventEmitter<void>();
 
   isCramLoading: boolean = false;
@@ -40,7 +41,7 @@ export class CramExamComponent implements OnInit {
     this.cramError = '';
     this.cramData = null;
 
-    this.api.generateCramSession(Number(this.cramStartWeek), Number(this.cramEndWeek)).subscribe({
+    this.api.generateCramSession(Number(this.cramStartWeek), Number(this.cramEndWeek), this.classId).subscribe({
       next: (res) => {
         this.isCramLoading = false;
         if (res && res.dense_review_markdown) {

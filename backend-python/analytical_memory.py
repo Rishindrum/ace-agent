@@ -21,19 +21,22 @@ def get_bigquery_client():
     """Returns an initialized BigQuery client for the demo project."""
     return bigquery.Client(project=PROJECT_ID)
 
-def write_quiz_score(user_id: str, topic_name: str, score: int) -> bool:
+def write_quiz_score(user_id: str, class_id: str, topic_name: str, score: int) -> bool:
     """
     Writes a new quiz score record to BigQuery.
     
     Args:
         user_id: The Firebase UID of the student.
+        class_id: The identifier for the class.
         topic_name: The specific syllabus topic tested.
         score: The percentage score (0-100).
         
     Returns:
         bool: True if write succeeded, False otherwise.
     """
-    print(f"[AnalyticalMemory] Writing quiz score for {user_id} on {topic_name}: {score}%")
+    # Safe fallback
+    c_id = class_id if class_id else "default_class"
+    print(f"[AnalyticalMemory] Writing quiz score for {user_id} on {topic_name} under class {c_id}: {score}%")
     try:
         client = get_bigquery_client()
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
@@ -43,6 +46,7 @@ def write_quiz_score(user_id: str, topic_name: str, score: int) -> bool:
         
         row_to_insert = {
             "user_id": user_id,
+            "class_id": c_id,
             "topic_name": topic_name,
             "score": score,
             "timestamp": timestamp_str
@@ -59,31 +63,34 @@ def write_quiz_score(user_id: str, topic_name: str, score: int) -> bool:
         print(f"[AnalyticalMemory] BigQuery write failed: {e}")
         return False
 
-def read_quiz_scores(user_id: str) -> list:
+def read_quiz_scores(user_id: str, class_id: str = None) -> list:
     """
     Reads all quiz scores for a given user from BigQuery.
     
     Args:
         user_id: The Firebase UID of the student.
+        class_id: The identifier for the class.
         
     Returns:
         list: A list of dicts containing the user's score records.
     """
-    print(f"[AnalyticalMemory] Reading quiz scores for user: {user_id}")
+    c_id = class_id if class_id else "default_class"
+    print(f"[AnalyticalMemory] Reading quiz scores for user: {user_id}, class: {c_id}")
     try:
         client = get_bigquery_client()
         table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
         
         query = f"""
-            SELECT user_id, topic_name, score, timestamp
+            SELECT user_id, class_id, topic_name, score, timestamp
             FROM `{table_ref}`
-            WHERE user_id = @user_id
+            WHERE user_id = @user_id AND class_id = @class_id
             ORDER BY timestamp DESC
         """
         
         job_config = bigquery.QueryJobConfig(
             query_parameters=[
-                bigquery.ScalarQueryParameter("user_id", "STRING", user_id)
+                bigquery.ScalarQueryParameter("user_id", "STRING", user_id),
+                bigquery.ScalarQueryParameter("class_id", "STRING", c_id)
             ]
         )
         
@@ -94,8 +101,11 @@ def read_quiz_scores(user_id: str) -> list:
         for row in results:
             # Format timestamp as ISO format string
             ts_str = row.timestamp.isoformat() if row.timestamp else ""
+            # Handle cases where class_id might not exist in old rows
+            c_val = getattr(row, "class_id", "default_class")
             scores.append({
                 "user_id": row.user_id,
+                "class_id": c_val,
                 "topic_name": row.topic_name,
                 "score": row.score,
                 "timestamp": ts_str

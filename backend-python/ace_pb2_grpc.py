@@ -84,6 +84,11 @@ class TutorServiceStub:
                 request_serializer=ace__pb2.LessonRequest.SerializeToString,
                 response_deserializer=ace__pb2.LessonResponse.FromString,
                 _registered_method=True)
+        self.CheckTopicSufficiency = channel.unary_unary(
+                '/ace.TutorService/CheckTopicSufficiency',
+                request_serializer=ace__pb2.SufficiencyRequest.SerializeToString,
+                response_deserializer=ace__pb2.SufficiencyResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer:
@@ -149,6 +154,12 @@ class TutorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def CheckTopicSufficiency(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -201,6 +212,11 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.GenerateLessonAndExercises,
                     request_deserializer=ace__pb2.LessonRequest.FromString,
                     response_serializer=ace__pb2.LessonResponse.SerializeToString,
+            ),
+            'CheckTopicSufficiency': grpc.unary_unary_rpc_method_handler(
+                    servicer.CheckTopicSufficiency,
+                    request_deserializer=ace__pb2.SufficiencyRequest.FromString,
+                    response_serializer=ace__pb2.SufficiencyResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -473,6 +489,33 @@ class TutorService:
             '/ace.TutorService/GenerateLessonAndExercises',
             ace__pb2.LessonRequest.SerializeToString,
             ace__pb2.LessonResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def CheckTopicSufficiency(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/CheckTopicSufficiency',
+            ace__pb2.SufficiencyRequest.SerializeToString,
+            ace__pb2.SufficiencyResponse.FromString,
             options,
             channel_credentials,
             insecure,

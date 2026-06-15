@@ -40,12 +40,12 @@ export class QuizInterfaceComponent implements OnInit {
   userId: string = 'demo_student';
   syllabusName: string = '';
   
+  @Input() classId: string = 'default_class';
   @Input() set selectedWeek(value: number) {
     if (value) {
       this.weekNumber = value;
     }
   }
-  
   weekNumber: number = 1;
   questionCount: number = 5;
   currentView: 'history' | 'quiz' = 'history';
@@ -134,7 +134,7 @@ export class QuizInterfaceComponent implements OnInit {
     this.isLoading = true;
     this.statusMessage = `Generating syllabus quiz for Week ${this.weekNumber} using course materials...`;
     
-    this.api.generateQuiz(this.weekNumber, this.questionCount).subscribe({
+    this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId).subscribe({
       next: (questions: SyllabusQuestionPayload[]) => {
         this.isLoading = false;
         this.statusMessage = '';
@@ -221,7 +221,7 @@ export class QuizInterfaceComponent implements OnInit {
         questions: telemetryQuestions
       };
 
-      this.api.submitQuizTelemetry(telemetryPayload).subscribe({
+      this.api.submitQuizTelemetry(telemetryPayload, this.classId).subscribe({
         next: (telemetryRes) => {
           console.log("[BigQuery Telemetry] Successfully streamed:", telemetryRes);
         },

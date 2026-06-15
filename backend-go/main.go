@@ -33,6 +33,7 @@ var bqTable *bigquery.Table
 type QuizAttemptTelemetry struct {
 	AttemptID       string    `bigquery:"attempt_id"`
 	UserID          string    `bigquery:"user_id"`
+	ClassID         string    `bigquery:"class_id"`
 	WeekNumber      int       `bigquery:"week_number"`
 	TotalQuestions  int       `bigquery:"total_questions"`
 	CorrectAnswers  int       `bigquery:"correct_answers"`
@@ -45,6 +46,7 @@ func (q *QuizAttemptTelemetry) Save() (map[string]bigquery.Value, string, error)
 	return map[string]bigquery.Value{
 		"attempt_id":       q.AttemptID,
 		"user_id":          q.UserID,
+		"class_id":         q.ClassID,
 		"week_number":      q.WeekNumber,
 		"total_questions":  q.TotalQuestions,
 		"correct_answers":  q.CorrectAnswers,
@@ -96,6 +98,7 @@ func initBigQuery() {
 	schema := bigquery.Schema{
 		{Name: "attempt_id", Type: bigquery.StringFieldType, Required: true},
 		{Name: "user_id", Type: bigquery.StringFieldType, Required: true},
+		{Name: "class_id", Type: bigquery.StringFieldType, Required: true},
 		{Name: "week_number", Type: bigquery.IntegerFieldType, Required: true},
 		{Name: "total_questions", Type: bigquery.IntegerFieldType, Required: true},
 		{Name: "correct_answers", Type: bigquery.IntegerFieldType, Required: true},
@@ -161,9 +164,39 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// 3. Call Python
+	userID := r.FormValue("user_id")
+	if userID == "" {
+		userID = r.URL.Query().Get("user_id")
+	}
+	if userID == "" {
+		userID = auth.GetUserID(r.Context())
+	}
+	if userID == "" {
+		userID = "default_user"
+	}
+
+	classID := r.FormValue("class_id")
+	if classID == "" {
+		classID = r.URL.Query().Get("class_id")
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
+	className := r.FormValue("class_name")
+	if className == "" {
+		className = r.URL.Query().Get("class_name")
+	}
+	if className == "" {
+		className = "Default Class"
+	}
+
 	req := &pb.SyllabusRequest{
-		FileName: header.Filename,
-		FileData: fileBytes,
+		FileName:  header.Filename,
+		FileData:  fileBytes,
+		UserId:    userID,
+		ClassId:   classID,
+		ClassName: className,
 	}
 
 	resp, err := tutorClient.ProcessSyllabus(context.Background(), req)
@@ -230,7 +263,20 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 		// Create a context with a timeout so it doesn't hang forever
 		ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 
-		grpcReq := &pb.ChatRequest{Message: string(msg)}
+		userID := r.URL.Query().Get("user_id")
+		if userID == "" {
+			userID = "default_user"
+		}
+		classID := r.URL.Query().Get("class_id")
+		if classID == "" {
+			classID = "default_class"
+		}
+
+		grpcReq := &pb.ChatRequest{
+			Message: string(msg),
+			UserId:  userID,
+			ClassId: classID,
+		}
 		resp, err := tutorClient.Chat(ctx, grpcReq)
 		cancel() // Clean up context
 
@@ -268,6 +314,7 @@ func submitQuizResultHandler(w http.ResponseWriter, r *http.Request) {
 		UserID    string `json:"user_id"`
 		TopicName string `json:"topic_name"`
 		Score     int32  `json:"score"`
+		ClassID   string `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -275,10 +322,16 @@ func submitQuizResultHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	classID := req.ClassID
+	if classID == "" {
+		classID = "default_class"
+	}
+
 	grpcReq := &pb.QuizResultRequest{
 		UserId:    req.UserID,
 		TopicName: req.TopicName,
 		Score:     req.Score,
+		ClassId:   classID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -310,13 +363,18 @@ func getQuizScoresHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := r.URL.Query().Get("user_id")
+	classID := r.URL.Query().Get("class_id")
 	if userID == "" {
 		http.Error(w, "Missing user_id parameter", http.StatusBadRequest)
 		return
 	}
+	if classID == "" {
+		classID = "default_class"
+	}
 
 	grpcReq := &pb.GetQuizScoresRequest{
-		UserId: userID,
+		UserId:  userID,
+		ClassId: classID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
@@ -349,14 +407,19 @@ func generateAdaptiveQuizHandler(w http.ResponseWriter, r *http.Request) {
 
 	userID := r.URL.Query().Get("user_id")
 	syllabusName := r.URL.Query().Get("syllabus_name")
+	classID := r.URL.Query().Get("class_id")
 	if userID == "" || syllabusName == "" {
 		http.Error(w, "Missing user_id or syllabus_name parameter", http.StatusBadRequest)
 		return
+	}
+	if classID == "" {
+		classID = "default_class"
 	}
 
 	grpcReq := &pb.AdaptiveQuizRequest{
 		UserId:       userID,
 		SyllabusName: syllabusName,
+		ClassId:      classID,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -391,6 +454,8 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		WeekNumber int32  `json:"week_number"`
 		TopicName  string `json:"topic_name"`
 		RawText    string `json:"raw_text"`
+		ClassID    string `json:"class_id"`
+		ClassName  string `json:"class_name"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -399,12 +464,25 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := auth.GetUserID(r.Context())
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+	className := req.ClassName
+	if className == "" {
+		className = "Default Class"
+	}
 
 	grpcReq := &pb.IngestRequest{
 		WeekNumber: req.WeekNumber,
 		TopicName:  req.TopicName,
 		RawText:    req.RawText,
 		UserId:     userID,
+		ClassId:    classID,
+		ClassName:  className,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -443,8 +521,9 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		WeekNumber    int32 `json:"week_number"`
-		QuestionCount int32 `json:"question_count"`
+		WeekNumber    int32  `json:"week_number"`
+		QuestionCount int32  `json:"question_count"`
+		ClassID       string `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -453,9 +532,16 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := auth.GetUserID(r.Context())
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
 
 	// Daily Gating: Check if Quiz is unlocked
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID)
+	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
 	if !sessionState.QuizUnlocked {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusForbidden)
@@ -472,7 +558,7 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	// Calculate current syllabus week
 	var currentWeek int32 = 1
 	var courseStartDate string
-	if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID); ok {
+	if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
 		courseStartDate = sched.CourseStartDate
 		if courseStartDate == "" {
 			courseStartDate = time.Now().Format("2006-01-02")
@@ -487,15 +573,15 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 
 	// If they have already completed the current week, generate 'Maintenance Review' (-1)
 	if targetWeek == currentWeek {
-		completed, err := hasCompletedWeekQuiz(ctx, userID, int(currentWeek))
+		completed, err := hasCompletedWeekQuiz(ctx, userID, classID, int(currentWeek))
 		if err == nil && completed {
 			targetWeek = -1
-			log.Printf("[Study] User %s has already completed current week %d. Overriding to Maintenance Review.", userID, currentWeek)
+			log.Printf("[Study] User %s has already completed current week %d in class %s. Overriding to Maintenance Review.", userID, currentWeek, classID)
 		}
 	}
 
 	// Extract historically weak topics from BigQuery
-	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID)
+	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID, classID)
 	if err != nil {
 		log.Printf("[GenerateQuiz] Warning: Failed to fetch weak topics from BigQuery: %v", err)
 		weakTopics = []string{}
@@ -506,11 +592,18 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 		QuestionCount: req.QuestionCount,
 		UserId:        userID,
 		WeakTopics:    weakTopics,
+		ClassId:       classID,
 	}
 
 	resp, err := tutorClient.GenerateQuiz(ctx, grpcReq)
 	if err != nil {
 		log.Printf("[Error] GenerateQuiz gRPC failed: %v", err)
+		if strings.Contains(err.Error(), "NO_MATERIALS_FOUND") {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"code": "NO_MATERIALS_FOUND"})
+			return
+		}
 		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
@@ -529,11 +622,11 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(questions)
 }
 
-func getWeakTopicsFromBigQuery(ctx context.Context, userID string) ([]string, error) {
+func getWeakTopicsFromBigQuery(ctx context.Context, userID, classID string) ([]string, error) {
 	if bqClient == nil {
 		return nil, fmt.Errorf("BigQuery client is nil")
 	}
-	queryStr := fmt.Sprintf("SELECT DISTINCT week_number FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND score_percentage < 70", userID)
+	queryStr := fmt.Sprintf("SELECT DISTINCT week_number FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND class_id = '%s' AND score_percentage < 70", userID, classID)
 	q := bqClient.Query(queryStr)
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -556,14 +649,14 @@ func getWeakTopicsFromBigQuery(ctx context.Context, userID string) ([]string, er
 	return weakTopics, nil
 }
 
-func hasCompletedQuizToday(ctx context.Context, userID string) (bool, error) {
+func hasCompletedQuizToday(ctx context.Context, userID, classID string) (bool, error) {
 	if bqClient == nil {
 		return false, fmt.Errorf("BigQuery client is nil")
 	}
 	now := time.Now()
 	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
 	
-	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND timestamp >= TIMESTAMP('%s')", userID, todayStart)
+	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND class_id = '%s' AND timestamp >= TIMESTAMP('%s')", userID, classID, todayStart)
 	q := bqClient.Query(queryStr)
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -580,11 +673,11 @@ func hasCompletedQuizToday(ctx context.Context, userID string) (bool, error) {
 	return row.Count > 0, nil
 }
 
-func hasCompletedWeekQuiz(ctx context.Context, userID string, weekNum int) (bool, error) {
+func hasCompletedWeekQuiz(ctx context.Context, userID, classID string, weekNum int) (bool, error) {
 	if bqClient == nil {
 		return false, fmt.Errorf("BigQuery client is nil")
 	}
-	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND week_number = %d", userID, weekNum)
+	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND class_id = '%s' AND week_number = %d", userID, classID, weekNum)
 	q := bqClient.Query(queryStr)
 	it, err := q.Read(ctx)
 	if err != nil {
@@ -615,11 +708,16 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
 			return
 		}
-		sched, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, time.Now())
+		classID := r.URL.Query().Get("class_id")
+		if classID == "" {
+			classID = "default_class"
+		}
+		sched, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, classID, time.Now())
 		if !ok {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{
 				"user_id":           userID,
+				"class_id":          classID,
 				"preferred_days":    []int{},
 				"daily_pace":        0,
 				"current_streak":    0,
@@ -642,6 +740,8 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		DailyPace       int    `json:"daily_pace"`
 		CurrentStreak   int    `json:"current_streak"`
 		CourseStartDate string `json:"course_start_date"`
+		ClassID         string `json:"class_id"`
+		ClassName       string `json:"class_name"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -655,15 +755,25 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	classID := req.ClassID
+	if classID == "" {
+		classID = "default_class"
+	}
+
+	className := req.ClassName
+	if className == "" {
+		className = "Default Class"
+	}
+
 	courseStartDate := req.CourseStartDate
 	if courseStartDate == "" {
 		courseStartDate = time.Now().Format("2006-01-02")
 	}
 
-	sched, ok := auth.GlobalScheduleStore.GetSchedule(userID)
+	sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID)
 	isModified := false
 	if ok {
-		if !slicesEqual(sched.PreferredDays, req.PreferredDays) || sched.DailyPace != req.DailyPace || sched.CourseStartDate != courseStartDate {
+		if !slicesEqual(sched.PreferredDays, req.PreferredDays) || sched.DailyPace != req.DailyPace || sched.CourseStartDate != courseStartDate || (req.ClassName != "" && sched.ClassName != req.ClassName) {
 			isModified = true
 		}
 	}
@@ -683,6 +793,9 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		sched.PreferredDays = req.PreferredDays
 		sched.DailyPace = req.DailyPace
 		sched.CourseStartDate = courseStartDate
+		if req.ClassName != "" {
+			sched.ClassName = req.ClassName
+		}
 		sched.Modifications = append(sched.Modifications, now.Format(time.RFC3339))
 		err := auth.GlobalScheduleStore.SaveScheduleStruct(sched)
 		if err != nil {
@@ -690,7 +803,7 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		err := auth.GlobalScheduleStore.SaveSchedule(userID, req.PreferredDays, req.DailyPace, req.CurrentStreak, courseStartDate)
+		err := auth.GlobalScheduleStore.SaveSchedule(userID, classID, className, req.PreferredDays, req.DailyPace, req.CurrentStreak, courseStartDate)
 		if err != nil {
 			http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
 			return
@@ -701,6 +814,109 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"status":  "success",
 		"message": "Schedule settings saved successfully",
+	})
+}
+
+func listClassesHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	var list []auth.UserSchedule
+	schedules := auth.GlobalScheduleStore.GetAllSchedules()
+	for _, s := range schedules {
+		if s.UserID == userID {
+			updated, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, s.ClassID, time.Now())
+			if ok {
+				list = append(list, updated)
+			} else {
+				list = append(list, s)
+			}
+		}
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(list)
+}
+
+func checkTopicSufficiencyHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = r.URL.Query().Get("class_id")
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
+	weekStr := r.URL.Query().Get("week_number")
+	var weekNum int32 = 1
+	if weekStr != "" {
+		var wVal int
+		fmt.Sscanf(weekStr, "%d", &wVal)
+		weekNum = int32(wVal)
+	} else {
+		if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
+			courseStartDate := sched.CourseStartDate
+			if courseStartDate == "" {
+				courseStartDate = time.Now().Format("2006-01-02")
+			}
+			weekNum = int32(auth.CalculateCurrentSyllabusWeek(courseStartDate))
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.CheckTopicSufficiency(ctx, &pb.SufficiencyRequest{
+		UserId:     userID,
+		ClassId:    classID,
+		WeekNumber: weekNum,
+	})
+	if err != nil {
+		log.Printf("[Error] CheckTopicSufficiency gRPC failed: %v", err)
+		http.Error(w, "gRPC Call failed: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"insufficient_materials": resp.InsufficientMaterials,
+		"insufficient_topics":    resp.InsufficientTopics,
+		"all_topics":             resp.AllTopics,
 	})
 }
 
@@ -735,24 +951,29 @@ func runDailySchedulerCheck() {
 			continue
 		}
 
-		log.Printf("[SchedulerWorker] User %s is scheduled to study today. Checking completion...", sched.UserID)
+		classID := sched.ClassID
+		if classID == "" {
+			classID = "default_class"
+		}
 
-		completed, err := hasCompletedQuizToday(ctx, sched.UserID)
+		log.Printf("[SchedulerWorker] User %s is scheduled to study class %s today. Checking completion...", sched.UserID, classID)
+
+		completed, err := hasCompletedQuizToday(ctx, sched.UserID, classID)
 		if err != nil {
-			log.Printf("[SchedulerWorker] Warning: Failed to check BQ quiz completion for user %s: %v. Proceeding assuming not completed.", sched.UserID, err)
+			log.Printf("[SchedulerWorker] Warning: Failed to check BQ quiz completion for user %s, class %s: %v. Proceeding assuming not completed.", sched.UserID, classID, err)
 			completed = false
 		}
 
 		if completed {
-			log.Printf("[SchedulerWorker] User %s has already completed their study session today. Skipping.", sched.UserID)
+			log.Printf("[SchedulerWorker] User %s has already completed their study session today for class %s. Skipping.", sched.UserID, classID)
 			continue
 		}
 
-		log.Printf("[SchedulerWorker] User %s has NOT completed a session today. Scheduling Google Calendar event...", sched.UserID)
+		log.Printf("[SchedulerWorker] User %s has NOT completed a session today for class %s. Scheduling Google Calendar event...", sched.UserID, classID)
 
-		weakTopics, err := getWeakTopicsFromBigQuery(ctx, sched.UserID)
+		weakTopics, err := getWeakTopicsFromBigQuery(ctx, sched.UserID, classID)
 		if err != nil {
-			log.Printf("[SchedulerWorker] Warning: Failed to fetch weak topics for user %s: %v.", sched.UserID, err)
+			log.Printf("[SchedulerWorker] Warning: Failed to fetch weak topics for user %s, class %s: %v.", sched.UserID, classID, err)
 			weakTopics = []string{}
 		}
 
@@ -797,6 +1018,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	var req struct {
 		WeekNumber int              `json:"week_number"`
 		Questions  []QuestionChoice `json:"questions"`
+		ClassID    string           `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -818,12 +1040,21 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := auth.GetUserID(r.Context())
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
 	scorePercentage := (float64(correctAnswers) / float64(totalQuestions)) * 100.0
 	attemptID := uuid.New().String()
 
 	telemetry := &QuizAttemptTelemetry{
 		AttemptID:       attemptID,
 		UserID:          userID,
+		ClassID:         classID,
 		WeekNumber:      req.WeekNumber,
 		TotalQuestions:  totalQuestions,
 		CorrectAnswers:  correctAnswers,
@@ -831,67 +1062,11 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		Timestamp:       time.Now(),
 	}
 
-	// Streak logic: When a user completes a quiz, calculate the CurrentSyllabusWeek.
-	// If the quiz they just took is >= CurrentSyllabusWeek, evaluate the custom streak math.
-	if sched, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, time.Now()); ok {
-		startDate := sched.CourseStartDate
-		if startDate == "" {
-			startDate = time.Now().Format("2006-01-02")
-		}
-		currentWeek := auth.CalculateCurrentSyllabusWeek(startDate)
-		if req.WeekNumber >= currentWeek {
-			now := time.Now()
-			isPreferredDay := false
-			for _, d := range sched.PreferredDays {
-				if d == int(now.Weekday()) {
-					isPreferredDay = true
-					break
-				}
-			}
-
-			if isPreferredDay {
-				// Get previous preferred day
-				prevPrefDay := auth.GetPreviousPreferredDay(now, sched.PreferredDays)
-				
-				if sched.LastStudyDate == "" {
-					// First study day
-					sched.CurrentStreak = 1
-					sched.LastStudyDate = now.Format("2006-01-02")
-					auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-					log.Printf("[Streak] User %s daily streak set to 1 (first study day)", userID)
-				} else {
-					lastStudyTime, err := time.Parse("2006-01-02", sched.LastStudyDate)
-					if err != nil {
-						sched.CurrentStreak = 1
-						sched.LastStudyDate = now.Format("2006-01-02")
-						auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-						log.Printf("[Streak] User %s daily streak set to 1 (failed parsing last study date)", userID)
-					} else if auth.IsSameDay(lastStudyTime, now) {
-						// Already studied today. Do nothing to the streak.
-						log.Printf("[Streak] User %s daily streak kept at %d (already studied today)", userID, sched.CurrentStreak)
-					} else if auth.IsBeforeDay(lastStudyTime, prevPrefDay) {
-						// Missed previous preferred day -> broken streak
-						sched.CurrentStreak = 1
-						sched.LastStudyDate = now.Format("2006-01-02")
-						auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-						log.Printf("[Streak] User %s daily streak reset to 1 (missed previous preferred day %s)", userID, prevPrefDay.Format("2006-01-02"))
-					} else {
-						// Studied on or after previous preferred day
-						sched.CurrentStreak = sched.CurrentStreak + 1
-						sched.LastStudyDate = now.Format("2006-01-02")
-						auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-						log.Printf("[Streak] User %s daily streak incremented to %d (completed week %d >= current week %d)", userID, sched.CurrentStreak, req.WeekNumber, currentWeek)
-					}
-				}
-			} else {
-				// Wednesday is safely ignored. Do not change streak, but update LastStudyDate to today.
-				sched.LastStudyDate = now.Format("2006-01-02")
-				auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-				log.Printf("[Streak] User %s daily streak kept at %d (non-preferred day ignored, study recorded)", userID, sched.CurrentStreak)
-			}
-		} else {
-			log.Printf("[Streak] User %s daily streak NOT incremented (completed week %d < current week %d)", userID, req.WeekNumber, currentWeek)
-		}
+	var classStreak, globalStreak int
+	if updatedSched, ok := auth.GlobalScheduleStore.UpdateStreaks(userID, classID, req.WeekNumber, time.Now()); ok {
+		classStreak = updatedSched.ClassStreak
+		globalStreak = updatedSched.GlobalStreak
+		log.Printf("[Streak] User %s daily streak updated: class_streak=%d, global_streak=%d (completed week %d)", userID, classStreak, globalStreak, req.WeekNumber)
 	}
 
 	if bqTable != nil {
@@ -916,6 +1091,8 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		"total_questions": totalQuestions,
 		"percentage":      scorePercentage,
 		"confirmed":       true,
+		"class_streak":    classStreak,
+		"global_streak":   globalStreak,
 	})
 }
 
@@ -1162,8 +1339,9 @@ func cramSessionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		StartWeek int32 `json:"start_week"`
-		EndWeek   int32 `json:"end_week"`
+		StartWeek int32  `json:"start_week"`
+		EndWeek   int32  `json:"end_week"`
+		ClassID   string `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1172,11 +1350,19 @@ func cramSessionHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userID := auth.GetUserID(r.Context())
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
 	defer cancel()
 
 	// Extract weak topics
-	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID)
+	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID, classID)
 	if err != nil {
 		log.Printf("[Cram] Warning: Failed to fetch weak topics: %v", err)
 		weakTopics = []string{}
@@ -1187,6 +1373,7 @@ func cramSessionHandler(w http.ResponseWriter, r *http.Request) {
 		StartWeek:  req.StartWeek,
 		EndWeek:    req.EndWeek,
 		WeakTopics: weakTopics,
+		ClassId:    classID,
 	}
 
 	resp, err := tutorClient.GenerateCramSession(ctx, grpcReq)
@@ -1282,18 +1469,27 @@ func main() {
 	mux.HandleFunc("/api/v1/auth/register", registerHandler)
 	mux.HandleFunc("/api/v1/auth/login", loginHandler)
 	mux.HandleFunc("/api/v1/ingest", auth.JWTMiddleware(ingestMaterialHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/materials/upload", auth.JWTMiddleware(ingestMaterialHandler))
 	mux.HandleFunc("/api/v1/quiz", auth.JWTMiddleware(generateQuizHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/quiz", auth.JWTMiddleware(generateQuizHandler))
 	mux.HandleFunc("/api/v1/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
 	mux.HandleFunc("/api/v1/study/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/quiz/submit", auth.JWTMiddleware(submitQuizTelemetryHandler))
 	mux.HandleFunc("/api/v1/study/cram", auth.JWTMiddleware(cramSessionHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/cram", auth.JWTMiddleware(cramSessionHandler))
 	mux.HandleFunc("/api/v1/auth/google/login", auth.JWTMiddleware(googleLoginHandler))
 	mux.HandleFunc("/api/v1/auth/google/callback", auth.JWTMiddleware(googleCallbackHandler))
 	mux.HandleFunc("/api/v1/schedule/preferences", auth.JWTMiddleware(schedulePreferencesHandler))
 	mux.HandleFunc("/api/v1/user/config", auth.JWTMiddleware(userConfigHandler))
 	mux.HandleFunc("/api/v1/user/schedule-settings", auth.JWTMiddleware(userScheduleSettingsHandler))
 	mux.HandleFunc("/api/v1/study/today/state", auth.JWTMiddleware(getDailySessionStateHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/today/state", auth.JWTMiddleware(getDailySessionStateHandler))
 	mux.HandleFunc("/api/v1/study/exercise/submit", auth.JWTMiddleware(submitExerciseHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/exercise/submit", auth.JWTMiddleware(submitExerciseHandler))
 	mux.HandleFunc("/api/v1/study/lesson", auth.JWTMiddleware(generateLessonHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/lesson", auth.JWTMiddleware(generateLessonHandler))
+	mux.HandleFunc("/api/v1/classes", auth.JWTMiddleware(listClassesHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/sufficiency", auth.JWTMiddleware(checkTopicSufficiencyHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", mux); err != nil {
@@ -1338,9 +1534,51 @@ func getDailySessionStateHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	state := auth.GlobalDailySessionStore.GetSessionState(userID)
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = r.URL.Query().Get("class_id")
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
+	state := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+
+	var currentWeek int32 = 1
+	var courseStartDate string
+	if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
+		courseStartDate = sched.CourseStartDate
+		if courseStartDate == "" {
+			courseStartDate = time.Now().Format("2006-01-02")
+		}
+		currentWeek = int32(auth.CalculateCurrentSyllabusWeek(courseStartDate))
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	insufficientMaterials := false
+	suffResp, err := tutorClient.CheckTopicSufficiency(ctx, &pb.SufficiencyRequest{
+		UserId:     userID,
+		ClassId:    classID,
+		WeekNumber: currentWeek,
+	})
+	if err == nil && suffResp != nil {
+		insufficientMaterials = suffResp.InsufficientMaterials
+	} else {
+		log.Printf("[getDailySessionStateHandler] Warning: CheckTopicSufficiency failed: %v", err)
+	}
+
 	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(state)
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"user_id":                state.UserID,
+		"class_id":               state.ClassID,
+		"date":                   state.Date,
+		"lesson_completed":       state.LessonCompleted,
+		"exercises_completed":    state.ExercisesCompleted,
+		"quiz_unlocked":          state.QuizUnlocked,
+		"insufficient_materials": insufficientMaterials,
+	})
 }
 
 func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
@@ -1371,11 +1609,20 @@ func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req struct {
 		Answers []ExerciseAnswer `json:"answers"`
+		ClassID string           `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		http.Error(w, "Invalid request body", http.StatusBadRequest)
 		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
 	}
 
 	totalQuestions := len(req.Answers)
@@ -1394,7 +1641,7 @@ func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	scorePercentage := (float64(correctCount) / float64(totalQuestions)) * 100.0
 	passed := scorePercentage >= 60.0
 
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID)
+	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
 	if passed {
 		sessionState.ExercisesCompleted = true
 		sessionState.QuizUnlocked = true
@@ -1425,7 +1672,8 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		WeekNumber int32 `json:"week_number"`
+		WeekNumber int32  `json:"week_number"`
+		ClassID    string `json:"class_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -1439,6 +1687,14 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = req.ClassID
+	}
+	if classID == "" {
+		classID = "default_class"
+	}
+
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
@@ -1446,7 +1702,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	if req.WeekNumber == 0 {
 		var currentWeek int32 = 1
 		var courseStartDate string
-		if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID); ok {
+		if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
 			courseStartDate = sched.CourseStartDate
 			if courseStartDate == "" {
 				courseStartDate = time.Now().Format("2006-01-02")
@@ -1457,7 +1713,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Extract weak topics from BigQuery
-	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID)
+	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID, classID)
 	if err != nil {
 		log.Printf("[Lesson] Warning: Failed to fetch weak topics from BigQuery: %v", err)
 		weakTopics = []string{}
@@ -1468,17 +1724,24 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 		WeekNumber: req.WeekNumber,
 		UserId:     userID,
 		WeakTopics: weakTopics,
+		ClassId:    classID,
 	}
 
 	resp, err := tutorClient.GenerateLessonAndExercises(ctx, grpcReq)
 	if err != nil {
 		log.Printf("[Error] GenerateLessonAndExercises gRPC failed: %v", err)
+		if strings.Contains(err.Error(), "NO_MATERIALS_FOUND") {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusNotFound)
+			json.NewEncoder(w).Encode(map[string]string{"code": "NO_MATERIALS_FOUND"})
+			return
+		}
 		http.Error(w, "Failed to generate lesson: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
 	// Set LessonCompleted = true
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID)
+	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
 	sessionState.LessonCompleted = true
 	auth.GlobalDailySessionStore.SaveSessionState(sessionState)
 
@@ -1502,8 +1765,9 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	jsonResponse := map[string]interface{}{
-		"lesson_markdown": resp.LessonMarkdown,
-		"exercises":       exercises,
+		"lesson_markdown":        resp.LessonMarkdown,
+		"exercises":              exercises,
+		"insufficient_materials": resp.InsufficientMaterials,
 	}
 
 	w.Header().Set("Content-Type", "application/json")

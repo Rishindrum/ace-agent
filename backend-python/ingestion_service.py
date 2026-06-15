@@ -56,13 +56,13 @@ def resolve_topic(raw_text: str, topic_name: str) -> str:
     
     return topic_name.strip()
 
-def ingest_material(content: str, topic_name: str, week_number: int, user_id: str) -> bool:
+def ingest_material(content: str, topic_name: str, week_number: int, user_id: str, class_id: str, class_name: str) -> bool:
     """
     Ingests text content for a specific topic and week:
     1. Resolves the topic name to a standardized string using Gemini.
     2. Chunks the text content.
     3. Computes and appends the vector embeddings to the NumPy vector store.
-    4. Merges the Week and Topic nodes in Neo4j, ensuring they are connected and isolated per user.
+    4. Merges the Class and Week and Topic nodes in Neo4j, ensuring they are connected and isolated per user.
     5. Creates a new Material node and links it using a SOURCE_MATERIAL_FOR edge.
     
     Args:
@@ -70,11 +70,13 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
         topic_name: Name of the syllabus Topic (e.g., "Linear Algebra").
         week_number: The week number (e.g., 1).
         user_id: Unique user identifier for database isolation.
+        class_id: The identifier for the class.
+        class_name: The name of the class.
         
     Returns:
         bool: True if ingestion was successful, False otherwise.
     """
-    print(f"[IngestionService] Starting ingestion for topic '{topic_name}' under Week '{week_number}' for user '{user_id}'...")
+    print(f"[IngestionService] Starting ingestion for topic '{topic_name}' under Week '{week_number}' for user '{user_id}' and class '{class_id}'...")
     
     # 1. LLM Resolution step to get a standardized topic string
     resolved_topic = resolve_topic(content, topic_name)
@@ -91,7 +93,7 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
 
     # 4. Add chunks to our custom NumPy Vector Store configuration
     try:
-        vector_store.append_documents(chunks)
+        vector_store.append_documents(user_id, class_id, chunks)
     except Exception as e:
         print(f"[IngestionService] Embedding/Vector Store update failed: {e}")
         return False
@@ -102,18 +104,23 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
         driver = get_driver()
         material_name = f"Material_{resolved_topic.replace(' ', '_')}_{week_name.replace(' ', '_')}_{int(time.time())}"
         
-        # Cypher: MERGE User, Week, Topic nodes, connect them, then CREATE Material node
+        # Cypher: MERGE User, Class, Week, Topic nodes, connect them, then CREATE Material node
         query = """
         MERGE (u:User {id: $user_id})
-        MERGE (w:Week {number: $week_number, user_id: $user_id})
+        MERGE (c:Class {id: $class_id})
+        ON CREATE SET c.name = $class_name
+        
+        MERGE (u)-[:ENROLLED_IN]->(c)
+        
+        MERGE (w:Week {number: $week_number, class_id: $class_id, user_id: $user_id})
         ON CREATE SET w.name = $week_name
         
-        MERGE (u)-[:HAS_SYLLABUS]->(w)
+        MERGE (c)-[:HAS_SYLLABUS]->(w)
         
-        MERGE (t:Topic {name: $topic_name, user_id: $user_id})
+        MERGE (t:Topic {name: $topic_name, class_id: $class_id, user_id: $user_id})
         MERGE (w)-[:SCHEDULED_FOR]->(t)
         
-        CREATE (m:Material {name: $material_name, user_id: $user_id})
+        CREATE (m:Material {name: $material_name, class_id: $class_id, user_id: $user_id})
         SET m.content = $content,
             m.chunks = $chunks,
             m.created_at = timestamp()
@@ -126,6 +133,8 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
             result = session.run(
                 query,
                 user_id=user_id,
+                class_id=class_id,
+                class_name=class_name,
                 week_name=week_name,
                 week_number=week_num,
                 topic_name=resolved_topic,

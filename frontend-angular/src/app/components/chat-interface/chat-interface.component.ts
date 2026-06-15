@@ -1,4 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 import { MatIconModule } from '@angular/material/icon'; 
@@ -19,9 +19,12 @@ interface ChatMessage {
   styleUrls: ['./chat-interface.component.scss']
 })
 export class ChatInterfaceComponent implements OnInit, OnDestroy {
+  @Input() classId: string = 'default_class';
+
   messages: ChatMessage[] = [];
   newMessage: string = '';
   private socket: WebSocket | null = null;
+
 
   // 2. INJECT THE SERVICE
   constructor(private tutorService: ApiService) {}

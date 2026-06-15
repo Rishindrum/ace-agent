@@ -10,12 +10,16 @@ import (
 
 type UserSchedule struct {
 	UserID          string   `json:"user_id"`
+	ClassID         string   `json:"class_id"`
+	ClassName       string   `json:"class_name"`
 	PreferredDays   []int    `json:"preferred_days"`
 	DailyPace       int      `json:"daily_pace"`
 	CurrentStreak   int      `json:"current_streak"`
 	CourseStartDate string   `json:"course_start_date"`
 	LastStudyDate   string   `json:"last_study_date"`
 	Modifications   []string `json:"modifications"`
+	ClassStreak     int      `json:"class_streak"`
+	GlobalStreak    int      `json:"global_streak"`
 }
 
 type ScheduleStore struct {
@@ -59,28 +63,42 @@ func (s *ScheduleStore) save() {
 	json.NewEncoder(file).Encode(s.schedules)
 }
 
-func (s *ScheduleStore) SaveSchedule(userID string, preferredDays []int, dailyPace int, currentStreak int, courseStartDate string) error {
+func (s *ScheduleStore) SaveSchedule(userID, classID, className string, preferredDays []int, dailyPace int, currentStreak int, courseStartDate string) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	existing, ok := s.schedules[userID]
+	key := userID + "_" + classID
+	existing, ok := s.schedules[key]
 	lastStudyDate := ""
 	var mods []string
+	globalStreak := 0
 	if ok {
 		lastStudyDate = existing.LastStudyDate
 		mods = existing.Modifications
+		globalStreak = existing.GlobalStreak
+	} else {
+		for _, v := range s.schedules {
+			if v.UserID == userID {
+				globalStreak = v.GlobalStreak
+				break
+			}
+		}
 	}
 
 	sched := UserSchedule{
 		UserID:          userID,
+		ClassID:         classID,
+		ClassName:       className,
 		PreferredDays:   preferredDays,
 		DailyPace:       dailyPace,
 		CurrentStreak:   currentStreak,
+		ClassStreak:     currentStreak,
+		GlobalStreak:    globalStreak,
 		CourseStartDate: courseStartDate,
 		LastStudyDate:   lastStudyDate,
 		Modifications:   mods,
 	}
-	s.schedules[userID] = sched
+	s.schedules[key] = sched
 	s.save()
 	return nil
 }
@@ -89,49 +107,123 @@ func (s *ScheduleStore) SaveScheduleStruct(sched UserSchedule) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.schedules[sched.UserID] = sched
+	key := sched.UserID + "_" + sched.ClassID
+	sched.ClassStreak = sched.CurrentStreak
+	s.schedules[key] = sched
 	s.save()
 	return nil
 }
 
-func (s *ScheduleStore) GetSchedule(userID string) (UserSchedule, bool) {
+func (s *ScheduleStore) GetSchedule(userID, classID string) (UserSchedule, bool) {
 	s.mu.RLock()
 	defer s.mu.RUnlock()
-	sched, ok := s.schedules[userID]
+	key := userID + "_" + classID
+	sched, ok := s.schedules[key]
 	return sched, ok
 }
 
-func (s *ScheduleStore) GetUpdatedSchedule(userID string, now time.Time) (UserSchedule, bool) {
+func (s *ScheduleStore) GetUpdatedSchedule(userID, classID string, now time.Time) (UserSchedule, bool) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	sched, ok := s.schedules[userID]
+	key := userID + "_" + classID
+	sched, ok := s.schedules[key]
 	if !ok {
 		return sched, false
 	}
 
+	classBroken := false
 	if sched.CurrentStreak > 0 {
 		prevPrefDay := GetPreviousPreferredDay(now, sched.PreferredDays)
-		broken := false
 		if sched.LastStudyDate == "" {
-			broken = true
+			classBroken = true
 		} else {
 			lastStudyTime, err := time.Parse("2006-01-02", sched.LastStudyDate)
 			if err != nil {
-				broken = true
+				classBroken = true
 			} else if IsBeforeDay(lastStudyTime, prevPrefDay) {
-				broken = true
+				classBroken = true
 			}
 		}
 
-		if broken {
+		if classBroken {
 			sched.CurrentStreak = 0
-			s.schedules[userID] = sched
-			s.save()
+			sched.ClassStreak = 0
+			s.schedules[key] = sched
 		}
 	}
 
-	return sched, true
+	var userScheds []UserSchedule
+	for _, v := range s.schedules {
+		if v.UserID == userID {
+			userScheds = append(userScheds, v)
+		}
+	}
+
+	globalPreferredDays := make(map[int]bool)
+	for _, us := range userScheds {
+		for _, d := range us.PreferredDays {
+			globalPreferredDays[d] = true
+		}
+	}
+
+	getPrevGlobalPrefDay := func() time.Time {
+		if len(globalPreferredDays) == 0 {
+			return now.AddDate(0, 0, -1)
+		}
+		for i := 1; i <= 7; i++ {
+			prev := now.AddDate(0, 0, -i)
+			if globalPreferredDays[int(prev.Weekday())] {
+				return prev
+			}
+		}
+		return now.AddDate(0, 0, -1)
+	}
+
+	prevGlobalPrefDay := getPrevGlobalPrefDay()
+
+	maxLastStudyDate := ""
+	for _, us := range userScheds {
+		if us.LastStudyDate != "" {
+			if maxLastStudyDate == "" || us.LastStudyDate > maxLastStudyDate {
+				maxLastStudyDate = us.LastStudyDate
+			}
+		}
+	}
+
+	globalBroken := false
+	currentGlobalStreak := 0
+	for _, us := range userScheds {
+		if us.GlobalStreak > currentGlobalStreak {
+			currentGlobalStreak = us.GlobalStreak
+		}
+	}
+
+	if currentGlobalStreak > 0 {
+		if maxLastStudyDate == "" {
+			globalBroken = true
+		} else {
+			lastGlobalStudyTime, err := time.Parse("2006-01-02", maxLastStudyDate)
+			if err != nil {
+				globalBroken = true
+			} else if IsBeforeDay(lastGlobalStudyTime, prevGlobalPrefDay) {
+				globalBroken = true
+			}
+		}
+
+		if globalBroken {
+			for k, v := range s.schedules {
+				if v.UserID == userID {
+					v.GlobalStreak = 0
+					s.schedules[k] = v
+				}
+			}
+			sched.GlobalStreak = 0
+		}
+	}
+
+	s.save()
+	return s.schedules[key], true
 }
 
 func (s *ScheduleStore) GetAllSchedules() []UserSchedule {
@@ -227,4 +319,145 @@ func CanModifySchedule(sched UserSchedule, now time.Time) (bool, string) {
 	}
 
 	return true, ""
+}
+
+func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now time.Time) (UserSchedule, bool) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	key := userID + "_" + classID
+	sched, ok := s.schedules[key]
+	if !ok {
+		return sched, false
+	}
+
+	var userScheds []UserSchedule
+	for _, v := range s.schedules {
+		if v.UserID == userID {
+			userScheds = append(userScheds, v)
+		}
+	}
+
+	startDate := sched.CourseStartDate
+	if startDate == "" {
+		startDate = now.Format("2006-01-02")
+	}
+	currentWeek := CalculateCurrentSyllabusWeek(startDate)
+
+	isPreferredDay := false
+	for _, d := range sched.PreferredDays {
+		if d == int(now.Weekday()) {
+			isPreferredDay = true
+			break
+		}
+	}
+
+	todayStr := now.Format("2006-01-02")
+
+	alreadyStudiedTodayClass := (sched.LastStudyDate == todayStr)
+
+	alreadyStudiedTodayGlobal := false
+	maxLastStudyDate := ""
+	for _, us := range userScheds {
+		if us.LastStudyDate == todayStr {
+			alreadyStudiedTodayGlobal = true
+		}
+		if us.LastStudyDate != "" {
+			if maxLastStudyDate == "" || us.LastStudyDate > maxLastStudyDate {
+				maxLastStudyDate = us.LastStudyDate
+			}
+		}
+	}
+
+	if quizWeek >= currentWeek {
+		if isPreferredDay {
+			prevPrefDay := GetPreviousPreferredDay(now, sched.PreferredDays)
+			if sched.LastStudyDate == "" {
+				sched.CurrentStreak = 1
+				sched.ClassStreak = 1
+				sched.LastStudyDate = todayStr
+			} else {
+				lastStudyTime, err := time.Parse("2006-01-02", sched.LastStudyDate)
+				if err != nil {
+					sched.CurrentStreak = 1
+					sched.ClassStreak = 1
+					sched.LastStudyDate = todayStr
+				} else if IsSameDay(lastStudyTime, now) {
+					// Already studied today. Do nothing to class streak.
+				} else if IsBeforeDay(lastStudyTime, prevPrefDay) {
+					sched.CurrentStreak = 1
+					sched.ClassStreak = 1
+					sched.LastStudyDate = todayStr
+				} else {
+					sched.CurrentStreak = sched.CurrentStreak + 1
+					sched.ClassStreak = sched.CurrentStreak
+					sched.LastStudyDate = todayStr
+				}
+			}
+		} else {
+			sched.LastStudyDate = todayStr
+		}
+	}
+
+	globalPreferredDays := make(map[int]bool)
+	for _, us := range userScheds {
+		for _, d := range us.PreferredDays {
+			globalPreferredDays[d] = true
+		}
+	}
+
+	getPrevGlobalPrefDay := func() time.Time {
+		if len(globalPreferredDays) == 0 {
+			return now.AddDate(0, 0, -1)
+		}
+		for i := 1; i <= 7; i++ {
+			prev := now.AddDate(0, 0, -i)
+			if globalPreferredDays[int(prev.Weekday())] {
+				return prev
+			}
+		}
+		return now.AddDate(0, 0, -1)
+	}
+
+	prevGlobalPrefDay := getPrevGlobalPrefDay()
+
+	currentGlobalStreak := 0
+	for _, us := range userScheds {
+		if us.GlobalStreak > currentGlobalStreak {
+			currentGlobalStreak = us.GlobalStreak
+		}
+	}
+
+	newGlobalStreak := currentGlobalStreak
+
+	if quizWeek >= currentWeek && isPreferredDay && !alreadyStudiedTodayClass {
+		if !alreadyStudiedTodayGlobal {
+			if maxLastStudyDate == "" {
+				newGlobalStreak = 1
+			} else {
+				lastGlobalStudyTime, err := time.Parse("2006-01-02", maxLastStudyDate)
+				if err != nil {
+					newGlobalStreak = 1
+				} else if IsBeforeDay(lastGlobalStudyTime, prevGlobalPrefDay) {
+					newGlobalStreak = 1
+				} else {
+					newGlobalStreak = currentGlobalStreak + 1
+				}
+			}
+		}
+	}
+
+	sched.GlobalStreak = newGlobalStreak
+	sched.ClassStreak = sched.CurrentStreak
+	s.schedules[key] = sched
+
+	for k, v := range s.schedules {
+		if v.UserID == userID {
+			v.GlobalStreak = newGlobalStreak
+			s.schedules[k] = v
+		}
+	}
+
+	s.save()
+	return s.schedules[key], true
 }

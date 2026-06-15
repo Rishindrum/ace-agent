@@ -42,11 +42,7 @@ client = genai.Client(api_key=GEMINI_API_KEY)
 
 
 class PersistentVectorStore:
-    def __init__(self, storage_file="ace_brain.pkl"):
-        self.storage_file = storage_file
-        self.documents = []
-        self.vectors = None
-
+    def __init__(self):
         try:
             self.storage_client = storage.Client()
             self.bucket = self.storage_client.bucket(GCS_BUCKET_NAME)
@@ -55,12 +51,59 @@ class PersistentVectorStore:
             print(f"[VectorStore] WARNING: GCS connection failed. Running in local-only mode. Error: {e}")
             self.bucket = None
 
-        self.load() # Try to load existing memory on startup
+    def _get_filename(self, user_id: str, class_id: str) -> str:
+        u = user_id if user_id else "default_user"
+        c = class_id if class_id else "default_class"
+        return f"{u}_{c}_vectors.pkl"
 
-    def add_documents(self, chunks):
-        self.documents = chunks
-        print(f"[VectorStore] Embedding {len(chunks)} chunks (this may take a moment)...")
+    def _load_state(self, user_id: str, class_id: str):
+        filename = self._get_filename(user_id, class_id)
+        documents = []
+        vectors = None
+
+        # Try to download from Cloud first
+        if self.bucket:
+            try:
+                blob = self.bucket.blob(f"indices/{filename}")
+                if blob.exists():
+                    print(f"[VectorStore] Found brain in Cloud for {user_id}/{class_id}! Downloading...")
+                    blob.download_to_filename(filename)
+            except Exception as e:
+                print(f"[VectorStore] GCS Download failed for {filename}: {e}")
+
+        # Try to load from local disk
+        if os.path.exists(filename):
+            try:
+                with open(filename, 'rb') as f:
+                    data = pickle.load(f)
+                    documents = data.get('docs', [])
+                    vectors = data.get('vecs', None)
+                print(f"[VectorStore] Loaded {len(documents)} chunks from disk for {user_id}/{class_id}.")
+            except Exception as e:
+                print(f"[VectorStore] Could not load memory from {filename}: {e}")
         
+        return documents, vectors
+
+    def _save_state(self, user_id: str, class_id: str, documents, vectors):
+        filename = self._get_filename(user_id, class_id)
+        # 1. Save to local disk
+        try:
+            with open(filename, 'wb') as f:
+                pickle.dump({'docs': documents, 'vecs': vectors}, f)
+        except Exception as e:
+            print(f"[VectorStore] Disk Save Failed for {filename}: {e}")
+
+        # 2. Upload to GCS
+        if self.bucket:
+            try:
+                blob = self.bucket.blob(f"indices/{filename}")
+                blob.upload_from_filename(filename)
+                print(f"[VectorStore] SUCCESSFULLY UPLOADED brain to GCS: indices/{filename}")
+            except Exception as e:
+                print(f"[VectorStore] GCS Upload Failed for {filename}: {e}")
+
+    def add_documents(self, user_id: str, class_id: str, chunks):
+        print(f"[VectorStore] Embedding {len(chunks)} chunks for {user_id}/{class_id}...")
         try:
             # Create Embeddings (with gemini)
             result = client.models.embed_content(
@@ -68,20 +111,20 @@ class PersistentVectorStore:
                 contents=chunks,
                 config={'output_dimensionality': 768}
             )
-            self.vectors = np.array([e.values for e in result.embeddings])
+            vectors = np.array([e.values for e in result.embeddings])
             
             # SAVE to disk and cloud
-            self.save()
-            
+            self._save_state(user_id, class_id, chunks, vectors)
         except Exception as e:
             print(f"[VectorStore] Embedding Error: {e}")
 
-    def append_documents(self, chunks):
-        """Appends and embeds new documents to the vector store incrementally."""
+    def append_documents(self, user_id: str, class_id: str, chunks):
         if not chunks:
             return
-        print(f"[VectorStore] Appending {len(chunks)} chunks to vector store...")
+        print(f"[VectorStore] Appending {len(chunks)} chunks to vector store for {user_id}/{class_id}...")
         try:
+            documents, vectors = self._load_state(user_id, class_id)
+            
             # Create Embeddings for new chunks (with gemini)
             result = client.models.embed_content(
                 model="gemini-embedding-001",
@@ -91,24 +134,24 @@ class PersistentVectorStore:
             new_vectors = np.array([e.values for e in result.embeddings])
             
             # Append documents
-            self.documents.extend(chunks)
+            documents.extend(chunks)
             
             # Concatenate vectors
-            if self.vectors is None:
-                self.vectors = new_vectors
+            if vectors is None:
+                vectors = new_vectors
             else:
-                self.vectors = np.vstack([self.vectors, new_vectors])
+                vectors = np.vstack([vectors, new_vectors])
             
             # SAVE to disk and cloud
-            self.save()
-            print(f"[VectorStore] Successfully appended and saved. Total documents: {len(self.documents)}")
+            self._save_state(user_id, class_id, documents, vectors)
+            print(f"[VectorStore] Successfully appended and saved. Total documents: {len(documents)}")
         except Exception as e:
             print(f"[VectorStore] Append Embedding Error: {e}")
 
-
-    def search(self, query, top_k=3):
-        if self.vectors is None or len(self.documents) == 0:
-            print("[VectorStore] Memory is empty! Did you upload a PDF?")
+    def search(self, user_id: str, class_id: str, query, top_k=3):
+        documents, vectors = self._load_state(user_id, class_id)
+        if vectors is None or len(documents) == 0:
+            print(f"[VectorStore] Memory is empty for {user_id}/{class_id}! Did you upload a PDF?")
             return []
 
         # Embed query
@@ -120,51 +163,12 @@ class PersistentVectorStore:
         query_vector = np.array([q_result.embeddings[0].values])
 
         # Calculate Similarity
-        similarities = cosine_similarity(query_vector, self.vectors)[0]
+        similarities = cosine_similarity(query_vector, vectors)[0]
         
         # Get top results
         top_indices = similarities.argsort()[-top_k:][::-1]
-        results = [self.documents[idx] for idx in top_indices]
+        results = [documents[idx] for idx in top_indices]
         return results
-
-    def save(self):
-        """Saves the current state to a file"""
-        with open(self.storage_file, 'wb') as f:
-            pickle.dump({'docs': self.documents, 'vecs': self.vectors}, f)
-
-        # 2. Upload to GCS
-        if self.bucket:
-            try:
-                blob = self.bucket.blob(f"indices/{self.storage_file}")
-                blob.upload_from_filename(self.storage_file)
-                print(f"[VectorStore] SUCCESSFULLY UPLOADED brain to GCS: indices/{self.storage_file}")
-            except Exception as e:
-                print(f"[VectorStore] GCS Upload Failed: {e}")
-
-    def load(self):
-        """Loads state from a file if it exists"""
-        loaded = False
-
-        # Get from cloud
-        if self.bucket:
-            try:
-                blob = self.bucket.blob(f"indices/{self.storage_file}")
-                if blob.exists():
-                    print("[VectorStore] Found brain in Cloud! Downloading...")
-                    blob.download_to_filename(self.storage_file)
-                    loaded = True
-            except Exception as e:
-                print(f"[VectorStore] GCS Download failed: {e}")
-
-        if os.path.exists(self.storage_file):
-            try:
-                with open(self.storage_file, 'rb') as f:
-                    data = pickle.load(f)
-                    self.documents = data['docs']
-                    self.vectors = data['vecs']
-                print(f"[VectorStore] Loaded {len(self.documents)} chunks from disk.")
-            except Exception as e:
-                print(f"[VectorStore] Could not load memory: {e}")
 
 # Initialize the store
 vector_store = PersistentVectorStore()
@@ -252,7 +256,10 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return {"passed": True, "reasoning": f"Judge error: {e}"}
 
     def ProcessSyllabus(self, request, context):
-        print(f"[Python] Processing syllabus: {request.file_name}")
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        class_name = request.class_name if request.class_name else "Default Class"
+        print(f"[Python] Processing syllabus for class {class_name} ({class_id}): {request.file_name}")
         
         # 1. READ PDF
         try:
@@ -270,7 +277,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         chunks = [full_text[i:i+1000] for i in range(0, len(full_text), 1000)]
         
         # Store in our custom "ScaNN-style" store
-        vector_store.add_documents(chunks)
+        vector_store.add_documents(user_id, class_id, chunks)
 
         # 3. EXTRACT GRAPH
         print("[Python] Asking Gemini to extract graph...")
@@ -302,7 +309,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 
                 # Write to Neo4j
                 with self.driver.session() as session:
-                    session.execute_write(self._create_dynamic_nodes, request.file_name, concepts)
+                    session.execute_write(self._create_dynamic_nodes, user_id, class_id, class_name, concepts)
             except Exception as e:
                 print(f"[Python] Graph Logic Error: {e}")
         else:
@@ -315,7 +322,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             graph_json=json.dumps(concepts)
         )
 
-    def _query_graph_context(self, user_text):
+    def _query_graph_context(self, user_id, class_id, user_text):
         """
         Searches the Knowledge Graph for topics mentioned in the user's text.
         Returns a string describing the relationships.
@@ -327,21 +334,21 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             # Cypher Query: Find any Topic node whose name is mentioned in the User's text
             # We use (?i) for case-insensitive matching
             query = """
-            MATCH (n:Topic)
+            MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:COVERS]->(n:Topic {user_id: $user_id, class_id: $class_id})
             WHERE toLower($text) CONTAINS toLower(n.name)
             
             // Get things pointing TO this node (Prerequisites)
-            OPTIONAL MATCH (p)-[:PREREQUISITE_TO]->(n)
+            OPTIONAL MATCH (p:Topic {user_id: $user_id, class_id: $class_id})-[:PREREQUISITE_TO]->(n)
             
             // Get things this node points TO (Future topics)
-            OPTIONAL MATCH (n)-[:PREREQUISITE_TO]->(f)
+            OPTIONAL MATCH (n)-[:PREREQUISITE_TO]->(f:Topic {user_id: $user_id, class_id: $class_id})
             
             RETURN n.name as topic, 
                    collect(DISTINCT p.name) as prereqs, 
                    collect(DISTINCT f.name) as future
             LIMIT 3
             """
-            result = session.run(query, text=user_text)
+            result = session.run(query, user_id=user_id, class_id=class_id, text=user_text)
             
             for record in result:
                 topic = record['topic']
@@ -360,18 +367,20 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
 
     # --- UPDATED: Hybrid Chat ---
     def Chat(self, request, context):
-        print(f"[Python] Chat Question: {request.message}")
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] Chat Question for {user_id}/{class_id}: {request.message}")
         
         # SOURCE 1: Vector Search (The "Index")
         # Finds paragraphs from the PDF text
-        relevant_chunks = vector_store.search(request.message)
+        relevant_chunks = vector_store.search(user_id, class_id, request.message)
         vector_text = "\n\n".join(relevant_chunks)
         if not vector_text:
             vector_text = "No direct text matches found."
 
         # SOURCE 2: Graph Search (The "Table of Contents")
         # Finds relationships from Neo4j
-        graph_text = self._query_graph_context(request.message)
+        graph_text = self._query_graph_context(user_id, class_id, request.message)
         if not graph_text:
             graph_text = "No relevant topics found in the graph."
 
@@ -438,9 +447,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         return ace_pb2.ChatResponse(response="I'm sorry, I was unable to generate a factually accurate response after multiple attempts. Please try rephrasing your question.")
 
     def SubmitQuizResult(self, request, context):
-        print(f"[Python] SubmitQuizResult for user {request.user_id} on topic {request.topic_name} with score {request.score}")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] SubmitQuizResult for user {request.user_id} on topic {request.topic_name} with score {request.score} in class {class_id}")
         success = analytical_memory.write_quiz_score(
             user_id=request.user_id,
+            class_id=class_id,
             topic_name=request.topic_name,
             score=request.score
         )
@@ -450,13 +461,15 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.QuizResultResponse(success=False, message="Failed to store quiz result in BigQuery.")
 
     def GetQuizScores(self, request, context):
-        print(f"[Python] GetQuizScores requested for user {request.user_id}")
-        records = analytical_memory.read_quiz_scores(user_id=request.user_id)
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GetQuizScores requested for user {request.user_id} and class {class_id}")
+        records = analytical_memory.read_quiz_scores(user_id=request.user_id, class_id=class_id)
         
         scores_pb = []
         for r in records:
             scores_pb.append(ace_pb2.QuizScoreRecord(
                 user_id=r["user_id"],
+                class_id=r.get("class_id", class_id),
                 topic_name=r["topic_name"],
                 score=r["score"],
                 timestamp=r["timestamp"]
@@ -469,7 +482,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         )
 
     def GenerateAdaptiveQuiz(self, request, context):
-        print(f"[Python] GenerateAdaptiveQuiz for user {request.user_id} and syllabus {request.syllabus_name}")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GenerateAdaptiveQuiz for user {request.user_id} and class {class_id}")
         
         # 1. Fetch topics covered by this syllabus from Neo4j
         topics = []
@@ -477,11 +491,10 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             try:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (s:Syllabus)-[:COVERS]->(t:Topic)
-                    WHERE toLower(s.name) = toLower($syllabus_name)
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:COVERS]->(t:Topic {user_id: $user_id, class_id: $class_id})
                     RETURN t.name as topic
                     """
-                    result = session.run(query, syllabus_name=request.syllabus_name)
+                    result = session.run(query, user_id=request.user_id, class_id=class_id)
                     topics = [record["topic"] for record in result]
             except Exception as e:
                 print(f"[Python] Error fetching topics from Neo4j: {e}")
@@ -489,7 +502,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         # 2. Fetch user's performance history from BigQuery
         performance_history = []
         try:
-            performance_history = analytical_memory.read_quiz_scores(request.user_id)
+            performance_history = analytical_memory.read_quiz_scores(request.user_id, class_id)
         except Exception as e:
             print(f"[Python] Error fetching performance history: {e}")
 
@@ -554,14 +567,18 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         return ace_pb2.AdaptiveQuizResponse(quiz_json=quiz_json)
 
     def IngestMaterial(self, request, context):
-        print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}' for user '{request.user_id}'...")
+        class_id = request.class_id if request.class_id else "default_class"
+        class_name = request.class_name if request.class_name else "Default Class"
+        print(f"[Python] IngestMaterial for topic '{request.topic_name}' under week '{request.week_number}' for user '{request.user_id}' and class '{class_id}'...")
         try:
             import ingestion_service
             success = ingestion_service.ingest_material(
                 content=request.raw_text,
                 topic_name=request.topic_name,
                 week_number=str(request.week_number),
-                user_id=request.user_id
+                user_id=request.user_id,
+                class_id=class_id,
+                class_name=class_name
             )
             if success:
                 return ace_pb2.IngestResponse(success=True, message="Material successfully ingested and embedded.")
@@ -573,7 +590,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             
     def GenerateQuiz(self, request, context):
         weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
-        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', weak topics {weak_topics_list}...")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', class '{class_id}', weak topics {weak_topics_list}...")
         try:
             topic_names = []
             chunks = []
@@ -588,24 +606,24 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             # Fallback: review all course concepts if no weak topics are recorded yet
                             print(f"[Python] No weak topics found. Falling back to all concepts.")
                             query = """
-                            MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                            MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                             RETURN t.name AS topic_name, m.chunks AS chunks
                             """
-                            result = session.run(query, user_id=request.user_id)
+                            result = session.run(query, user_id=request.user_id, class_id=class_id)
                         else:
                             query = """
-                            MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                            MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                             WHERE t.name IN $weak_topics
                             RETURN t.name AS topic_name, m.chunks AS chunks
                             """
-                            result = session.run(query, user_id=request.user_id, weak_topics=weak_topics_list)
+                            result = session.run(query, user_id=request.user_id, class_id=class_id, weak_topics=weak_topics_list)
                     else:
                         query = """
-                        MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                        MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                         WHERE (w.number = $week_number) OR (t.name IN $weak_topics)
                         RETURN t.name AS topic_name, m.chunks AS chunks
                         """
-                        result = session.run(query, week_number=request.week_number, user_id=request.user_id, weak_topics=weak_topics_list)
+                        result = session.run(query, week_number=request.week_number, user_id=request.user_id, class_id=class_id, weak_topics=weak_topics_list)
                     
                     for record in result:
                         tname = record.get("topic_name")
@@ -621,6 +639,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             topics_str = ", ".join(topic_names) if topic_names else "Unknown"
             context_chunks = "\n\n".join(chunks) if chunks else "No direct course text chunks."
             print(f"[Python] GenerateQuiz: Retrieved topics '{topics_str}' with {len(chunks)} chunks.")
+            
+            if len(chunks) == 0:
+                print(f"[Python] GenerateQuiz: No materials found. Aborting Gemini API call.")
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details("NO_MATERIALS_FOUND")
+                return ace_pb2.QuizResponse()
             
             attempts = 0
             max_retries = 3
@@ -707,7 +731,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
 
     def GenerateCramSession(self, request, context):
         weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
-        print(f"[Python] GenerateCramSession for user '{request.user_id}' from Week {request.start_week} to {request.end_week}, weak topics {weak_topics_list}...")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GenerateCramSession for user '{request.user_id}' under class '{class_id}' from Week {request.start_week} to {request.end_week}, weak topics {weak_topics_list}...")
         try:
             topic_names = []
             chunks = []
@@ -716,11 +741,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             if self.driver:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                     WHERE w.number >= $start_week AND w.number <= $end_week
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, start_week=request.start_week, end_week=request.end_week, user_id=request.user_id)
+                    result = session.run(query, start_week=request.start_week, end_week=request.end_week, user_id=request.user_id, class_id=class_id)
                     for record in result:
                         tname = record.get("topic_name")
                         if tname and tname not in topic_names:
@@ -818,7 +843,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.CramResponse()
 
     def GenerateLesson(self, request, context):
-        print(f"[Python] GenerateLesson for week '{request.week_number}' for user '{request.user_id}'...")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GenerateLesson for week '{request.week_number}' for user '{request.user_id}', class '{class_id}'...")
         try:
             topic_names = []
             chunks = []
@@ -827,11 +853,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             if self.driver:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                     WHERE w.number = $week_number
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id, class_id=class_id)
                     for record in result:
                         tname = record.get("topic_name")
                         if tname and tname not in topic_names:
@@ -927,7 +953,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.LessonResponse()
 
     def GenerateLessonAndExercises(self, request, context):
-        print(f"[Python] GenerateLessonAndExercises for week '{request.week_number}' for user '{request.user_id}'...")
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GenerateLessonAndExercises for week '{request.week_number}' for user '{request.user_id}', class '{class_id}'...")
         try:
             topic_names = []
             chunks = []
@@ -936,11 +963,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             if self.driver:
                 with self.driver.session() as session:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id})
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                     WHERE w.number = $week_number
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, week_number=request.week_number, user_id=request.user_id)
+                    result = session.run(query, week_number=request.week_number, user_id=request.user_id, class_id=class_id)
                     for record in result:
                         tname = record.get("topic_name")
                         if tname and tname not in topic_names:
@@ -955,7 +982,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             # 2. Query BigQuery for weak topics
             weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
             try:
-                bq_scores = analytical_memory.read_quiz_scores(request.user_id)
+                bq_scores = analytical_memory.read_quiz_scores(request.user_id, class_id)
                 topic_scores = {}
                 for s in bq_scores:
                     topic = s["topic_name"]
@@ -974,6 +1001,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             weak_topics_str = ", ".join(weak_topics_list) if weak_topics_list else "None"
             context_chunks = "\n\n".join(chunks) if chunks else "No course materials found for this week."
             print(f"[Python] GenerateLessonAndExercises: Week topics '{topics_str}', weak topics '{weak_topics_str}' with {len(chunks)} chunks.")
+            
+            if len(chunks) == 0:
+                print(f"[Python] GenerateLessonAndExercises: No materials found. Aborting Gemini API call.")
+                context.set_code(grpc.StatusCode.NOT_FOUND)
+                context.set_details("NO_MATERIALS_FOUND")
+                return ace_pb2.LessonResponse(insufficient_materials=True)
+                
+            is_insufficient, _, _ = self._check_sufficiency(request.user_id, class_id, request.week_number)
             
             attempts = 0
             max_retries = 3
@@ -1037,7 +1072,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                         )
                     return ace_pb2.LessonResponse(
                         lesson_markdown=lesson_data.lesson_markdown,
-                        exercises=grpc_exercises
+                        exercises=grpc_exercises,
+                        insufficient_materials=is_insufficient
                     )
                 
                 reasoning = judge_result.get("reasoning", "hallucinations or outside info included")
@@ -1046,33 +1082,42 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             print(f"[Python] GenerateLessonAndExercises failed all {max_retries} attempts. Returning error.")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details("Failed to generate factually accurate lesson and exercises after 3 attempts.")
-            return ace_pb2.LessonResponse()
+            return ace_pb2.LessonResponse(insufficient_materials=is_insufficient)
             
         except Exception as e:
             print(f"[Python] GenerateLessonAndExercises Exception: {e}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"Failed to generate lesson: {str(e)}")
-            return ace_pb2.LessonResponse()
+            insuf = is_insufficient if 'is_insufficient' in locals() else True
+            return ace_pb2.LessonResponse(insufficient_materials=insuf)
     
     
     
     @staticmethod
-    def _create_dynamic_nodes(tx, filename, concepts):
-        tx.run("MERGE (s:Syllabus {name: $filename})", filename=filename)
+    def _create_dynamic_nodes(tx, user_id, class_id, class_name, concepts):
+        tx.run("""
+            MERGE (u:User {id: $user_id})
+            MERGE (c:Class {id: $class_id})
+            ON CREATE SET c.name = $class_name
+            MERGE (u)-[:ENROLLED_IN]->(c)
+        """, user_id=user_id, class_id=class_id, class_name=class_name)
+        
         for concept in concepts:
             name = concept['name']
             prereqs = concept.get('prerequisites', [])
-            tx.run("MERGE (c:Topic {name: $name})", name=name)
             tx.run("""
-                MATCH (s:Syllabus {name: $filename}), (c:Topic {name: $name})
-                MERGE (s)-[:COVERS]->(c)
-            """, filename=filename, name=name)
+                MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})
+                MERGE (t:Topic {name: $name, user_id: $user_id, class_id: $class_id})
+                MERGE (c)-[:COVERS]->(t)
+            """, user_id=user_id, class_id=class_id, name=name)
             for p_name in prereqs:
-                tx.run("MERGE (p:Topic {name: $p_name})", p_name=p_name)
                 tx.run("""
-                    MATCH (c:Topic {name: $c_name}), (p:Topic {name: $p_name})
-                    MERGE (p)-[:PREREQUISITE_TO]->(c)
-                """, c_name=name, p_name=p_name)
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})
+                    MERGE (t:Topic {name: $name, user_id: $user_id, class_id: $class_id})
+                    MERGE (p:Topic {name: $p_name, user_id: $user_id, class_id: $class_id})
+                    MERGE (c)-[:COVERS]->(p)
+                    MERGE (p)-[:PREREQUISITE_TO]->(t)
+                """, user_id=user_id, class_id=class_id, name=name, p_name=p_name)
 
     def _generate_with_retry(self, model_name, contents, retries=3, delay=2, config=None):
         """
@@ -1099,6 +1144,46 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     raise e
         
         raise Exception("Gemini remains overloaded after max retries.")
+
+    def _check_sufficiency(self, user_id, class_id, week_number):
+        insufficient_topics = []
+        all_topics = []
+        if self.driver:
+            with self.driver.session() as session:
+                query = """
+                MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+                WHERE w.number = $week_number
+                OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
+                RETURN t.name AS topic_name, collect(m.content) AS contents
+                """
+                result = session.run(query, week_number=week_number, user_id=user_id, class_id=class_id)
+                for record in result:
+                    tname = record.get("topic_name")
+                    if tname:
+                        if tname not in all_topics:
+                            all_topics.append(tname)
+                        contents = record.get("contents") or []
+                        total_len = sum(len(c) for c in contents if c is not None)
+                        if total_len < 1000:
+                            insufficient_topics.append(tname)
+        return len(insufficient_topics) > 0, insufficient_topics, all_topics
+
+    def CheckTopicSufficiency(self, request, context):
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] CheckTopicSufficiency for week '{request.week_number}', user '{request.user_id}', class '{class_id}'...")
+        try:
+            is_insufficient, insufficient_topics, all_topics = self._check_sufficiency(request.user_id, class_id, request.week_number)
+            print(f"[Python] CheckTopicSufficiency result: insufficient_materials={is_insufficient}, insufficient_topics={insufficient_topics}, all_topics={all_topics}")
+            return ace_pb2.SufficiencyResponse(
+                insufficient_materials=is_insufficient,
+                insufficient_topics=insufficient_topics,
+                all_topics=all_topics
+            )
+        except Exception as e:
+            print(f"[Python] CheckTopicSufficiency Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to check topic sufficiency: {str(e)}")
+            return ace_pb2.SufficiencyResponse(insufficient_materials=True, insufficient_topics=[], all_topics=[])
 
 def serve():
     # 1. Get the port from the environment (Google sets this)

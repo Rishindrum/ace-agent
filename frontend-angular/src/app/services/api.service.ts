@@ -45,18 +45,20 @@ export class ApiService {
 
   constructor(private http: HttpClient) { }
 
-  uploadSyllabus(file: File): Observable<any> {
+  uploadSyllabus(file: File, classId?: string, className?: string): Observable<any> {
     const formData = new FormData();
     formData.append('file', file);
-    
-    // EXPLICITLY add /upload here. 
-    // This ensures it works in both dev and prod.
+    if (classId) formData.append('class_id', classId);
+    if (className) formData.append('class_name', className);
     return this.http.post(`${this.baseUrl}/upload`, formData);
   }
 
   getChatSocket(): WebSocket {
-    // EXPLICITLY add /ws here.
     return new WebSocket(`${this.wsBaseUrl}/ws`);
+  }
+
+  listClasses(): Observable<any[]> {
+    return this.http.get<any[]>(`${this.baseUrl}/api/v1/classes`);
   }
 
   submitQuizResult(userId: string, topicName: string, score: number): Observable<any> {
@@ -75,15 +77,17 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/quiz/adaptive?user_id=${userId}&syllabus_name=${syllabusName}`);
   }
 
-  generateQuiz(weekNumber: number, questionCount: number): Observable<SyllabusQuestionPayload[]> {
-    return this.http.post<SyllabusQuestionPayload[]>(`${this.baseUrl}/api/v1/quiz`, {
+  generateQuiz(weekNumber: number, questionCount: number, classId?: string): Observable<SyllabusQuestionPayload[]> {
+    const cid = classId || 'default_class';
+    return this.http.post<SyllabusQuestionPayload[]>(`${this.baseUrl}/api/v1/classes/${cid}/study/quiz`, {
       week_number: weekNumber,
       question_count: questionCount
     });
   }
 
-  submitQuizTelemetry(payload: QuizTelemetryPayload): Observable<QuizTelemetryResponse> {
-    return this.http.post<QuizTelemetryResponse>(`${this.baseUrl}/api/v1/quiz/submit`, payload);
+  submitQuizTelemetry(payload: QuizTelemetryPayload, classId?: string): Observable<QuizTelemetryResponse> {
+    const cid = classId || 'default_class';
+    return this.http.post<QuizTelemetryResponse>(`${this.baseUrl}/api/v1/classes/${cid}/study/quiz/submit`, payload);
   }
 
   saveSchedulePreferences(preferredStudyTime: string, daysToAvoid: string[]): Observable<any> {
@@ -100,41 +104,55 @@ export class ApiService {
     });
   }
 
-  getUserScheduleSettings(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/api/v1/user/schedule-settings`);
+  getUserScheduleSettings(classId?: string): Observable<any> {
+    const q = classId ? `?class_id=${classId}` : '';
+    return this.http.get<any>(`${this.baseUrl}/api/v1/user/schedule-settings${q}`);
   }
 
-  saveUserScheduleSettings(preferredDays: number[], dailyPace: number, currentStreak: number, courseStartDate: string): Observable<any> {
+  saveUserScheduleSettings(preferredDays: number[], dailyPace: number, currentStreak: number, courseStartDate: string, classId?: string, className?: string): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/api/v1/user/schedule-settings`, {
       preferred_days: preferredDays,
       daily_pace: dailyPace,
       current_streak: currentStreak,
-      course_start_date: courseStartDate
+      course_start_date: courseStartDate,
+      class_id: classId || 'default_class',
+      class_name: className || 'Default Class'
     });
   }
 
-  generateCramSession(startWeek: number, endWeek: number): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/api/v1/study/cram`, {
+  generateCramSession(startWeek: number, endWeek: number, classId?: string): Observable<any> {
+    const cid = classId || 'default_class';
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/cram`, {
       start_week: startWeek,
       end_week: endWeek
     });
   }
 
-  getDailySessionState(): Observable<any> {
-    return this.http.get<any>(`${this.baseUrl}/api/v1/study/today/state`);
+  getDailySessionState(classId?: string): Observable<any> {
+    const cid = classId || 'default_class';
+    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/today/state`);
   }
 
-  submitExercises(answers: any[]): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/api/v1/study/exercise/submit`, {
+  submitExercises(answers: any[], classId?: string): Observable<any> {
+    const cid = classId || 'default_class';
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/exercise/submit`, {
       answers: answers
     });
   }
 
-  generateLesson(weekNumber: number): Observable<any> {
-    return this.http.post<any>(`${this.baseUrl}/api/v1/study/lesson`, {
+  generateLesson(weekNumber: number, classId?: string): Observable<any> {
+    const cid = classId || 'default_class';
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/lesson`, {
       week_number: weekNumber
     });
   }
+
+  checkTopicSufficiency(classId: string, weekNumber?: number): Observable<any> {
+    const cid = classId || 'default_class';
+    const q = weekNumber ? `?week_number=${weekNumber}` : '';
+    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/sufficiency${q}`);
+  }
+
 
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);

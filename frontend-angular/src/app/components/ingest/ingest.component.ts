@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -22,6 +22,8 @@ import { IngestService } from '../../services/ingest.service';
   styleUrls: ['./ingest.component.scss']
 })
 export class IngestComponent {
+  @Input() classId: string = 'default_class';
+
   weekNumber: number | null = null;
   topicName: string = '';
   rawText: string = '';
@@ -41,7 +43,7 @@ export class IngestComponent {
     this.isLoading = true;
     this.responseMessage = 'Ingesting and embedding material...';
 
-    this.ingestService.ingestMaterial(this.weekNumber, this.topicName, this.rawText).subscribe({
+    this.ingestService.ingestMaterial(this.weekNumber, this.topicName, this.rawText, this.classId).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         this.isSuccess = res.success;
@@ -62,3 +64,4 @@ export class IngestComponent {
     });
   }
 }
+

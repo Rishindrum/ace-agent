@@ -10,6 +10,7 @@ import (
 
 type DailySessionState struct {
 	UserID             string `json:"user_id"`
+	ClassID            string `json:"class_id"`
 	Date               string `json:"date"` // YYYY-MM-DD
 	LessonCompleted    bool   `json:"lesson_completed"`
 	ExercisesCompleted bool   `json:"exercises_completed"`
@@ -57,21 +58,23 @@ func (s *DailySessionStore) save() {
 	json.NewEncoder(file).Encode(s.sessions)
 }
 
-func (s *DailySessionStore) GetSessionState(userID string) DailySessionState {
+func (s *DailySessionStore) GetSessionState(userID, classID string) DailySessionState {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	key := userID + "_" + classID
 	today := time.Now().Format("2006-01-02")
-	state, ok := s.sessions[userID]
+	state, ok := s.sessions[key]
 	if !ok || state.Date != today {
 		state = DailySessionState{
 			UserID:             userID,
+			ClassID:            classID,
 			Date:               today,
 			LessonCompleted:    false,
 			ExercisesCompleted: false,
 			QuizUnlocked:       false,
 		}
-		s.sessions[userID] = state
+		s.sessions[key] = state
 		s.save()
 	}
 	return state
@@ -81,6 +84,7 @@ func (s *DailySessionStore) SaveSessionState(state DailySessionState) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	s.sessions[state.UserID] = state
+	key := state.UserID + "_" + state.ClassID
+	s.sessions[key] = state
 	s.save()
 }
