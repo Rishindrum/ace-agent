@@ -175,7 +175,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		userID = "default_user"
 	}
 
-	classID := r.FormValue("class_id")
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		classID = r.FormValue("class_id")
+	}
 	if classID == "" {
 		classID = r.URL.Query().Get("class_id")
 	}
@@ -1556,6 +1559,7 @@ func main() {
 	// Start Server
 	mux := http.NewServeMux()
 	mux.HandleFunc("/upload", uploadHandler)
+	mux.HandleFunc("/api/v1/classes/{class_id}/syllabus/upload", auth.JWTMiddleware(uploadHandler))
 	mux.HandleFunc("/ws", wsHandler)
 	mux.HandleFunc("/quiz/submit", submitQuizResultHandler)
 	mux.HandleFunc("/quiz/scores", getQuizScoresHandler)
@@ -1586,9 +1590,25 @@ func main() {
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/sufficiency", auth.JWTMiddleware(checkTopicSufficiencyHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
-	if err := http.ListenAndServe(":8080", mux); err != nil {
+	if err := http.ListenAndServe(":8080", CORSMiddleware(mux)); err != nil {
 		log.Fatal(err)
 	}
+}
+
+func CORSMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
+
+		if r.Method == "OPTIONS" {
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 func slicesEqual(a, b []int) bool {

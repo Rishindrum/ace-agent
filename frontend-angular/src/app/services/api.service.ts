@@ -46,11 +46,11 @@ export class ApiService {
   constructor(private http: HttpClient) { }
 
   uploadSyllabus(file: File, classId?: string, className?: string): Observable<any> {
+    const cid = classId || 'default_class';
     const formData = new FormData();
     formData.append('file', file);
-    if (classId) formData.append('class_id', classId);
     if (className) formData.append('class_name', className);
-    return this.http.post(`${this.baseUrl}/upload`, formData);
+    return this.http.post(`${this.baseUrl}/api/v1/classes/${cid}/syllabus/upload`, formData);
   }
 
   getChatSocket(): WebSocket {
