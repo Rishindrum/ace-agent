@@ -43,6 +43,9 @@ func InitUserStore(path string) {
 func (s *UserStore) load() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if err := DownloadFromGCS(s.path); err != nil {
+		fmt.Printf("[Auth] Warning: failed to download user store from GCS: %v\n", err)
+	}
 	file, err := os.Open(s.path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -63,6 +66,9 @@ func (s *UserStore) save() {
 	}
 	defer file.Close()
 	json.NewEncoder(file).Encode(s.users)
+	if err := UploadToGCS(s.path); err != nil {
+		fmt.Printf("[Auth] Warning: failed to upload user store to GCS: %v\n", err)
+	}
 }
 
 func (s *UserStore) Register(username, password string) (string, error) {

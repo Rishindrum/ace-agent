@@ -41,6 +41,9 @@ func InitScheduleStore(path string) {
 func (s *ScheduleStore) load() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if err := DownloadFromGCS(s.path); err != nil {
+		fmt.Printf("[Schedule] Warning: failed to download schedule store from GCS: %v\n", err)
+	}
 	file, err := os.Open(s.path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -61,6 +64,9 @@ func (s *ScheduleStore) save() {
 	}
 	defer file.Close()
 	json.NewEncoder(file).Encode(s.schedules)
+	if err := UploadToGCS(s.path); err != nil {
+		fmt.Printf("[Schedule] Warning: failed to upload schedule store to GCS: %v\n", err)
+	}
 }
 
 func (s *ScheduleStore) SaveSchedule(userID, classID, className string, preferredDays []int, dailyPace int, currentStreak int, courseStartDate string) error {

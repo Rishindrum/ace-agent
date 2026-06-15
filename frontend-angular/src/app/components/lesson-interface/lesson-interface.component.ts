@@ -123,7 +123,9 @@ export class LessonInterfaceComponent implements OnInit {
       next: (res: any) => {
         this.isLoading = false;
         this.statusMessage = '';
-        if (res && res.lesson_markdown) {
+        if (res && res.code === 'NO_MATERIALS_FOUND') {
+          this.errorMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!";
+        } else if (res && res.lesson_markdown) {
           this.lessonMarkdown = res.lesson_markdown;
           this.exercises = res.exercises || [];
           this.updateStepFromState();
@@ -166,7 +168,9 @@ export class LessonInterfaceComponent implements OnInit {
         this.isRegenerating = false;
         this.isRegenModalOpen = false;
         this.statusMessage = '';
-        if (res && res.lesson_markdown) {
+        if (res && res.code === 'NO_MATERIALS_FOUND') {
+          this.errorMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!";
+        } else if (res && res.lesson_markdown) {
           this.lessonMarkdown = res.lesson_markdown;
           this.exercises = res.exercises || [];
           this.resetExercises();

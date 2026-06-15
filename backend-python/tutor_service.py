@@ -32,12 +32,36 @@ if os.path.exists(env_path):
                 key, val = line.split("=", 1)
                 os.environ[key.strip()] = val.strip()
 
+import urllib.request
+
+def get_project_id():
+    proj = os.getenv("GCP_PROJECT_ID") or os.getenv("GOOGLE_CLOUD_PROJECT")
+    if proj:
+        return proj
+    try:
+        req = urllib.request.Request(
+            "http://metadata.google.internal/computeMetadata/v1/project/project-id",
+            headers={"Metadata-Flavor": "Google"}
+        )
+        with urllib.request.urlopen(req, timeout=2) as response:
+            return response.read().decode('utf-8').strip()
+    except Exception:
+        return None
+
 # Initialize Gemini
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_USER = os.getenv("NEO4J_USER")
 NEO4J_PASSWORD = os.getenv("NEO4J_PASSWORD") # Must be provided by Docker
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY") # Must be provided by Docker
-GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME", "ace-agent-brain-bucket")
+
+project_id = get_project_id()
+if os.getenv("GCS_BUCKET_NAME"):
+    GCS_BUCKET_NAME = os.getenv("GCS_BUCKET_NAME")
+elif project_id:
+    GCS_BUCKET_NAME = f"ace-agent-brain-bucket-{project_id}"
+else:
+    GCS_BUCKET_NAME = "ace-agent-brain-bucket"
+
 client = genai.Client(api_key=GEMINI_API_KEY)
 
 
@@ -45,7 +69,17 @@ class PersistentVectorStore:
     def __init__(self):
         try:
             self.storage_client = storage.Client()
-            self.bucket = self.storage_client.bucket(GCS_BUCKET_NAME)
+            
+            # Try to get or create the bucket
+            try:
+                bucket = self.storage_client.get_bucket(GCS_BUCKET_NAME)
+            except Exception:
+                print(f"[VectorStore] Bucket {GCS_BUCKET_NAME} not found, trying to create...")
+                proj = get_project_id() or self.storage_client.project
+                bucket = self.storage_client.create_bucket(GCS_BUCKET_NAME, project=proj, location="us-central1")
+                print(f"[VectorStore] Created bucket {GCS_BUCKET_NAME}")
+                
+            self.bucket = bucket
             print(f"[VectorStore] Connected to GCS Bucket: {GCS_BUCKET_NAME}")
         except Exception as e:
             print(f"[VectorStore] WARNING: GCS connection failed. Running in local-only mode. Error: {e}")
@@ -227,7 +261,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             self.driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
             self.driver.verify_connectivity()
         except Exception as e:
-            print(f"[Python] WARNING: Neo4j Connection FAILED.")
+            print(f"[Python] WARNING: Neo4j Connection FAILED. Setting driver to None. Error: {e}")
+            self.driver = None
 
     def _evaluate_generation(self, generated_content: str, context_chunks: str, mode: str) -> dict:
         criteria = ""

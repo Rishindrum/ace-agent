@@ -140,11 +140,13 @@ export class QuizInterfaceComponent implements OnInit {
     this.statusMessage = `Generating syllabus quiz for Week ${this.weekNumber} using course materials...`;
     
     this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId).subscribe({
-      next: (questions: SyllabusQuestionPayload[]) => {
+      next: (res: any) => {
         this.isLoading = false;
         this.statusMessage = '';
-        if (questions && questions.length > 0) {
-          const mappedQuestions = questions.map(q => ({
+        if (res && res.code === 'NO_MATERIALS_FOUND') {
+          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
+        } else if (res && res.length > 0) {
+          const mappedQuestions = res.map((q: any) => ({
             question_text: q.questionText || 'Question',
             options: q.options || [],
             correct_option_index: q.correctOptionIndex !== undefined ? q.correctOptionIndex : 0,
@@ -168,7 +170,11 @@ export class QuizInterfaceComponent implements OnInit {
       },
       error: (err) => {
         this.isLoading = false;
-        this.statusMessage = 'Error generating syllabus quiz: ' + err.message;
+        if (err.status === 404 || err.error?.code === 'NO_MATERIALS_FOUND') {
+          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
+        } else {
+          this.statusMessage = 'Error generating syllabus quiz: ' + (err.error?.message || err.message || err);
+        }
         console.error("Syllabus quiz generation error:", err);
       }
     });
@@ -190,13 +196,15 @@ export class QuizInterfaceComponent implements OnInit {
     this.statusMessage = `Steering Gemini and regenerating quiz for Week ${this.weekNumber}...`;
 
     this.api.generateQuiz(this.weekNumber, this.questionCount, this.classId, true, this.regenPrompt).subscribe({
-      next: (questions: SyllabusQuestionPayload[]) => {
+      next: (res: any) => {
         this.isLoading = false;
         this.isRegenerating = false;
         this.isRegenModalOpen = false;
         this.statusMessage = '';
-        if (questions && questions.length > 0) {
-          const mappedQuestions = questions.map(q => ({
+        if (res && res.code === 'NO_MATERIALS_FOUND') {
+          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
+        } else if (res && res.length > 0) {
+          const mappedQuestions = res.map((q: any) => ({
             question_text: q.questionText || 'Question',
             options: q.options || [],
             correct_option_index: q.correctOptionIndex !== undefined ? q.correctOptionIndex : 0,
@@ -222,7 +230,11 @@ export class QuizInterfaceComponent implements OnInit {
         this.isLoading = false;
         this.isRegenerating = false;
         this.isRegenModalOpen = false;
-        this.statusMessage = 'Error regenerating quiz: ' + err.message;
+        if (err.status === 404 || err.error?.code === 'NO_MATERIALS_FOUND') {
+          this.statusMessage = "No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a quiz!";
+        } else {
+          this.statusMessage = 'Error regenerating quiz: ' + (err.error?.message || err.message || err);
+        }
         console.error("Quiz regeneration error:", err);
       }
     });

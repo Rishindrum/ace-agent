@@ -36,6 +36,9 @@ func InitDailySessionStore(path string) {
 func (s *DailySessionStore) load() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+	if err := DownloadFromGCS(s.path); err != nil {
+		fmt.Printf("[SessionStore] Warning: failed to download session store from GCS: %v\n", err)
+	}
 	file, err := os.Open(s.path)
 	if err != nil {
 		if os.IsNotExist(err) {
@@ -56,6 +59,9 @@ func (s *DailySessionStore) save() {
 	}
 	defer file.Close()
 	json.NewEncoder(file).Encode(s.sessions)
+	if err := UploadToGCS(s.path); err != nil {
+		fmt.Printf("[SessionStore] Warning: failed to upload session store to GCS: %v\n", err)
+	}
 }
 
 func (s *DailySessionStore) GetSessionState(userID, classID string) DailySessionState {

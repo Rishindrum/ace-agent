@@ -644,7 +644,7 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[Error] GenerateQuiz gRPC failed: %v", err)
 		if strings.Contains(err.Error(), "NO_MATERIALS_FOUND") {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusNotFound)
+			w.WriteHeader(http.StatusOK)
 			json.NewEncoder(w).Encode(map[string]string{"code": "NO_MATERIALS_FOUND"})
 			return
 		}
@@ -1913,8 +1913,11 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[Error] GenerateLessonAndExercises gRPC failed: %v", err)
 		if strings.Contains(err.Error(), "NO_MATERIALS_FOUND") {
 			w.Header().Set("Content-Type", "application/json")
-			w.WriteHeader(http.StatusNotFound)
-			json.NewEncoder(w).Encode(map[string]string{"code": "NO_MATERIALS_FOUND"})
+			w.WriteHeader(http.StatusOK)
+			json.NewEncoder(w).Encode(map[string]interface{}{
+				"insufficient_materials": true,
+				"code":                   "NO_MATERIALS_FOUND",
+			})
 			return
 		}
 		http.Error(w, "Failed to generate lesson: "+err.Error(), http.StatusInternalServerError)
