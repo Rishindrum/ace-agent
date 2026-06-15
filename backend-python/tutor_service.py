@@ -638,23 +638,45 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                         print(f"[Python] Failed to extract text from PDF: {pdf_err}")
                 elif filename.endswith(".pptx") or filename.endswith(".ppt"):
                     try:
-                        text_runs = []
-                        with zipfile.ZipFile(io.BytesIO(request.file_data)) as z:
-                            slide_files = sorted([f for f in z.namelist() if f.startswith("ppt/slides/slide") and f.endswith(".xml")])
-                            for slide_file in slide_files:
-                                slide_xml = z.read(slide_file)
-                                root = ET.fromstring(slide_xml)
-                                namespaces = {
-                                    'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
-                                    'p': 'http://schemas.openxmlformats.org/presentationml/2006/main'
-                                }
-                                for t in root.findall('.//a:t', namespaces):
-                                    if t.text:
-                                        text_runs.append(t.text)
-                        content = "\n".join(text_runs)
-                        print(f"[Python] Extracted {len(content)} characters from PPTX: {request.file_name}")
-                    except Exception as pptx_err:
-                        print(f"[Python] Failed to extract text from PPTX: {pptx_err}")
+                        print(f"[Python] Extracting text from presentation {request.file_name} using Gemini...")
+                        mime_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation" if filename.endswith(".pptx") else "application/vnd.ms-powerpoint"
+                        
+                        prompt = "You are a document transcription assistant. Extract all readable text, slide titles, bullet points, and content from the provided presentation slides. Output only the extracted educational text content, organized slide-by-slide. Do not include introductory notes, meta commentary, or explanations."
+                        
+                        from google.genai import types as genai_types
+                        response = client.models.generate_content(
+                            model='gemini-2.5-flash',
+                            contents=[
+                                genai_types.Part.from_bytes(
+                                    data=request.file_data,
+                                    mime_type=mime_type,
+                                ),
+                                prompt
+                            ]
+                        )
+                        content = response.text
+                        print(f"[Python] Successfully extracted {len(content)} characters from {request.file_name} using Gemini.")
+                    except Exception as gemini_err:
+                        print(f"[Python] Gemini presentation extraction failed: {gemini_err}. Trying local zip/XML parser if PPTX...")
+                        if filename.endswith(".pptx"):
+                            try:
+                                text_runs = []
+                                with zipfile.ZipFile(io.BytesIO(request.file_data)) as z:
+                                    slide_files = sorted([f for f in z.namelist() if f.startswith("ppt/slides/slide") and f.endswith(".xml")])
+                                    for slide_file in slide_files:
+                                        slide_xml = z.read(slide_file)
+                                        root = ET.fromstring(slide_xml)
+                                        namespaces = {
+                                            'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+                                            'p': 'http://schemas.openxmlformats.org/presentationml/2006/main'
+                                        }
+                                        for t in root.findall('.//a:t', namespaces):
+                                            if t.text:
+                                                text_runs.append(t.text)
+                                content = "\n".join(text_runs)
+                                print(f"[Python] Extracted {len(content)} characters from PPTX locally.")
+                            except Exception as pptx_err:
+                                print(f"[Python] Failed local PPTX extraction: {pptx_err}")
                 else:
                     try:
                         content = request.file_data.decode("utf-8")

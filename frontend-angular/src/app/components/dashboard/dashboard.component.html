@@ -206,7 +206,7 @@
 
               <div *ngIf="!allWeeksLoading && weeks.length > 0" class="weeks-accordion">
                 <div *ngFor="let wKey of weeks" class="week-group" [class.active-week]="selectedTimelineWeek === wKey">
-                  <div class="week-group-header" (click)="selectTimelineWeek(wKey)">
+                  <div class="week-group-header" (click)="toggleSyllabusWeek(wKey)">
                     <span class="week-title-label">Week {{ wKey }}</span>
                     <span class="week-badge-summary">
                       <span class="badge-sufficient" *ngIf="allWeeksData[wKey] && allWeeksData[wKey].topics.length > 0 && allWeeksData[wKey].insufficient.length === 0">
@@ -403,7 +403,7 @@
         Provide course slides text transcripts, lecture notes, or text documents for this topic to clear the "insufficient materials" warning.
       </p>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="!newMaterialFile">
         <label for="materialText">Notes & Text Content</label>
         <textarea 
           id="materialText" 
@@ -411,25 +411,29 @@
           placeholder="Paste notes, transcripts, or reference text here..." 
           rows="8"
           [disabled]="isIngestingMaterial"
-          required
         ></textarea>
       </div>
 
       <div class="form-group">
-        <label>Optional: Import Text File</label>
+        <label>{{ newMaterialFile ? 'Uploaded File' : 'Or Upload Study Material (.txt, .md, .pdf, .ppt, .pptx)' }}</label>
         <div class="file-uploader-mini">
           <input 
             type="file" 
             (change)="onMaterialFileSelected($event)" 
-            accept=".txt,.md,.json" 
+            accept=".txt,.md,.pdf,.ppt,.pptx" 
             [disabled]="isIngestingMaterial"
             hidden
             #materialFileInput 
           />
-          <button class="btn btn-secondary btn-mini-upload" (click)="materialFileInput.click()" [disabled]="isIngestingMaterial">
-            <mat-icon>attach_file</mat-icon> Load from file (.txt, .md)
+          <button *ngIf="!newMaterialFile" class="btn btn-secondary btn-mini-upload" (click)="materialFileInput.click()" [disabled]="isIngestingMaterial">
+            <mat-icon>attach_file</mat-icon> Select Document / Presentation
           </button>
-          <span class="mini-upload-filename" *ngIf="newMaterialFile">{{ newMaterialFile.name }}</span>
+          <div *ngIf="newMaterialFile" class="uploaded-file-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
+            <span class="mini-upload-filename" style="display: flex; align-items: center; gap: 8px; color: #f1f5f9;"><mat-icon style="color: #6366f1;">insert_drive_file</mat-icon> {{ newMaterialFile.name }}</span>
+            <button class="btn-clear-file" (click)="clearSelectedFile()" [disabled]="isIngestingMaterial" style="background: none; border: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; transition: all 0.2s;">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -445,7 +449,7 @@
       <button 
         class="btn btn-primary" 
         (click)="submitMaterials()" 
-        [disabled]="isIngestingMaterial || !newMaterialText.trim()"
+        [disabled]="isIngestingMaterial || (!newMaterialText.trim() && !newMaterialFile)"
       >
         <mat-icon>add_link</mat-icon> Ingest Notes
       </button>

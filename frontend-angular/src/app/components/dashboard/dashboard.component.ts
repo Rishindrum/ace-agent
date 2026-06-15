@@ -191,6 +191,13 @@ export class DashboardComponent implements OnInit {
     });
   }
 
+  toggleSyllabusWeek(week: number): void {
+    this.selectedTimelineWeek = week;
+    if (this.selectedClass) {
+      this.loadTopicSufficiency(this.selectedClass.class_id, week);
+    }
+  }
+
   selectTab(tab: 'syllabus' | 'lesson' | 'tutor' | 'quiz'): void {
     this.activeTab = tab;
   }
@@ -363,18 +370,24 @@ export class DashboardComponent implements OnInit {
   onMaterialFileSelected(event: any): void {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      this.newMaterialFile = file;
       const ext = file.name.split('.').pop()?.toLowerCase();
-      if (ext === 'txt') {
+      if (ext === 'txt' || ext === 'md') {
         const reader = new FileReader();
         reader.onload = (e: any) => {
           this.newMaterialText = e.target.result || '';
+          this.newMaterialFile = null;
         };
         reader.readAsText(file);
       } else {
-        this.newMaterialText = `[File Upload: ${file.name}]`;
+        this.newMaterialFile = file;
+        this.newMaterialText = ''; // Clear text area since we are uploading a binary document
       }
     }
+  }
+
+  clearSelectedFile(): void {
+    this.newMaterialFile = null;
+    this.newMaterialText = '';
   }
 
   submitMaterials(): void {

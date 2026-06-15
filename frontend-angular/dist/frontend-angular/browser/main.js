@@ -79418,7 +79418,7 @@ function DashboardComponent_div_26_div_72_div_13_div_1_Template(rf, ctx) {
     \u0275\u0275listener("click", function DashboardComponent_div_26_div_72_div_13_div_1_Template_div_click_1_listener() {
       const wKey_r11 = \u0275\u0275restoreView(_r10).$implicit;
       const ctx_r1 = \u0275\u0275nextContext(4);
-      return \u0275\u0275resetView(ctx_r1.selectTimelineWeek(wKey_r11));
+      return \u0275\u0275resetView(ctx_r1.toggleSyllabusWeek(wKey_r11));
     });
     \u0275\u0275elementStart(2, "span", 98);
     \u0275\u0275text(3);
@@ -79912,21 +79912,78 @@ function DashboardComponent_div_28_Template(rf, ctx) {
     \u0275\u0275property("disabled", ctx_r1.isAddingClass || !ctx_r1.newClassName.trim() || !ctx_r1.newClassSyllabusFile);
   }
 }
-function DashboardComponent_div_29_span_28_Template(rf, ctx) {
+function DashboardComponent_div_29_div_14_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "span", 165);
-    \u0275\u0275text(1);
+    const _r21 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 137)(1, "label", 164);
+    \u0275\u0275text(2, "Notes & Text Content");
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(3, "textarea", 165);
+    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_29_div_14_Template_textarea_ngModelChange_3_listener($event) {
+      \u0275\u0275restoreView(_r21);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      \u0275\u0275twoWayBindingSet(ctx_r1.newMaterialText, $event) || (ctx_r1.newMaterialText = $event);
+      return \u0275\u0275resetView($event);
+    });
+    \u0275\u0275elementEnd()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(3);
+    \u0275\u0275twoWayProperty("ngModel", ctx_r1.newMaterialText);
+    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
+  }
+}
+function DashboardComponent_div_29_button_21_Template(rf, ctx) {
+  if (rf & 1) {
+    const _r22 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "button", 166);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_button_21_Template_button_click_0_listener() {
+      \u0275\u0275restoreView(_r22);
+      \u0275\u0275nextContext();
+      const materialFileInput_r23 = \u0275\u0275reference(20);
+      return \u0275\u0275resetView(materialFileInput_r23.click());
+    });
+    \u0275\u0275elementStart(1, "mat-icon");
+    \u0275\u0275text(2, "attach_file");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(3, " Select Document / Presentation ");
     \u0275\u0275elementEnd();
   }
   if (rf & 2) {
     const ctx_r1 = \u0275\u0275nextContext(2);
-    \u0275\u0275advance();
-    \u0275\u0275textInterpolate(ctx_r1.newMaterialFile.name);
+    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
   }
 }
-function DashboardComponent_div_29_div_29_Template(rf, ctx) {
+function DashboardComponent_div_29_div_22_Template(rf, ctx) {
   if (rf & 1) {
-    \u0275\u0275elementStart(0, "div", 166)(1, "mat-icon");
+    const _r24 = \u0275\u0275getCurrentView();
+    \u0275\u0275elementStart(0, "div", 167)(1, "span", 168)(2, "mat-icon", 169);
+    \u0275\u0275text(3, "insert_drive_file");
+    \u0275\u0275elementEnd();
+    \u0275\u0275text(4);
+    \u0275\u0275elementEnd();
+    \u0275\u0275elementStart(5, "button", 170);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_div_22_Template_button_click_5_listener() {
+      \u0275\u0275restoreView(_r24);
+      const ctx_r1 = \u0275\u0275nextContext(2);
+      return \u0275\u0275resetView(ctx_r1.clearSelectedFile());
+    });
+    \u0275\u0275elementStart(6, "mat-icon", 171);
+    \u0275\u0275text(7, "close");
+    \u0275\u0275elementEnd()()();
+  }
+  if (rf & 2) {
+    const ctx_r1 = \u0275\u0275nextContext(2);
+    \u0275\u0275advance(4);
+    \u0275\u0275textInterpolate1(" ", ctx_r1.newMaterialFile.name, "");
+    \u0275\u0275advance();
+    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
+  }
+}
+function DashboardComponent_div_29_div_23_Template(rf, ctx) {
+  if (rf & 1) {
+    \u0275\u0275elementStart(0, "div", 172)(1, "mat-icon");
     \u0275\u0275text(2);
     \u0275\u0275elementEnd();
     \u0275\u0275elementStart(3, "span");
@@ -79963,60 +80020,39 @@ function DashboardComponent_div_29_Template(rf, ctx) {
     \u0275\u0275elementStart(11, "div", 135)(12, "p", 136);
     \u0275\u0275text(13, ' Provide course slides text transcripts, lecture notes, or text documents for this topic to clear the "insufficient materials" warning. ');
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(14, "div", 137)(15, "label", 157);
-    \u0275\u0275text(16, "Notes & Text Content");
+    \u0275\u0275template(14, DashboardComponent_div_29_div_14_Template, 4, 2, "div", 157);
+    \u0275\u0275elementStart(15, "div", 137)(16, "label");
+    \u0275\u0275text(17);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(17, "textarea", 158);
-    \u0275\u0275twoWayListener("ngModelChange", function DashboardComponent_div_29_Template_textarea_ngModelChange_17_listener($event) {
-      \u0275\u0275restoreView(_r20);
-      const ctx_r1 = \u0275\u0275nextContext();
-      \u0275\u0275twoWayBindingSet(ctx_r1.newMaterialText, $event) || (ctx_r1.newMaterialText = $event);
-      return \u0275\u0275resetView($event);
-    });
-    \u0275\u0275elementEnd()();
-    \u0275\u0275elementStart(18, "div", 137)(19, "label");
-    \u0275\u0275text(20, "Optional: Import Text File");
-    \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(21, "div", 159)(22, "input", 160, 2);
-    \u0275\u0275listener("change", function DashboardComponent_div_29_Template_input_change_22_listener($event) {
+    \u0275\u0275elementStart(18, "div", 158)(19, "input", 159, 2);
+    \u0275\u0275listener("change", function DashboardComponent_div_29_Template_input_change_19_listener($event) {
       \u0275\u0275restoreView(_r20);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.onMaterialFileSelected($event));
     });
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(24, "button", 161);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_24_listener() {
-      \u0275\u0275restoreView(_r20);
-      const materialFileInput_r21 = \u0275\u0275reference(23);
-      return \u0275\u0275resetView(materialFileInput_r21.click());
-    });
-    \u0275\u0275elementStart(25, "mat-icon");
-    \u0275\u0275text(26, "attach_file");
-    \u0275\u0275elementEnd();
-    \u0275\u0275text(27, " Load from file (.txt, .md) ");
-    \u0275\u0275elementEnd();
-    \u0275\u0275template(28, DashboardComponent_div_29_span_28_Template, 2, 1, "span", 162);
+    \u0275\u0275template(21, DashboardComponent_div_29_button_21_Template, 4, 1, "button", 160)(22, DashboardComponent_div_29_div_22_Template, 8, 2, "div", 161);
     \u0275\u0275elementEnd()();
-    \u0275\u0275template(29, DashboardComponent_div_29_div_29_Template, 5, 7, "div", 163);
+    \u0275\u0275template(23, DashboardComponent_div_29_div_23_Template, 5, 7, "div", 162);
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(30, "div", 147)(31, "button", 148);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_31_listener() {
+    \u0275\u0275elementStart(24, "div", 147)(25, "button", 148);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_25_listener() {
       \u0275\u0275restoreView(_r20);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.closeAddMaterials());
     });
-    \u0275\u0275text(32, "Cancel");
+    \u0275\u0275text(26, "Cancel");
     \u0275\u0275elementEnd();
-    \u0275\u0275elementStart(33, "button", 164);
-    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_33_listener() {
+    \u0275\u0275elementStart(27, "button", 163);
+    \u0275\u0275listener("click", function DashboardComponent_div_29_Template_button_click_27_listener() {
       \u0275\u0275restoreView(_r20);
       const ctx_r1 = \u0275\u0275nextContext();
       return \u0275\u0275resetView(ctx_r1.submitMaterials());
     });
-    \u0275\u0275elementStart(34, "mat-icon");
-    \u0275\u0275text(35, "add_link");
+    \u0275\u0275elementStart(28, "mat-icon");
+    \u0275\u0275text(29, "add_link");
     \u0275\u0275elementEnd();
-    \u0275\u0275text(36, " Ingest Notes ");
+    \u0275\u0275text(30, " Ingest Notes ");
     \u0275\u0275elementEnd()()()();
   }
   if (rf & 2) {
@@ -80025,21 +80061,22 @@ function DashboardComponent_div_29_Template(rf, ctx) {
     \u0275\u0275textInterpolate1("Add Materials: ", ctx_r1.addingMaterialTopic, "");
     \u0275\u0275advance();
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
-    \u0275\u0275advance(9);
-    \u0275\u0275twoWayProperty("ngModel", ctx_r1.newMaterialText);
-    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
-    \u0275\u0275advance(5);
-    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
+    \u0275\u0275advance(6);
+    \u0275\u0275property("ngIf", !ctx_r1.newMaterialFile);
+    \u0275\u0275advance(3);
+    \u0275\u0275textInterpolate(ctx_r1.newMaterialFile ? "Uploaded File" : "Or Upload Study Material (.txt, .md, .pdf, .ppt, .pptx)");
     \u0275\u0275advance(2);
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
-    \u0275\u0275advance(4);
+    \u0275\u0275advance(2);
+    \u0275\u0275property("ngIf", !ctx_r1.newMaterialFile);
+    \u0275\u0275advance();
     \u0275\u0275property("ngIf", ctx_r1.newMaterialFile);
     \u0275\u0275advance();
     \u0275\u0275property("ngIf", ctx_r1.ingestMessage);
     \u0275\u0275advance(2);
     \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial);
     \u0275\u0275advance(2);
-    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial || !ctx_r1.newMaterialText.trim());
+    \u0275\u0275property("disabled", ctx_r1.isIngestingMaterial || !ctx_r1.newMaterialText.trim() && !ctx_r1.newMaterialFile);
   }
 }
 var DashboardComponent = class _DashboardComponent {
@@ -80179,6 +80216,12 @@ var DashboardComponent = class _DashboardComponent {
         this.activeTab = "lesson";
       }
     });
+  }
+  toggleSyllabusWeek(week) {
+    this.selectedTimelineWeek = week;
+    if (this.selectedClass) {
+      this.loadTopicSufficiency(this.selectedClass.class_id, week);
+    }
   }
   selectTab(tab) {
     this.activeTab = tab;
@@ -80331,18 +80374,23 @@ var DashboardComponent = class _DashboardComponent {
   onMaterialFileSelected(event) {
     if (event.target.files && event.target.files.length > 0) {
       const file = event.target.files[0];
-      this.newMaterialFile = file;
       const ext = file.name.split(".").pop()?.toLowerCase();
-      if (ext === "txt") {
+      if (ext === "txt" || ext === "md") {
         const reader = new FileReader();
         reader.onload = (e) => {
           this.newMaterialText = e.target.result || "";
+          this.newMaterialFile = null;
         };
         reader.readAsText(file);
       } else {
-        this.newMaterialText = `[File Upload: ${file.name}]`;
+        this.newMaterialFile = file;
+        this.newMaterialText = "";
       }
     }
+  }
+  clearSelectedFile() {
+    this.newMaterialFile = null;
+    this.newMaterialText = "";
   }
   submitMaterials() {
     if (!this.newMaterialText.trim() && !this.newMaterialFile || !this.addingMaterialTopic || !this.selectedClass) {
@@ -80384,7 +80432,7 @@ var DashboardComponent = class _DashboardComponent {
   static \u0275fac = function DashboardComponent_Factory(__ngFactoryType__) {
     return new (__ngFactoryType__ || _DashboardComponent)(\u0275\u0275directiveInject(ActivatedRoute), \u0275\u0275directiveInject(Router), \u0275\u0275directiveInject(AuthService), \u0275\u0275directiveInject(ApiService), \u0275\u0275directiveInject(IngestService));
   };
-  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 30, vars: 7, consts: [["noTopicsInWeek", ""], ["classSyllabusInput", ""], ["materialFileInput", ""], [1, "app-header"], [1, "logo-area", 2, "cursor", "pointer", 3, "click"], [1, "logo-icon"], [1, "logo-text"], [1, "header-right"], [1, "global-streak-header-widget"], [1, "streak-icon"], [1, "streak-text"], [1, "streak-value"], [1, "streak-label"], ["class", "tab-nav", 4, "ngIf"], [1, "btn-logout", 3, "click"], [1, "app-wrapper"], ["class", "class-manager-container fade-in", 4, "ngIf"], ["class", "class-workspace-container fade-in", 4, "ngIf"], [3, "weeks", "cramStartWeek", "cramEndWeek", "classId", "close", 4, "ngIf"], ["class", "modal-overlay fade-in", 4, "ngIf"], [1, "tab-nav"], [1, "nav-tab", 3, "click"], [1, "nav-tab", 3, "class.active", "click"], [1, "class-manager-container", "fade-in"], [1, "manager-header", "card"], [1, "header-details"], [1, "subtitle"], [1, "btn-add-class", 3, "click"], ["class", "empty-state card fade-in", 4, "ngIf"], ["class", "classes-grid", 4, "ngIf"], [1, "empty-state", "card", "fade-in"], [1, "empty-icon"], [1, "btn", "btn-primary", 3, "click"], [1, "classes-grid"], ["class", "class-card card", 3, "click", 4, "ngFor", "ngForOf"], [1, "class-card", "card", 3, "click"], [1, "class-card-glow"], [1, "class-card-header"], [1, "class-icon"], [1, "class-streak-badge"], [1, "class-card-body"], [1, "class-id"], [1, "class-card-footer"], [1, "class-workspace-container", "fade-in"], [1, "class-subheader"], [1, "btn-back", 3, "click"], [1, "subheader-title"], [1, "class-id-badge"], [1, "timeline-bar-container", "card"], [1, "timeline-left"], [1, "streak-widget"], [1, "week-widget"], [1, "week-label"], [1, "week-value"], [1, "timeline-scroll"], [1, "timeline-weeks"], ["class", "timeline-week-btn", "title", "Click to study topics for this week", 3, "current", "past", "future", "click", 4, "ngFor", "ngForOf"], [1, "timeline-right"], [1, "btn-study", 3, "click"], [1, "btn-cram", 3, "click"], [1, "daily-progress-container", "card", "fade-in"], [1, "daily-progress-header"], [1, "progress-title-icon"], [1, "date-badge"], [1, "checklist-items"], [1, "checklist-item", 3, "click"], [1, "check-icon"], [1, "item-text"], [1, "item-title"], [1, "item-desc"], [1, "app-workspace"], ["class", "tab-content fade-in", 4, "ngIf"], ["class", "tab-content fade-in tutor-tab", 4, "ngIf"], ["class", "tab-content fade-in lesson-tab", 4, "ngIf"], ["class", "tab-content fade-in quiz-tab", 4, "ngIf"], ["title", "Click to study topics for this week", 1, "timeline-week-btn", 3, "click"], [1, "week-num"], [1, "week-status"], [4, "ngIf"], [1, "tab-content", "fade-in"], [1, "syllabus-layout"], [1, "sidebar-column"], [1, "syllabus-topics-card", "card"], [1, "card-header-row"], [1, "section-desc"], ["class", "loading-topics", 4, "ngIf"], ["class", "empty-topics", 4, "ngIf"], ["class", "weeks-accordion", 4, "ngIf"], [1, "ingest-section", "card"], [3, "classId"], [1, "graph-section", "card"], [1, "loading-topics"], [1, "topic-spinner"], [1, "empty-topics"], [1, "weeks-accordion"], ["class", "week-group", 3, "active-week", 4, "ngFor", "ngForOf"], [1, "week-group"], [1, "week-group-header", 3, "click"], [1, "week-title-label"], [1, "week-badge-summary"], ["class", "badge-sufficient", 4, "ngIf"], ["class", "badge-insufficient", 4, "ngIf"], ["class", "badge-empty", 4, "ngIf"], ["class", "week-group-content", 4, "ngIf"], [1, "badge-sufficient"], [1, "badge-insufficient"], [1, "badge-empty"], [1, "week-group-content"], [4, "ngIf", "ngIfElse"], ["class", "timeline-topic-item", 3, "insufficient", 4, "ngFor", "ngForOf"], [1, "timeline-topic-item"], [1, "topic-item-left"], [1, "topic-status-icon", 3, "ngClass"], [1, "topic-name-label", 3, "title"], [1, "topic-item-actions"], ["title", "Upload raw text notes or PPTX/PDF to clear warnings", 1, "btn", "btn-add-materials-small", 3, "click"], [1, "empty-desc", 2, "font-size", "12px", "color", "#94a3b8", "margin", "0", "padding", "4px"], [1, "tab-content", "fade-in", "tutor-tab"], [1, "chat-layout", "card"], [1, "tab-content", "fade-in", "lesson-tab"], [3, "exerciseCompleted", "startQuiz", "selectedWeek", "dailyState", "classId"], [1, "tab-content", "fade-in", "quiz-tab"], ["class", "quiz-locked-notice card", 4, "ngIf"], ["class", "quiz-layout card", 4, "ngIf"], [1, "quiz-locked-notice", "card"], [1, "locked-icon"], [1, "quiz-layout", "card"], [3, "selectedWeek", "classId"], [3, "close", "weeks", "cramStartWeek", "cramEndWeek", "classId"], [1, "modal-overlay", "fade-in"], [1, "modal-card", "card", "scale-up"], [1, "modal-header"], [1, "modal-title-container"], [1, "modal-header-icon"], [1, "btn-modal-close", 3, "click", "disabled"], [1, "modal-body"], [1, "modal-desc"], [1, "form-group"], ["for", "newClassName"], ["type", "text", "id", "newClassName", "placeholder", "e.g. Intro to Artificial Intelligence", "required", "", 3, "ngModelChange", "ngModel", "disabled"], [1, "file-uploader-dropzone"], ["type", "file", "id", "newClassSyllabus", "accept", ".pdf", "hidden", "", 3, "change", "disabled"], [1, "dropzone-content", 3, "click"], [1, "upload-icon"], ["class", "upload-text", 4, "ngIf"], ["class", "modal-error-alert", 4, "ngIf"], ["class", "modal-progress-container", 4, "ngIf"], [1, "modal-actions"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", "btn-submit-class", 3, "click", "disabled"], [1, "upload-text"], [1, "selected-filename"], [1, "modal-error-alert"], [1, "modal-progress-container"], ["mode", "indeterminate"], [1, "progress-subtext"], [1, "modal-header-icon", "warning-color"], ["for", "materialText"], ["id", "materialText", "placeholder", "Paste notes, transcripts, or reference text here...", "rows", "8", "required", "", 3, "ngModelChange", "ngModel", "disabled"], [1, "file-uploader-mini"], ["type", "file", "accept", ".txt,.md,.json", "hidden", "", 3, "change", "disabled"], [1, "btn", "btn-secondary", "btn-mini-upload", 3, "click", "disabled"], ["class", "mini-upload-filename", 4, "ngIf"], ["class", "modal-status-alert", 3, "ngClass", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click", "disabled"], [1, "mini-upload-filename"], [1, "modal-status-alert", 3, "ngClass"]], template: function DashboardComponent_Template(rf, ctx) {
+  static \u0275cmp = /* @__PURE__ */ \u0275\u0275defineComponent({ type: _DashboardComponent, selectors: [["app-dashboard"]], decls: 30, vars: 7, consts: [["noTopicsInWeek", ""], ["classSyllabusInput", ""], ["materialFileInput", ""], [1, "app-header"], [1, "logo-area", 2, "cursor", "pointer", 3, "click"], [1, "logo-icon"], [1, "logo-text"], [1, "header-right"], [1, "global-streak-header-widget"], [1, "streak-icon"], [1, "streak-text"], [1, "streak-value"], [1, "streak-label"], ["class", "tab-nav", 4, "ngIf"], [1, "btn-logout", 3, "click"], [1, "app-wrapper"], ["class", "class-manager-container fade-in", 4, "ngIf"], ["class", "class-workspace-container fade-in", 4, "ngIf"], [3, "weeks", "cramStartWeek", "cramEndWeek", "classId", "close", 4, "ngIf"], ["class", "modal-overlay fade-in", 4, "ngIf"], [1, "tab-nav"], [1, "nav-tab", 3, "click"], [1, "nav-tab", 3, "class.active", "click"], [1, "class-manager-container", "fade-in"], [1, "manager-header", "card"], [1, "header-details"], [1, "subtitle"], [1, "btn-add-class", 3, "click"], ["class", "empty-state card fade-in", 4, "ngIf"], ["class", "classes-grid", 4, "ngIf"], [1, "empty-state", "card", "fade-in"], [1, "empty-icon"], [1, "btn", "btn-primary", 3, "click"], [1, "classes-grid"], ["class", "class-card card", 3, "click", 4, "ngFor", "ngForOf"], [1, "class-card", "card", 3, "click"], [1, "class-card-glow"], [1, "class-card-header"], [1, "class-icon"], [1, "class-streak-badge"], [1, "class-card-body"], [1, "class-id"], [1, "class-card-footer"], [1, "class-workspace-container", "fade-in"], [1, "class-subheader"], [1, "btn-back", 3, "click"], [1, "subheader-title"], [1, "class-id-badge"], [1, "timeline-bar-container", "card"], [1, "timeline-left"], [1, "streak-widget"], [1, "week-widget"], [1, "week-label"], [1, "week-value"], [1, "timeline-scroll"], [1, "timeline-weeks"], ["class", "timeline-week-btn", "title", "Click to study topics for this week", 3, "current", "past", "future", "click", 4, "ngFor", "ngForOf"], [1, "timeline-right"], [1, "btn-study", 3, "click"], [1, "btn-cram", 3, "click"], [1, "daily-progress-container", "card", "fade-in"], [1, "daily-progress-header"], [1, "progress-title-icon"], [1, "date-badge"], [1, "checklist-items"], [1, "checklist-item", 3, "click"], [1, "check-icon"], [1, "item-text"], [1, "item-title"], [1, "item-desc"], [1, "app-workspace"], ["class", "tab-content fade-in", 4, "ngIf"], ["class", "tab-content fade-in tutor-tab", 4, "ngIf"], ["class", "tab-content fade-in lesson-tab", 4, "ngIf"], ["class", "tab-content fade-in quiz-tab", 4, "ngIf"], ["title", "Click to study topics for this week", 1, "timeline-week-btn", 3, "click"], [1, "week-num"], [1, "week-status"], [4, "ngIf"], [1, "tab-content", "fade-in"], [1, "syllabus-layout"], [1, "sidebar-column"], [1, "syllabus-topics-card", "card"], [1, "card-header-row"], [1, "section-desc"], ["class", "loading-topics", 4, "ngIf"], ["class", "empty-topics", 4, "ngIf"], ["class", "weeks-accordion", 4, "ngIf"], [1, "ingest-section", "card"], [3, "classId"], [1, "graph-section", "card"], [1, "loading-topics"], [1, "topic-spinner"], [1, "empty-topics"], [1, "weeks-accordion"], ["class", "week-group", 3, "active-week", 4, "ngFor", "ngForOf"], [1, "week-group"], [1, "week-group-header", 3, "click"], [1, "week-title-label"], [1, "week-badge-summary"], ["class", "badge-sufficient", 4, "ngIf"], ["class", "badge-insufficient", 4, "ngIf"], ["class", "badge-empty", 4, "ngIf"], ["class", "week-group-content", 4, "ngIf"], [1, "badge-sufficient"], [1, "badge-insufficient"], [1, "badge-empty"], [1, "week-group-content"], [4, "ngIf", "ngIfElse"], ["class", "timeline-topic-item", 3, "insufficient", 4, "ngFor", "ngForOf"], [1, "timeline-topic-item"], [1, "topic-item-left"], [1, "topic-status-icon", 3, "ngClass"], [1, "topic-name-label", 3, "title"], [1, "topic-item-actions"], ["title", "Upload raw text notes or PPTX/PDF to clear warnings", 1, "btn", "btn-add-materials-small", 3, "click"], [1, "empty-desc", 2, "font-size", "12px", "color", "#94a3b8", "margin", "0", "padding", "4px"], [1, "tab-content", "fade-in", "tutor-tab"], [1, "chat-layout", "card"], [1, "tab-content", "fade-in", "lesson-tab"], [3, "exerciseCompleted", "startQuiz", "selectedWeek", "dailyState", "classId"], [1, "tab-content", "fade-in", "quiz-tab"], ["class", "quiz-locked-notice card", 4, "ngIf"], ["class", "quiz-layout card", 4, "ngIf"], [1, "quiz-locked-notice", "card"], [1, "locked-icon"], [1, "quiz-layout", "card"], [3, "selectedWeek", "classId"], [3, "close", "weeks", "cramStartWeek", "cramEndWeek", "classId"], [1, "modal-overlay", "fade-in"], [1, "modal-card", "card", "scale-up"], [1, "modal-header"], [1, "modal-title-container"], [1, "modal-header-icon"], [1, "btn-modal-close", 3, "click", "disabled"], [1, "modal-body"], [1, "modal-desc"], [1, "form-group"], ["for", "newClassName"], ["type", "text", "id", "newClassName", "placeholder", "e.g. Intro to Artificial Intelligence", "required", "", 3, "ngModelChange", "ngModel", "disabled"], [1, "file-uploader-dropzone"], ["type", "file", "id", "newClassSyllabus", "accept", ".pdf", "hidden", "", 3, "change", "disabled"], [1, "dropzone-content", 3, "click"], [1, "upload-icon"], ["class", "upload-text", 4, "ngIf"], ["class", "modal-error-alert", 4, "ngIf"], ["class", "modal-progress-container", 4, "ngIf"], [1, "modal-actions"], [1, "btn", "btn-secondary", 3, "click", "disabled"], [1, "btn", "btn-primary", "btn-submit-class", 3, "click", "disabled"], [1, "upload-text"], [1, "selected-filename"], [1, "modal-error-alert"], [1, "modal-progress-container"], ["mode", "indeterminate"], [1, "progress-subtext"], [1, "modal-header-icon", "warning-color"], ["class", "form-group", 4, "ngIf"], [1, "file-uploader-mini"], ["type", "file", "accept", ".txt,.md,.pdf,.ppt,.pptx", "hidden", "", 3, "change", "disabled"], ["class", "btn btn-secondary btn-mini-upload", 3, "disabled", "click", 4, "ngIf"], ["class", "uploaded-file-row", "style", "display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);", 4, "ngIf"], ["class", "modal-status-alert", 3, "ngClass", 4, "ngIf"], [1, "btn", "btn-primary", 3, "click", "disabled"], ["for", "materialText"], ["id", "materialText", "placeholder", "Paste notes, transcripts, or reference text here...", "rows", "8", 3, "ngModelChange", "ngModel", "disabled"], [1, "btn", "btn-secondary", "btn-mini-upload", 3, "click", "disabled"], [1, "uploaded-file-row", 2, "display", "flex", "align-items", "center", "justify-content", "space-between", "padding", "8px 12px", "background", "rgba(255,255,255,0.05)", "border-radius", "6px", "border", "1px solid rgba(255,255,255,0.1)"], [1, "mini-upload-filename", 2, "display", "flex", "align-items", "center", "gap", "8px", "color", "#f1f5f9"], [2, "color", "#6366f1"], [1, "btn-clear-file", 2, "background", "none", "border", "none", "color", "#94a3b8", "cursor", "pointer", "display", "flex", "align-items", "center", "justify-content", "center", "padding", "4px", "border-radius", "4px", "transition", "all 0.2s", 3, "click", "disabled"], [2, "font-size", "18px", "width", "18px", "height", "18px"], [1, "modal-status-alert", 3, "ngClass"]], template: function DashboardComponent_Template(rf, ctx) {
     if (rf & 1) {
       \u0275\u0275elementStart(0, "header", 3)(1, "div", 4);
       \u0275\u0275listener("click", function DashboardComponent_Template_div_click_1_listener() {
@@ -80421,7 +80469,7 @@ var DashboardComponent = class _DashboardComponent {
       \u0275\u0275elementStart(24, "div", 15);
       \u0275\u0275template(25, DashboardComponent_div_25_Template, 13, 2, "div", 16)(26, DashboardComponent_div_26_Template, 76, 22, "div", 17);
       \u0275\u0275elementEnd();
-      \u0275\u0275template(27, DashboardComponent_app_cram_exam_27_Template, 1, 4, "app-cram-exam", 18)(28, DashboardComponent_div_28_Template, 38, 12, "div", 19)(29, DashboardComponent_div_29_Template, 37, 10, "div", 19);
+      \u0275\u0275template(27, DashboardComponent_app_cram_exam_27_Template, 1, 4, "app-cram-exam", 18)(28, DashboardComponent_div_28_Template, 38, 12, "div", 19)(29, DashboardComponent_div_29_Template, 31, 10, "div", 19);
     }
     if (rf & 2) {
       \u0275\u0275advance(16);
@@ -80683,7 +80731,7 @@ var DashboardComponent = class _DashboardComponent {
 
               <div *ngIf="!allWeeksLoading && weeks.length > 0" class="weeks-accordion">
                 <div *ngFor="let wKey of weeks" class="week-group" [class.active-week]="selectedTimelineWeek === wKey">
-                  <div class="week-group-header" (click)="selectTimelineWeek(wKey)">
+                  <div class="week-group-header" (click)="toggleSyllabusWeek(wKey)">
                     <span class="week-title-label">Week {{ wKey }}</span>
                     <span class="week-badge-summary">
                       <span class="badge-sufficient" *ngIf="allWeeksData[wKey] && allWeeksData[wKey].topics.length > 0 && allWeeksData[wKey].insufficient.length === 0">
@@ -80880,7 +80928,7 @@ var DashboardComponent = class _DashboardComponent {
         Provide course slides text transcripts, lecture notes, or text documents for this topic to clear the "insufficient materials" warning.
       </p>
 
-      <div class="form-group">
+      <div class="form-group" *ngIf="!newMaterialFile">
         <label for="materialText">Notes & Text Content</label>
         <textarea 
           id="materialText" 
@@ -80888,25 +80936,29 @@ var DashboardComponent = class _DashboardComponent {
           placeholder="Paste notes, transcripts, or reference text here..." 
           rows="8"
           [disabled]="isIngestingMaterial"
-          required
         ></textarea>
       </div>
 
       <div class="form-group">
-        <label>Optional: Import Text File</label>
+        <label>{{ newMaterialFile ? 'Uploaded File' : 'Or Upload Study Material (.txt, .md, .pdf, .ppt, .pptx)' }}</label>
         <div class="file-uploader-mini">
           <input 
             type="file" 
             (change)="onMaterialFileSelected($event)" 
-            accept=".txt,.md,.json" 
+            accept=".txt,.md,.pdf,.ppt,.pptx" 
             [disabled]="isIngestingMaterial"
             hidden
             #materialFileInput 
           />
-          <button class="btn btn-secondary btn-mini-upload" (click)="materialFileInput.click()" [disabled]="isIngestingMaterial">
-            <mat-icon>attach_file</mat-icon> Load from file (.txt, .md)
+          <button *ngIf="!newMaterialFile" class="btn btn-secondary btn-mini-upload" (click)="materialFileInput.click()" [disabled]="isIngestingMaterial">
+            <mat-icon>attach_file</mat-icon> Select Document / Presentation
           </button>
-          <span class="mini-upload-filename" *ngIf="newMaterialFile">{{ newMaterialFile.name }}</span>
+          <div *ngIf="newMaterialFile" class="uploaded-file-row" style="display: flex; align-items: center; justify-content: space-between; padding: 8px 12px; background: rgba(255,255,255,0.05); border-radius: 6px; border: 1px solid rgba(255,255,255,0.1);">
+            <span class="mini-upload-filename" style="display: flex; align-items: center; gap: 8px; color: #f1f5f9;"><mat-icon style="color: #6366f1;">insert_drive_file</mat-icon> {{ newMaterialFile.name }}</span>
+            <button class="btn-clear-file" (click)="clearSelectedFile()" [disabled]="isIngestingMaterial" style="background: none; border: none; color: #94a3b8; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; border-radius: 4px; transition: all 0.2s;">
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px;">close</mat-icon>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -80922,7 +80974,7 @@ var DashboardComponent = class _DashboardComponent {
       <button 
         class="btn btn-primary" 
         (click)="submitMaterials()" 
-        [disabled]="isIngestingMaterial || !newMaterialText.trim()"
+        [disabled]="isIngestingMaterial || (!newMaterialText.trim() && !newMaterialFile)"
       >
         <mat-icon>add_link</mat-icon> Ingest Notes
       </button>
