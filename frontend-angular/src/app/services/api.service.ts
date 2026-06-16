@@ -34,7 +34,7 @@ export interface QuizTelemetryResponse {
 })
 export class ApiService {
   // Keep these as the "Base" only
-  private baseUrl = environment.apiUrl; 
+  public baseUrl = environment.apiUrl; 
   private wsBaseUrl = environment.wsUrl;
 
   private graphDataSubject = new BehaviorSubject<any>(null);
@@ -188,6 +188,10 @@ export class ApiService {
     const formData = new FormData();
     formData.append('file', file);
     return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/chat/upload`, formData);
+  }
+
+  resetWeekProgress(classId: string, weekNumber: number): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${classId}/study/week/${weekNumber}/reset`, {});
   }
 
   updateGraphData(data: any) {

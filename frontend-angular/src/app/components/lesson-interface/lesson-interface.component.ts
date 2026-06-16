@@ -39,6 +39,7 @@ export class LessonInterfaceComponent implements OnInit {
 
   @Output() exerciseCompleted = new EventEmitter<void>();
   @Output() startQuiz = new EventEmitter<void>();
+  @Output() quizCompleted = new EventEmitter<any>();
 
   @Input() classId: string = 'default_class';
 
@@ -330,6 +331,11 @@ export class LessonInterfaceComponent implements OnInit {
         this.quizTotal = res.total_questions;
         this.quizPercentage = res.percentage;
         this.exerciseCompleted.emit();
+        this.quizCompleted.emit({
+          score: res.score,
+          total: res.total_questions,
+          percentage: res.percentage
+        });
       },
       error: (err) => {
         this.isLoading = false;

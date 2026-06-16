@@ -5,7 +5,7 @@
     <p>{{ statusMessage }}</p>
   </div>
 
-  <div *ngIf="errorMessage" class="error-alert">
+  <div *ngIf="errorMessage && !errorMessage.includes('No study materials found')" class="error-alert">
     <mat-icon>error_outline</mat-icon>
     <span>{{ errorMessage }}</span>
     <button class="btn btn-outline" (click)="loadLesson()">Retry</button>
@@ -185,7 +185,9 @@
             </div>
             <div class="step-card-body text-center">
               <p class="unlocked-text">Checklist Completed! You are clear to start your Week {{ selectedWeek }} quiz.</p>
-              <p class="unlocked-subtext">This quiz contains exactly 10 questions customized to your target topics. Submitting your answers will save analytics to BigQuery and extend your streak!</p>
+              <p class="unlocked-subtext" style="color: #cbd5e1; font-size: 13px; line-height: 1.5; margin-top: 8px;">
+                Taking your quiz every day is required to maintain and add to your study streak! This quiz will test a mixture of your previous weakest topics and current topics (with more focus on the current topic). Submitting your answers will record telemetry to BigQuery.
+              </p>
             </div>
             <div class="step-card-footer">
               <button class="btn btn-primary btn-block btn-start-quiz" (click)="startIntegratedQuiz()">

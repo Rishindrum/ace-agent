@@ -21,6 +21,7 @@ interface ChatMessage {
 })
 export class ChatInterfaceComponent implements OnInit, OnDestroy {
   @Input() classId: string = 'default_class';
+  @Input() className: string = 'Default Class';
 
   messages: ChatMessage[] = [];
   newMessage: string = '';
@@ -52,7 +53,7 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     this.socket.onopen = () => {
       console.log('Connected to Chat Server');
       this.messages.push({
-        text: "Connected to Gemini 2.5 Brain. Ready to chat.", 
+        text: `Hello! Welcome to ${this.className}. I'm Ace, your study assistant for this class. Whether you need help understanding the syllabus, reviewing course materials, or mastering this week's topics, feel free to ask me anything about our course!`, 
         sender: 'bot', 
         timestamp: new Date()
       });

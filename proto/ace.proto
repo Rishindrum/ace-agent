@@ -22,6 +22,7 @@ service TutorService {
   rpc GetMaterials (GetMaterialsRequest) returns (GetMaterialsResponse);
   rpc DeleteMaterial (DeleteMaterialRequest) returns (DeleteMaterialResponse);
   rpc ParseDocument (ParseDocumentRequest) returns (ParseDocumentResponse);
+  rpc ResetWeekProgress (ResetWeekProgressRequest) returns (ResetWeekProgressResponse);
 }
 
 message SyllabusRequest {
@@ -37,6 +38,8 @@ message SyllabusResponse {
   string message = 2;
   int32 nodes_created = 3;
   string graph_json = 4;
+  repeated int32 recommended_study_days = 5;
+  int32 recommended_daily_pace_minutes = 6;
 }
 
 message ChatRequest {
@@ -250,4 +253,15 @@ message ParseDocumentResponse {
   string parsed_text = 1;
   bool success = 2;
   string message = 3;
+}
+
+message ResetWeekProgressRequest {
+  string user_id = 1;
+  string class_id = 2;
+  int32 week_number = 3;
+}
+
+message ResetWeekProgressResponse {
+  bool success = 1;
+  string message = 2;
 }

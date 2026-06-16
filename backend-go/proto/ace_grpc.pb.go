@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v3.20.3
-// source: ace.proto
+// source: proto/ace.proto
 
 package proto
 
@@ -36,6 +36,7 @@ const (
 	TutorService_GetMaterials_FullMethodName               = "/ace.TutorService/GetMaterials"
 	TutorService_DeleteMaterial_FullMethodName             = "/ace.TutorService/DeleteMaterial"
 	TutorService_ParseDocument_FullMethodName              = "/ace.TutorService/ParseDocument"
+	TutorService_ResetWeekProgress_FullMethodName          = "/ace.TutorService/ResetWeekProgress"
 )
 
 // TutorServiceClient is the client API for TutorService service.
@@ -59,6 +60,7 @@ type TutorServiceClient interface {
 	GetMaterials(ctx context.Context, in *GetMaterialsRequest, opts ...grpc.CallOption) (*GetMaterialsResponse, error)
 	DeleteMaterial(ctx context.Context, in *DeleteMaterialRequest, opts ...grpc.CallOption) (*DeleteMaterialResponse, error)
 	ParseDocument(ctx context.Context, in *ParseDocumentRequest, opts ...grpc.CallOption) (*ParseDocumentResponse, error)
+	ResetWeekProgress(ctx context.Context, in *ResetWeekProgressRequest, opts ...grpc.CallOption) (*ResetWeekProgressResponse, error)
 }
 
 type tutorServiceClient struct {
@@ -239,6 +241,16 @@ func (c *tutorServiceClient) ParseDocument(ctx context.Context, in *ParseDocumen
 	return out, nil
 }
 
+func (c *tutorServiceClient) ResetWeekProgress(ctx context.Context, in *ResetWeekProgressRequest, opts ...grpc.CallOption) (*ResetWeekProgressResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ResetWeekProgressResponse)
+	err := c.cc.Invoke(ctx, TutorService_ResetWeekProgress_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TutorServiceServer is the server API for TutorService service.
 // All implementations must embed UnimplementedTutorServiceServer
 // for forward compatibility.
@@ -260,6 +272,7 @@ type TutorServiceServer interface {
 	GetMaterials(context.Context, *GetMaterialsRequest) (*GetMaterialsResponse, error)
 	DeleteMaterial(context.Context, *DeleteMaterialRequest) (*DeleteMaterialResponse, error)
 	ParseDocument(context.Context, *ParseDocumentRequest) (*ParseDocumentResponse, error)
+	ResetWeekProgress(context.Context, *ResetWeekProgressRequest) (*ResetWeekProgressResponse, error)
 	mustEmbedUnimplementedTutorServiceServer()
 }
 
@@ -320,6 +333,9 @@ func (UnimplementedTutorServiceServer) DeleteMaterial(context.Context, *DeleteMa
 }
 func (UnimplementedTutorServiceServer) ParseDocument(context.Context, *ParseDocumentRequest) (*ParseDocumentResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method ParseDocument not implemented")
+}
+func (UnimplementedTutorServiceServer) ResetWeekProgress(context.Context, *ResetWeekProgressRequest) (*ResetWeekProgressResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method ResetWeekProgress not implemented")
 }
 func (UnimplementedTutorServiceServer) mustEmbedUnimplementedTutorServiceServer() {}
 func (UnimplementedTutorServiceServer) testEmbeddedByValue()                      {}
@@ -648,6 +664,24 @@ func _TutorService_ParseDocument_Handler(srv interface{}, ctx context.Context, d
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TutorService_ResetWeekProgress_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResetWeekProgressRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).ResetWeekProgress(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_ResetWeekProgress_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).ResetWeekProgress(ctx, req.(*ResetWeekProgressRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TutorService_ServiceDesc is the grpc.ServiceDesc for TutorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -723,7 +757,11 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "ParseDocument",
 			Handler:    _TutorService_ParseDocument_Handler,
 		},
+		{
+			MethodName: "ResetWeekProgress",
+			Handler:    _TutorService_ResetWeekProgress_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "ace.proto",
+	Metadata: "proto/ace.proto",
 }

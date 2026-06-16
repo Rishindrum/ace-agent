@@ -2,7 +2,7 @@
 <header class="app-header">
   <div class="logo-area" (click)="selectClass(null)" style="cursor: pointer;">
     <div class="logo-icon">
-      <mat-icon class="logo-cosmic">space_dashboard</mat-icon>
+      <mat-icon class="logo-cosmic">rocket_launch</mat-icon>
     </div>
     <div class="logo-text">
       <h2>Ace Agent</h2>
@@ -13,9 +13,6 @@
   <div class="header-right">
     <!-- Navigation Tabs -->
     <nav class="tab-nav" *ngIf="selectedClass">
-      <button class="nav-tab" (click)="selectClass(null)" title="Back to Classes Dashboard">
-        <mat-icon>dashboard</mat-icon> Dashboard
-      </button>
       <button class="nav-tab" [class.active]="activeTab === 'study'" (click)="selectTab('study')">
         <mat-icon>local_library</mat-icon> Study Hub
       </button>
@@ -94,7 +91,7 @@
 
     <!-- Classes Grid -->
     <div *ngIf="classes.length > 0" class="classes-grid">
-      <div *ngFor="let classObj of classes" class="class-card card" (click)="selectClass(classObj)">
+      <div *ngFor="let classObj of classes" class="class-card card" [class.course-complete-card]="getCourseCompletion(classObj) === 100" (click)="selectClass(classObj)">
         <div class="class-card-glow"></div>
         <div class="class-card-header" style="position: relative;">
           <mat-icon class="class-icon">school</mat-icon>
@@ -120,7 +117,7 @@
               <span>Completion</span>
               <span>{{ getCourseCompletion(classObj) }}%</span>
             </div>
-            <mat-progress-bar mode="determinate" [value]="getCourseCompletion(classObj)" style="height: 6px; border-radius: 3px;"></mat-progress-bar>
+            <mat-progress-bar mode="determinate" [value]="getCourseCompletion(classObj)" [class.completed-progress]="getCourseCompletion(classObj) === 100" style="height: 6px; border-radius: 3px;"></mat-progress-bar>
           </div>
         </div>
         <div class="class-card-footer">
@@ -194,6 +191,19 @@
       </div>
     </div>
 
+    <!-- Top Study Warning Banner (if insufficient topics materials are found) -->
+    <div *ngIf="activeTab === 'study' && insufficientTopics.length > 0" class="top-warning-alert card fade-in" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+      <mat-icon style="font-size: 36px; width: 36px; height: 36px; color: #f87171; display: flex; align-items: center; justify-content: center;">warning</mat-icon>
+      <div style="flex-grow: 1;">
+        <p style="margin: 0; color: #fca5a5; font-size: 14px; font-weight: 700; line-height: 1.4;">
+          No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!
+        </p>
+      </div>
+      <button class="btn btn-warning-action" (click)="viewSyllabusDirect()" style="background: #ef4444; border: none; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;">
+        Go to Syllabus
+      </button>
+    </div>
+
     <!-- Daily Gating Progress Checklist -->
     <div class="daily-progress-container card fade-in" *ngIf="activeTab === 'study'">
       <div class="daily-progress-header">
@@ -260,7 +270,11 @@
                 <div *ngFor="let wKey of weeks" class="week-group" [class.active-week]="selectedTimelineWeek === wKey">
                   <div class="week-group-header" (click)="toggleSyllabusWeek(wKey)">
                     <span class="week-title-label">Week {{ wKey }}</span>
-                    <span class="week-badge-summary">
+                    <span class="week-badge-summary" style="display: flex; align-items: center; gap: 8px;">
+                      <button class="btn btn-reset-week" (click)="resetWeekProgress(wKey, $event)" title="Reset this week's scores and lessons/quizzes progress" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; cursor: pointer; transition: all 0.2s; font-weight: 600; vertical-align: middle;">
+                        <mat-icon style="font-size: 12px; width: 12px; height: 12px; margin: 0;">restore</mat-icon>
+                        <span>RESET</span>
+                      </button>
                       <span class="badge-sufficient" *ngIf="allWeeksData[wKey] && allWeeksData[wKey].topics.length > 0 && allWeeksData[wKey].insufficient.length === 0">
                         <mat-icon>check_circle</mat-icon> Covered
                       </span>
@@ -298,12 +312,6 @@
               </div>
             </div>
 
-            <!-- Material Ingestion Card -->
-            <div class="ingest-section card">
-              <h3>General Material Ingestion</h3>
-              <p class="section-desc">Ingest general slides, transcripts, or notes by selecting a week number and topic name.</p>
-              <app-ingest [classId]="selectedClass.class_id" (onIngested)="onGeneralIngested()"></app-ingest>
-            </div>
           </div>
 
           <div class="graph-section card">
@@ -319,7 +327,9 @@
             [selectedWeek]="selectedTimelineWeek" 
             [dailyState]="dailyState"
             [classId]="selectedClass.class_id"
+            [className]="selectedClass.class_name"
             (exerciseCompleted)="loadDailyState()"
+            (quizCompleted)="onQuizCompleted($event)"
           ></app-lesson-interface>
         </div>
       </div>
@@ -401,7 +411,7 @@
         <div class="chat-layout card">
           <h3>Ask Ace</h3>
           <p class="section-desc">Ask questions about policies, prerequisites, syllabus content, or educational topics.</p>
-          <app-chat-interface [classId]="selectedClass.class_id"></app-chat-interface>
+          <app-chat-interface [classId]="selectedClass.class_id" [className]="selectedClass.class_name"></app-chat-interface>
         </div>
       </div>
 
@@ -604,38 +614,40 @@
 <app-cram-exam *ngIf="isCramModalOpen" [weeks]="weeks" [cramStartWeek]="currentWeek" [cramEndWeek]="currentWeek" [classId]="selectedClass?.class_id || 'default_class'" (close)="closeCramModal()"></app-cram-exam>
 
 <!-- strict ADD CLASS MODAL OVERLAY -->
-<div *ngIf="isAddClassModalOpen" class="modal-overlay fade-in">
-  <div class="modal-card card scale-up">
-    <div class="modal-header">
-      <div class="modal-title-container">
-        <mat-icon class="modal-header-icon">school</mat-icon>
-        <h2>Create New Class</h2>
+<div *ngIf="isAddClassModalOpen" class="modal-overlay add-class-step-modal fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2500; padding: 20px; box-sizing: border-box;">
+  <div class="modal-card card scale-up cosmic-modal" style="width: 100%; max-width: 600px; background: #0f172a; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 24px; box-shadow: 0 0 30px rgba(99, 102, 241, 0.2); box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; color: #f1f5f9; max-height: 90vh;">
+    <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
+      <div class="modal-title-container" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: #38bdf8;">
+        <mat-icon class="modal-header-icon" style="color: #38bdf8;">school</mat-icon>
+        <h2>{{ addClassStep === 1 ? 'Create New Class' : 'Configure Schedule Settings' }}</h2>
       </div>
-      <button class="btn-modal-close" (click)="closeAddClassModal()" [disabled]="isAddingClass">
+      <button class="btn-modal-close" (click)="closeAddClassModal()" [disabled]="isAddingClass" style="background: transparent; border: none; cursor: pointer; color: #94a3b8;">
         <mat-icon>close</mat-icon>
       </button>
     </div>
     
-    <div class="modal-body">
-      <p class="modal-desc">
+    <!-- STEP 1: Syllabus Upload -->
+    <div *ngIf="addClassStep === 1" class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
+      <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
         To register a class, enter a class name and upload its Syllabus or Class Calendar PDF. Ace Agent will parse key topics, weekly timelines, and dependent structures.
       </p>
 
-      <div class="form-group">
-        <label for="newClassName">Class Name</label>
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label for="newClassName" style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Class Name</label>
         <input 
           type="text" 
           id="newClassName" 
           [(ngModel)]="newClassName" 
           placeholder="e.g. Intro to Artificial Intelligence" 
           [disabled]="isAddingClass"
+          style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
           required 
         />
       </div>
 
-      <div class="form-group">
-        <label>Syllabus / Class Calendar PDF</label>
-        <div class="file-uploader-dropzone" [class.file-selected]="newClassSyllabusFile">
+      <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+        <label style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Syllabus / Class Calendar PDF</label>
+        <div class="file-uploader-dropzone" [class.file-selected]="newClassSyllabusFile" style="border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(99, 102, 241, 0.02);">
           <input 
             type="file" 
             id="newClassSyllabus" 
@@ -645,41 +657,142 @@
             hidden
             #classSyllabusInput 
           />
-          <div class="dropzone-content" (click)="classSyllabusInput.click()">
-            <mat-icon class="upload-icon">cloud_upload</mat-icon>
-            <div class="upload-text" *ngIf="!newClassSyllabusFile">
-              <strong>Click to upload PDF</strong> or drag and drop
+          <div class="dropzone-content" (click)="classSyllabusInput.click()" style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+            <mat-icon class="upload-icon" style="font-size: 32px; width: 32px; height: 32px; color: #6366f1;">cloud_upload</mat-icon>
+            <div class="upload-text" *ngIf="!newClassSyllabusFile" style="font-size: 12px; color: #94a3b8;">
+              <strong style="color: #e2e8f0; display: block; margin-bottom: 2px;">Click to upload PDF</strong> or drag and drop
               <span>Only PDF format allowed</span>
             </div>
-            <div class="upload-text" *ngIf="newClassSyllabusFile">
+            <div class="upload-text" *ngIf="newClassSyllabusFile" style="font-size: 12px; color: #e2e8f0;">
               <strong>Syllabus PDF Selected:</strong>
-              <span class="selected-filename">{{ newClassSyllabusFile.name }}</span>
+              <span class="selected-filename" style="color: #38bdf8; display: block; margin-top: 4px; word-break: break-all;">{{ newClassSyllabusFile.name }}</span>
             </div>
           </div>
         </div>
       </div>
 
       <!-- Add Class Error Message -->
+      <div *ngIf="addClassErrorMessage" class="modal-error-alert" style="background: rgba(239,68,68,0.1); border: 1px solid rgba(239,68,68,0.3); color: #fca5a5; padding: 10px; border-radius: 6px; font-size: 12px; display: flex; align-items: center; gap: 8px;">
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">error_outline</mat-icon>
+        <span>{{ addClassErrorMessage }}</span>
+      </div>
+
+      <!-- Ingest Progress Bar -->
+      <div *ngIf="isAddingClass" class="modal-progress-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <span class="progress-subtext" style="font-size: 11px; color: #94a3b8; text-align: center;">AI Brain parsing syllabus and mapping knowledge graph nodes...</span>
+      </div>
+    </div>
+
+    <div *ngIf="addClassStep === 1" class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 8px;">
+      <button class="btn btn-secondary" (click)="closeAddClassModal()" [disabled]="isAddingClass" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; cursor: pointer; font-weight: 600;">Cancel</button>
+      <button 
+        class="btn btn-primary btn-submit-class" 
+        (click)="createClass()" 
+        [disabled]="isAddingClass || !newClassName.trim() || !newClassSyllabusFile"
+        style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
+      >
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">cloud_upload</mat-icon> Upload & Parse
+      </button>
+    </div>
+
+    <!-- STEP 2: Recommended Streak & Topics Config -->
+    <div *ngIf="addClassStep === 2" class="modal-body setup-modal-body" style="display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 55vh; padding-right: 4px;">
+      <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
+        Gemini has successfully processed your syllabus! Verify the extracted weekly topics and configure your personalized study settings.
+      </p>
+
+      <!-- Extracted Topics List & Split Editor -->
+      <div class="setup-section topics-preview">
+        <h4 style="margin: 0 0 8px 0; color: #38bdf8; font-size: 13px; font-weight: 700; text-transform: uppercase;">Extracted Weekly Topics Split</h4>
+        <div class="preview-weeks-list" style="background: rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); padding: 12px; border-radius: 8px; max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px;">
+          <div *ngFor="let wk of setupTopicsList; let wIdx = index" class="preview-week-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 4px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+              <strong style="font-size: 12px; color: #e2e8f0;">Week {{ wk.week_number }}</strong>
+            </div>
+            <div class="setup-topics-sublist" style="display: flex; flex-direction: column; gap: 6px; padding-left: 10px;">
+              <div *ngFor="let topic of wk.topics; let tIdx = index; trackBy: trackByFn" class="setup-topic-row" style="display: flex; align-items: center; gap: 6px;">
+                <input 
+                  type="text" 
+                  [(ngModel)]="wk.topics[tIdx]" 
+                  placeholder="Enter topic name..." 
+                  style="flex-grow: 1; padding: 6px 8px; border: 1px solid rgba(255,255,255,0.1); border-radius: 4px; font-size: 11px; background: rgba(0,0,0,0.3); color: white; outline: none;"
+                />
+                <button class="btn-remove-topic" (click)="removeTopicFromSetupSyllabus(wIdx, tIdx)" title="Remove Topic" style="background: transparent; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; justify-content: center; padding: 2px;">
+                  <mat-icon style="font-size: 16px; width: 16px; height: 16px;">remove_circle</mat-icon>
+                </button>
+              </div>
+              <button class="btn-add-topic-small" (click)="addTopicToSetupSyllabus(wIdx)" style="align-self: flex-start; background: transparent; border: 1px dashed rgba(56, 189, 248, 0.4); cursor: pointer; color: #38bdf8; display: inline-flex; align-items: center; gap: 2px; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: 600; transition: all 0.2s;">
+                <mat-icon style="font-size: 10px; width: 10px; height: 10px;">add</mat-icon> Add Topic
+              </button>
+            </div>
+          </div>
+          <div *ngIf="setupTopicsList.length === 0" class="loading-preview" style="font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
+            <span>Loading topics list...</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recommended Schedule Config -->
+      <div class="setup-section settings-config" style="margin-top: 4px;">
+        <h4 style="margin: 0 0 12px 0; color: #38bdf8; font-size: 13px; font-weight: 700; text-transform: uppercase;">Study Schedule Recommendations</h4>
+        
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
+          <label style="font-size: 12px; font-weight: 600; color: #e2e8f0;">Streak Target Days (Select study days per week)</label>
+          <p class="rec-note" style="color: #38bdf8; font-size: 11px; margin: 0 0 8px 0;">* Gemini recommendation based on course density</p>
+          <div class="days-checkboxes-grid" style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px;">
+            <label *ngFor="let day of streakSettingsDays" class="day-checkbox-label" style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.05); padding: 8px 4px; border-radius: 6px; cursor: pointer;">
+              <input type="checkbox" [(ngModel)]="day.selected" style="margin: 0;" />
+              <span class="checkbox-custom-name" style="font-size: 10px; font-weight: 700; color: #94a3b8;">{{ day.name }}</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-top: 16px;">
+          <label for="setupDailyPace" style="font-size: 12px; font-weight: 600; color: #e2e8f0;">Recommended Daily Study Pace (minutes)</label>
+          <input 
+            type="number" 
+            id="setupDailyPace" 
+            [(ngModel)]="streakSettingsPace" 
+            min="10" 
+            max="180"
+            style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+            required 
+          />
+        </div>
+
+        <div class="form-group" style="display: flex; flex-direction: column; gap: 6px; margin-top: 16px;">
+          <label for="setupStartDate" style="font-size: 12px; font-weight: 600; color: #e2e8f0;">Course Start Date</label>
+          <input 
+            type="date" 
+            id="setupStartDate" 
+            [(ngModel)]="streakSettingsStartDate" 
+            style="padding: 10px; border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; background: rgba(0,0,0,0.2); color: white; outline: none; width: 100%; box-sizing: border-box;"
+            required 
+          />
+        </div>
+      </div>
+
       <div *ngIf="addClassErrorMessage" class="modal-error-alert">
         <mat-icon>error_outline</mat-icon>
         <span>{{ addClassErrorMessage }}</span>
       </div>
 
-      <!-- Ingest Progress Bar -->
       <div *ngIf="isAddingClass" class="modal-progress-container">
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <span class="progress-subtext">AI Brain parsing syllabus and mapping knowledge graph nodes...</span>
+        <span class="progress-subtext">Configuring course settings and syncing schedule...</span>
       </div>
     </div>
 
-    <div class="modal-actions">
-      <button class="btn btn-secondary" (click)="closeAddClassModal()" [disabled]="isAddingClass">Cancel</button>
+    <div *ngIf="addClassStep === 2" class="modal-actions" style="display: flex; justify-content: flex-end; gap: 12px; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 8px;">
+      <button class="btn btn-secondary" (click)="closeAddClassModal()" [disabled]="isAddingClass" style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; cursor: pointer; font-weight: 600;">Cancel</button>
       <button 
-        class="btn btn-primary btn-submit-class" 
-        (click)="createClass()" 
-        [disabled]="isAddingClass || !newClassName.trim() || !newClassSyllabusFile"
+        class="btn btn-primary" 
+        (click)="saveSetupSettings()" 
+        [disabled]="isAddingClass"
+        style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
       >
-        <mat-icon>add_circle</mat-icon> Create Class
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">play_circle_outline</mat-icon> Save & Start Course Tour
       </button>
     </div>
   </div>
@@ -878,5 +991,131 @@
       </button>
     </div>
 
+  </div>
+</div>
+
+<!-- INTERACTIVE ONBOARDING TUTORIAL OVERLAY -->
+<div *ngIf="isTutorialActive" class="tutorial-overlay fade-in" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.85); backdrop-filter: blur(8px); display: flex; justify-content: center; align-items: center; z-index: 2600; padding: 20px; box-sizing: border-box;">
+  <div class="tutorial-card card scale-up cosmic-modal" style="width: 100%; max-width: 500px; background: #0f172a; border: 1px solid rgba(99, 102, 241, 0.3); border-radius: 16px; padding: 24px; box-shadow: 0 0 30px rgba(99, 102, 241, 0.2); box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; color: #f1f5f9;">
+    <div class="tutorial-header" style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
+      <div class="tutorial-step-badge" style="background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #a5b4fc; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; margin-bottom: 6px; text-transform: uppercase;">Step {{ tutorialStep }} of 5</div>
+      <h3 style="margin: 0; font-size: 18px; color: #38bdf8; font-weight: 800;">{{ 
+        tutorialStep === 1 ? 'Welcome to Study Hub!' :
+        tutorialStep === 2 ? 'Browse the Syllabus Timeline' :
+        tutorialStep === 3 ? 'Understand concepts in the Knowledge Graph' :
+        tutorialStep === 4 ? 'Tailored Chatbot Assistant - Ask Ace' :
+        'Enable Calendar Notifications & Sync'
+      }}</h3>
+    </div>
+    
+    <div class="tutorial-body" style="font-size: 13px; line-height: 1.5; color: #cbd5e1;">
+      <!-- Step 1: Study Hub -->
+      <div *ngIf="tutorialStep === 1" class="tutorial-step-content">
+        <p>The <strong>Study Hub</strong> is your main command station. Every day, you can:
+        <ul style="margin-top: 8px; padding-left: 20px; display: flex; flex-direction: column; gap: 6px;">
+          <li>Generate a detailed study lesson using Gemini.</li>
+          <li>Practice interactive exercises to verify your understanding.</li>
+          <li>Take the official daily quiz to continue your learning streak.</li>
+        </ul>
+      </div>
+
+      <!-- Step 2: Syllabus Timeline -->
+      <div *ngIf="tutorialStep === 2" class="tutorial-step-content">
+        <p>Use the <strong>Syllabus Timeline</strong> to browse topics for each week of the semester.</p>
+        <p>You can see sufficiency check statuses, upload material for specific topics, and even reset progress for any week to clear BQ scores and start over!</p>
+      </div>
+
+      <!-- Step 3: Knowledge Graph -->
+      <div *ngIf="tutorialStep === 3" class="tutorial-step-content">
+        <p>Our interactive, space-themed <strong>Knowledge Graph</strong> visualizes the prerequisite connections between topics.</p>
+        <p>It updates dynamically as you learn, helping you see what concepts stand between you and your goals.</p>
+      </div>
+
+      <!-- Step 4: Ask Ace -->
+      <div *ngIf="tutorialStep === 4" class="tutorial-step-content">
+        <p>Need extra help? The <strong>Ask Ace</strong> tab opens a tailored chat interface with your cosmic AI teaching assistant.</p>
+        <p>Ace is primed with your course syllabus and materials, making it easy to clarify equations, guidelines, or vocabulary.</p>
+      </div>
+
+      <!-- Step 5: Calendar Integration -->
+      <div *ngIf="tutorialStep === 5" class="tutorial-step-content text-center" style="text-align: center;">
+        <p class="highlight-text" style="font-size: 14px; font-weight: 700; color: #38bdf8;">Do you want to enable calendar integration for reminders and your own record of sessions?</p>
+        <p class="sub-text" style="color: #94a3b8; font-size: 12px; margin-top: 8px;">This will create study events on your preferred days, send reminders 10 minutes prior, and automatically log your study sessions for your own records.</p>
+        
+        <div class="calendar-consent-buttons" style="display: flex; flex-direction: column; gap: 10px; margin-top: 20px;">
+          <button class="btn btn-primary" (click)="enableCalendarInTutorial()" style="padding: 12px; font-size: 13px; font-weight: 700; background: #6366f1; border: none; color: white; border-radius: 6px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px;">today</mat-icon> Yes, Enable Calendar Integration
+          </button>
+          <button class="btn btn-secondary" (click)="endTutorial()" style="padding: 10px; font-size: 12px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; border-radius: 6px; cursor: pointer;">
+            Maybe Later / Skip
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="tutorial-actions" *ngIf="tutorialStep < 5" style="display: flex; justify-content: space-between; border-top: 1px solid rgba(255, 255, 255, 0.1); padding-top: 12px; margin-top: 8px;">
+      <button class="btn btn-secondary" (click)="endTutorial()" style="padding: 8px 16px; font-size: 13px; border: 1px solid rgba(255,255,255,0.1); background: transparent; color: #94a3b8; border-radius: 6px; cursor: pointer;">Skip Tour</button>
+      <button class="btn btn-primary" (click)="nextTutorialStep()" style="padding: 8px 16px; font-size: 13px; border: none; background: #6366f1; color: white; border-radius: 6px; cursor: pointer; display: flex; align-items: center; gap: 6px; font-weight: 700;">
+        <span>Next Step</span>
+        <mat-icon style="font-size: 16px; width: 16px; height: 16px;">arrow_forward</mat-icon>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- STREAK & COMPLETION FULL SCREEN ANIMATIONS -->
+<div *ngIf="showAnimationOverlay" class="animation-fullscreen-overlay fade-in" (click)="closeAnimationOverlay()" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(5, 8, 16, 0.95); backdrop-filter: blur(12px); display: flex; justify-content: center; align-items: center; z-index: 3000; padding: 20px; box-sizing: border-box; cursor: pointer;">
+  <div class="animation-container scale-up" (click)="$event.stopPropagation()" style="width: 100%; max-width: 500px; background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(99, 102, 241, 0.4); border-radius: 24px; padding: 40px; box-shadow: 0 0 50px rgba(99, 102, 241, 0.4); box-sizing: border-box; display: flex; flex-direction: column; align-items: center; gap: 20px; color: #f1f5f9; position: relative; overflow: hidden; cursor: default;">
+    
+    <!-- Cosmic background particles effect inside modal -->
+    <div class="stars-particle-overlay" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.3; background-image: radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px), radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px); background-size: 550px 550px, 350px 350px; background-position: 0 0, 40px 60px;"></div>
+
+    <!-- 1. Normal Streak Lit Animation -->
+    <div *ngIf="animationType === 'streak'" class="anim-content streak-lit" style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
+      <div class="streak-fire-glow-holder" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+        <div class="fire-glow-ring animate-ping" style="position: absolute; width: 100px; height: 100px; border-radius: 50%; background: radial-gradient(circle, rgba(239,68,68,0.4) 0%, transparent 70%); animation-duration: 3s;"></div>
+        <mat-icon class="huge-fire-icon animated-fire" style="font-size: 80px; width: 80px; height: 80px; color: #ef4444; filter: drop-shadow(0 0 20px #ef4444); animation: cosmic-pulse 2s infinite ease-in-out;">local_fire_department</mat-icon>
+      </div>
+      <h1 class="anim-title text-glow" style="margin: 0; font-size: 28px; font-weight: 800; color: #ef4444; text-shadow: 0 0 15px rgba(239, 68, 68, 0.6); text-transform: uppercase;">Streak Extended!</h1>
+      <div class="streak-value-display" style="font-size: 48px; font-weight: 900; color: #f1f5f9; text-shadow: 0 0 10px rgba(255,255,255,0.3);">{{ animStreakCount }} Days</div>
+      <p class="anim-desc" style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">Your daily study loop is complete! Your learning streak is burning brighter.</p>
+      
+      <div class="completion-update-bar" style="margin-top: 20px; width: 100%;">
+        <span style="font-size: 12px; color: #94a3b8; display: block; margin-bottom: 6px; text-align: center; font-weight: 600;">Course Completion: {{ animCompletionPercentage }}%</span>
+        <div class="progress-bar-track" style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden;">
+          <div class="progress-bar-fill" [style.width.%]="animCompletionPercentage" [class.completed-green]="animCompletionPercentage === 100" style="height: 100%; background: #6366f1; border-radius: 4px; transition: width 1s ease-out;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 2. Milestone Landmark Animation (50, 100, 200...) -->
+    <div *ngIf="animationType === 'milestone'" class="anim-content milestone-reached" style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
+      <div class="milestone-badge-holder" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+        <div class="fire-glow-ring animate-pulse" style="position: absolute; width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 70%);"></div>
+        <mat-icon class="huge-badge-icon animate-bounce" style="font-size: 80px; width: 80px; height: 80px; color: #a855f7; filter: drop-shadow(0 0 25px #a855f7);">workspace_premium</mat-icon>
+      </div>
+      <h1 class="anim-title text-glow-rainbow" style="margin: 0; font-size: 26px; font-weight: 900; background: linear-gradient(to right, #38bdf8, #a855f7, #f43f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; text-transform: uppercase; animation: rainbow-glow 3s infinite linear; text-align: center;">{{ animMilestoneName }} Milestone!</h1>
+      <div class="streak-value-display text-glow-rainbow" style="font-size: 54px; font-weight: 950; background: linear-gradient(to right, #38bdf8, #a855f7, #f43f5e); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">{{ animStreakCount }} Days</div>
+      <p class="anim-desc" style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">Unbelievable commitment! You have reached a landmark study milestone of {{ animStreakCount }} consecutive days!</p>
+      <div class="badge-tag" style="background: rgba(168, 85, 247, 0.2); border: 1px solid #a855f7; color: #e9d5ff; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 12px; display: inline-block; margin-top: 10px;">🏆 Cosmic Scholar Status Unlocked</div>
+    </div>
+
+    <!-- 3. Complete Course Completion Animation (100%) -->
+    <div *ngIf="animationType === 'course_complete'" class="anim-content course-complete" style="display: flex; flex-direction: column; align-items: center; gap: 16px; width: 100%;">
+      <div class="completion-globe-holder" style="position: relative; width: 120px; height: 120px; display: flex; align-items: center; justify-content: center;">
+        <div class="fire-glow-ring animate-spin" style="position: absolute; width: 110px; height: 110px; border-radius: 50%; border: 2px dashed rgba(34,197,94,0.4); animation-duration: 10s;"></div>
+        <mat-icon class="huge-completion-icon" style="font-size: 80px; width: 80px; height: 80px; color: #22c55e; filter: drop-shadow(0 0 25px #22c55e);">school</mat-icon>
+      </div>
+      <h1 class="anim-title text-glow-green" style="margin: 0; font-size: 28px; font-weight: 800; color: #22c55e; text-shadow: 0 0 15px rgba(34, 197, 94, 0.6); text-transform: uppercase;">Course Mastered!</h1>
+      <div class="completion-value-display text-glow-green" style="font-size: 54px; font-weight: 950; color: #22c55e;">100% Complete</div>
+      <p class="anim-desc" style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">Congratulations! You have completed all 12 weeks of course materials and mastered every single topic in this syllabus!</p>
+      <div class="green-card-badge" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 12px; display: inline-block; margin-top: 10px;">🎓 Graduated with honors on Ace Agent</div>
+    </div>
+
+    <div class="animation-actions" style="margin-top: 10px; width: 100%; display: flex; justify-content: center;">
+      <button class="btn btn-primary btn-close-anim" (click)="closeAnimationOverlay()" style="padding: 12px 36px; font-size: 14px; font-weight: 700; background: #6366f1; border: none; color: white; border-radius: 8px; cursor: pointer; box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); text-transform: uppercase;">
+        Continue Study
+      </button>
+    </div>
   </div>
 </div>

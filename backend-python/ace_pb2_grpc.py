@@ -119,6 +119,11 @@ class TutorServiceStub:
                 request_serializer=ace__pb2.ParseDocumentRequest.SerializeToString,
                 response_deserializer=ace__pb2.ParseDocumentResponse.FromString,
                 _registered_method=True)
+        self.ResetWeekProgress = channel.unary_unary(
+                '/ace.TutorService/ResetWeekProgress',
+                request_serializer=ace__pb2.ResetWeekProgressRequest.SerializeToString,
+                response_deserializer=ace__pb2.ResetWeekProgressResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer:
@@ -226,6 +231,12 @@ class TutorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def ResetWeekProgress(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -313,6 +324,11 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.ParseDocument,
                     request_deserializer=ace__pb2.ParseDocumentRequest.FromString,
                     response_serializer=ace__pb2.ParseDocumentResponse.SerializeToString,
+            ),
+            'ResetWeekProgress': grpc.unary_unary_rpc_method_handler(
+                    servicer.ResetWeekProgress,
+                    request_deserializer=ace__pb2.ResetWeekProgressRequest.FromString,
+                    response_serializer=ace__pb2.ResetWeekProgressResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -774,6 +790,33 @@ class TutorService:
             '/ace.TutorService/ParseDocument',
             ace__pb2.ParseDocumentRequest.SerializeToString,
             ace__pb2.ParseDocumentResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ResetWeekProgress(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/ResetWeekProgress',
+            ace__pb2.ResetWeekProgressRequest.SerializeToString,
+            ace__pb2.ResetWeekProgressResponse.FromString,
             options,
             channel_credentials,
             insecure,

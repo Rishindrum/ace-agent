@@ -271,6 +271,8 @@ class WeekModel(BaseModel):
 class SyllabusResponseModel(BaseModel):
     concepts: List[ConceptModel] = Field(description="The graph of concepts and their prerequisites")
     weeks: List[WeekModel] = Field(description="The weekly schedule of the course")
+    recommended_study_days: List[int] = Field(description="Recommended study days of the week as integers (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). E.g. [1, 3, 5] for Mon/Wed/Fri.")
+    recommended_daily_pace_minutes: int = Field(description="Recommended daily study pace in minutes (e.g. 30, 45, 60).")
 
 
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
@@ -350,6 +352,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         # 3. EXTRACT GRAPH & WEEKLY SCHEDULE (If Neo4j is alive)
         concepts = []
         weeks = []
+        rec_days = [1, 3, 5]
+        rec_pace = 45
         if self.driver:
             print("[Python] Extracting graph and schedule with Gemini...")
             prompt = f"""
@@ -372,7 +376,9 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 data = json.loads(response.text)
                 concepts = data.get("concepts", [])
                 weeks = data.get("weeks", [])
-                print(f"[Python] Extracted {len(concepts)} concepts and {len(weeks)} weeks.")
+                rec_days = data.get("recommended_study_days", [1, 3, 5])
+                rec_pace = data.get("recommended_daily_pace_minutes", 45)
+                print(f"[Python] Extracted {len(concepts)} concepts, {len(weeks)} weeks, recommended study days {rec_days}, pace {rec_pace}.")
                 
                 # Write to Neo4j
                 with self.driver.session() as session:
@@ -414,7 +420,9 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             success=True,
             message=f"Processed {request.file_name}",
             nodes_created=len(concepts),
-            graph_json=json.dumps(concepts)
+            graph_json=json.dumps(concepts),
+            recommended_study_days=rec_days,
+            recommended_daily_pace_minutes=rec_pace
         )
 
 
@@ -733,6 +741,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                         except Exception:
                             pass
 
+            if request.file_data and request.file_name and (not content or not content.strip()):
+                return ace_pb2.IngestResponse(
+                    success=False, 
+                    message=f"Failed to extract text from {request.file_name}. If you are uploading a .ppt file, please convert it to .pptx or PDF format first, as old .ppt binary files are not supported."
+                )
+
             import ingestion_service
             success = ingestion_service.ingest_material(
                 content=content,
@@ -757,6 +771,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', class '{class_id}', weak topics {weak_topics_list}...")
         try:
+            current_topics = []
+            prev_weak_topics = []
             topic_names = []
             chunks = []
             
@@ -770,29 +786,37 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             # Fallback: review all course concepts if no weak topics are recorded yet
                             print(f"[Python] No weak topics found. Falling back to all concepts.")
                             query = """
-                            MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
-                            RETURN t.name AS topic_name, m.chunks AS chunks
+                            MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
+                            RETURN t.name AS topic_name, w.number AS week_number, m.chunks AS chunks
                             """
                             result = session.run(query, user_id=request.user_id, class_id=class_id)
                         else:
                             query = """
-                            MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
+                            MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                             WHERE t.name IN $weak_topics
-                            RETURN t.name AS topic_name, m.chunks AS chunks
+                            RETURN t.name AS topic_name, w.number AS week_number, m.chunks AS chunks
                             """
                             result = session.run(query, user_id=request.user_id, class_id=class_id, weak_topics=weak_topics_list)
                     else:
                         query = """
-                        MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
+                        MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
                         WHERE (w.number = $week_number) OR (t.name IN $weak_topics)
-                        RETURN t.name AS topic_name, m.chunks AS chunks
+                        RETURN t.name AS topic_name, w.number AS week_number, m.chunks AS chunks
                         """
                         result = session.run(query, week_number=request.week_number, user_id=request.user_id, class_id=class_id, weak_topics=weak_topics_list)
                     
                     for record in result:
                         tname = record.get("topic_name")
-                        if tname and tname not in topic_names:
-                            topic_names.append(tname)
+                        wnum = record.get("week_number")
+                        if tname:
+                            if tname not in topic_names:
+                                topic_names.append(tname)
+                            if wnum == request.week_number:
+                                if tname not in current_topics:
+                                    current_topics.append(tname)
+                            else:
+                                if tname not in prev_weak_topics:
+                                    prev_weak_topics.append(tname)
                         rec_chunks = record.get("chunks")
                         if rec_chunks:
                             if isinstance(rec_chunks, list):
@@ -853,13 +877,23 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 attempts += 1
                 print(f"[Python] GenerateQuiz attempt {attempts}...")
 
-                # Construct prompt for LLM
+                # Construct prompt for LLM with split focus
+                if request.week_number != -1:
+                    focus_instruction = f"""
+                    The quiz must test a mixture of:
+                    1. Current Week {request.week_number} topics (more focus on these): {', '.join(current_topics) if current_topics else 'None'}
+                    2. Previous weak/struggling topics (lower focus): {', '.join(prev_weak_topics) if prev_weak_topics else 'None'}
+                    
+                    CRITICAL: Place more focus on the current week's topics. Approximately 70% of the quiz questions should cover current week's topics, and 30% should cover previous weak topics.
+                    """
+                else:
+                    focus_instruction = f"The quiz should test the following topics: {topics_str}."
+
                 prompt = f"""
                 You are a helpful teaching assistant.
-                Generate a quiz containing exactly {request.question_count} multiple choice questions for the following week and topics.
+                Generate a quiz containing exactly {request.question_count} multiple choice questions.
                 
-                Week Number: {request.week_number}
-                Topics: {topics_str}
+                {focus_instruction}
                 
                 Here are the source material text chunks to base the questions on:
                 {context_chunks}
@@ -1617,6 +1651,26 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             context.set_details(f"Failed to delete class: {str(e)}")
             return ace_pb2.DeleteClassResponse(success=False, message=str(e))
 
+    def ResetWeekProgress(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        week_number = request.week_number
+        print(f"[Python] ResetWeekProgress for user {user_id}, class {class_id}, week {week_number}")
+        try:
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (w:Week {number: $week_number, user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {user_id: $user_id, class_id: $class_id})
+                    DETACH DELETE g
+                    """
+                    session.run(query, user_id=user_id, class_id=class_id, week_number=week_number)
+            return ace_pb2.ResetWeekProgressResponse(success=True, message=f"Week {week_number} progress reset in Neo4j successfully.")
+        except Exception as e:
+            print(f"[Python] ResetWeekProgress Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to reset week progress: {str(e)}")
+            return ace_pb2.ResetWeekProgressResponse(success=False, message=str(e))
+
     def _get_syllabus_nodes(self, tx, user_id, class_id):
         query = """
         MATCH (w:Week {user_id: $user_id, class_id: $class_id})
@@ -1897,7 +1951,11 @@ def serve():
     # Default to 50051 only if we are running locally
     port = os.environ.get('PORT', '50051')
     
-    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
+    options = [
+        ('grpc.max_receive_message_length', 100 * 1024 * 1024),
+        ('grpc.max_send_message_length', 100 * 1024 * 1024)
+    ]
+    server = grpc.server(futures.ThreadPoolExecutor(max_workers=10), options=options)
     ace_pb2_grpc.add_TutorServiceServicer_to_server(TutorService(), server)
     
     # Add Health Checking Servicer (Crucial for Cloud Run gRPC startup probes)

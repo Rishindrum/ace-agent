@@ -6,7 +6,6 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { FormsModule } from '@angular/forms';
 import { GraphVisualizerComponent } from '../graph-visualizer/graph-visualizer.component';
 import { ChatInterfaceComponent } from '../chat-interface/chat-interface.component';
-import { IngestComponent } from '../ingest/ingest.component';
 import { LessonInterfaceComponent } from '../lesson-interface/lesson-interface.component';
 import { CramExamComponent } from '../cram-exam/cram-exam.component';
 import { AuthService } from '../../services/auth.service';
@@ -23,7 +22,6 @@ import { IngestService } from '../../services/ingest.service';
     FormsModule,
     GraphVisualizerComponent,
     ChatInterfaceComponent,
-    IngestComponent,
     LessonInterfaceComponent,
     CramExamComponent
   ],
@@ -84,6 +82,25 @@ export class DashboardComponent implements OnInit {
   newClassSyllabusFile: File | null = null;
   addClassErrorMessage: string = '';
   isAddingClass: boolean = false;
+
+  // Post-upload Setup State
+  addClassStep: number = 1;
+  setupClassId: string = '';
+  setupClassName: string = '';
+  setupRecommendedPace: number = 45;
+  setupRecommendedDays: number[] = [];
+  setupTopicsList: any[] = [];
+
+  // Tutorial State
+  isTutorialActive: boolean = false;
+  tutorialStep: number = 1;
+
+  // Animation Overlays State
+  showAnimationOverlay: boolean = false;
+  animationType: 'streak' | 'milestone' | 'course_complete' = 'streak';
+  animStreakCount: number = 0;
+  animMilestoneName: string = '';
+  animCompletionPercentage: number = 0;
 
   // Edit Syllabus Modal Flow
   isEditSyllabusModalOpen: boolean = false;
@@ -613,6 +630,8 @@ export class DashboardComponent implements OnInit {
     this.newClassSyllabusFile = null;
     this.addClassErrorMessage = '';
     this.isAddingClass = false;
+    this.addClassStep = 1;
+    this.setupTopicsList = [];
     this.isAddClassModalOpen = true;
   }
 
@@ -639,15 +658,83 @@ export class DashboardComponent implements OnInit {
     // 1. Upload Syllabus first
     this.api.uploadSyllabus(this.newClassSyllabusFile, classId, this.newClassName).subscribe({
       next: (uploadRes: any) => {
+        this.isAddingClass = false;
         if (!uploadRes || uploadRes.status === 'error') {
-          this.isAddingClass = false;
           this.addClassErrorMessage = uploadRes?.message || 'Failed to upload syllabus PDF.';
           return;
         }
 
-        // 2. Initialize default schedule settings for this class to create the record
-        const today = new Date().toISOString().split('T')[0];
-        this.api.saveUserScheduleSettings([2, 4], 1, 0, today, classId, this.newClassName).subscribe({
+        // Capture recommendations and transition to Step 2
+        this.addClassStep = 2;
+        this.setupClassId = classId;
+        this.setupClassName = this.newClassName;
+        this.setupRecommendedPace = uploadRes.recommended_daily_pace_minutes || 45;
+        this.setupRecommendedDays = uploadRes.recommended_study_days || [1, 3, 5];
+
+        // Populate streakSettings / settingsDays checked arrays
+        this.streakSettingsPace = this.setupRecommendedPace;
+        this.streakSettingsStartDate = new Date().toISOString().split('T')[0];
+        this.streakSettingsDays.forEach(d => {
+          d.selected = this.setupRecommendedDays.includes(d.value);
+        });
+
+        // Load topics from syllabus
+        this.api.getSyllabus(classId).subscribe({
+          next: (res: any) => {
+            this.setupTopicsList = res.weeks || [];
+          },
+          error: (err) => {
+            console.warn('Failed to load syllabus for post-upload preview:', err);
+          }
+        });
+      },
+      error: (uploadErr) => {
+        this.isAddingClass = false;
+        this.addClassErrorMessage = 'Syllabus upload failed: ' + (uploadErr.error?.message || uploadErr.message || uploadErr);
+      }
+    });
+  }
+
+  addTopicToSetupSyllabus(weekIdx: number): void {
+    if (this.setupTopicsList[weekIdx]) {
+      this.setupTopicsList[weekIdx].topics.push('');
+    }
+  }
+
+  removeTopicFromSetupSyllabus(weekIdx: number, topicIdx: number): void {
+    if (this.setupTopicsList[weekIdx]) {
+      this.setupTopicsList[weekIdx].topics.splice(topicIdx, 1);
+    }
+  }
+
+  saveSetupSettings(): void {
+    const selectedDays = this.streakSettingsDays.filter(d => d.selected).map(d => d.value);
+    if (selectedDays.length === 0) {
+      alert('Please select at least one preferred study day.');
+      return;
+    }
+
+    this.isAddingClass = true;
+    this.addClassErrorMessage = '';
+
+    // 1. Clean up topics: remove empty topic names
+    const cleanedWeeks = this.setupTopicsList.map(w => ({
+      week_number: w.week_number,
+      topics: w.topics.map((t: string) => t.trim()).filter((t: string) => t !== '')
+    }));
+
+    // 2. Save the syllabus split first
+    this.api.editSyllabus(this.setupClassId, cleanedWeeks).subscribe({
+      next: () => {
+        // 3. Save user schedule settings
+        this.api.saveUserScheduleSettings(
+          selectedDays,
+          this.streakSettingsPace,
+          0, // streak starts at 0
+          this.streakSettingsStartDate,
+          this.setupClassId,
+          this.setupClassName
+        ).subscribe({
           next: (schedRes: any) => {
             this.isAddingClass = false;
             this.isAddClassModalOpen = false;
@@ -655,24 +742,27 @@ export class DashboardComponent implements OnInit {
             
             // Auto-select the newly created class
             const newClass = {
-              class_id: classId,
-              class_name: this.newClassName,
+              class_id: this.setupClassId,
+              class_name: this.setupClassName,
               class_streak: 0,
               current_streak: 0,
               global_streak: this.globalStreak,
-              course_start_date: today
+              course_start_date: this.streakSettingsStartDate
             };
             this.selectClass(newClass);
+            
+            // Start interactive onboarding tour!
+            this.startOnboardingTutorial();
           },
           error: (schedErr) => {
             this.isAddingClass = false;
-            this.addClassErrorMessage = 'Syllabus uploaded, but failed to create class schedule: ' + (schedErr.error?.message || schedErr.message || schedErr);
+            this.addClassErrorMessage = 'Failed to save schedule settings: ' + (schedErr.error?.message || schedErr.message || schedErr);
           }
         });
       },
-      error: (uploadErr) => {
+      error: (err) => {
         this.isAddingClass = false;
-        this.addClassErrorMessage = 'Syllabus upload failed: ' + (uploadErr.error?.message || uploadErr.message || uploadErr);
+        this.addClassErrorMessage = 'Failed to save syllabus: ' + (err.error?.message || err.message || err);
       }
     });
   }
@@ -827,6 +917,138 @@ export class DashboardComponent implements OnInit {
 
   closeCramModal() {
     this.isCramModalOpen = false;
+  }
+
+  // Onboarding Tutorial Methods
+  startOnboardingTutorial(): void {
+    this.isTutorialActive = true;
+    this.tutorialStep = 1;
+  }
+
+  nextTutorialStep(): void {
+    if (this.tutorialStep < 5) {
+      this.tutorialStep++;
+    } else {
+      this.endTutorial();
+    }
+  }
+
+  endTutorial(): void {
+    this.isTutorialActive = false;
+    this.tutorialStep = 1;
+    if (this.selectedClass) {
+      localStorage.setItem('onboarding_completed_' + this.selectedClass.class_id, 'true');
+    }
+  }
+
+  enableCalendarInTutorial(): void {
+    const token = this.authService.getToken();
+    window.location.href = `${this.api.baseUrl}/api/v1/auth/google/login?token=${token}`;
+  }
+
+  // Reset Progress per week
+  resetWeekProgress(weekNumber: number, event: Event): void {
+    event.stopPropagation();
+    if (!this.selectedClass) return;
+    if (confirm(`Are you sure you want to reset all progress, BigQuery scores, and lessons/quizzes for Week ${weekNumber}? This cannot be undone.`)) {
+      this.api.resetWeekProgress(this.selectedClass.class_id, weekNumber).subscribe({
+        next: (res) => {
+          alert(res.message || `Successfully reset Week ${weekNumber} progress!`);
+          this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
+          this.loadAllTopicsSufficiency();
+          this.loadClasses();
+          this.loadDailyState();
+          this.loadQuizScores();
+        },
+        error: (err) => {
+          alert('Failed to reset week progress: ' + (err.error?.message || err.message || err));
+        }
+      });
+    }
+  }
+
+  // Quiz completed & streak animation triggers
+  onQuizCompleted(event: any): void {
+    if (!this.selectedClass) return;
+    const cid = this.selectedClass.class_id;
+
+    // Save current values to compare
+    const prevStreak = this.selectedClass.class_streak || this.selectedClass.current_streak || 0;
+    const prevCompletion = this.getCourseCompletion(this.selectedClass);
+
+    // Refresh class details
+    this.api.listClasses().subscribe({
+      next: (res: any[]) => {
+        this.classes = res || [];
+        this.globalStreak = this.classes.reduce((max, c) => c.global_streak > max ? c.global_streak : max, 0);
+        
+        const updated = this.classes.find(c => c.class_id === cid);
+        if (updated) {
+          this.selectedClass = updated;
+          const newStreak = updated.class_streak || updated.current_streak || 0;
+          const newCompletion = this.getCourseCompletion(updated);
+
+          this.triggerAnimations(prevStreak, newStreak, prevCompletion, newCompletion);
+        }
+        this.loadDailyState(cid);
+        this.loadQuizScores();
+      }
+    });
+  }
+
+  triggerAnimations(prevStreak: number, newStreak: number, prevCompletion: number, newCompletion: number): void {
+    // Check if course is 100% completed
+    if (newCompletion === 100 && prevCompletion < 100) {
+      this.animationType = 'course_complete';
+      this.animCompletionPercentage = 100;
+      this.animStreakCount = newStreak;
+      this.showAnimationOverlay = true;
+      this.triggerAudioGong();
+      return;
+    }
+
+    // Check if new streak is a landmark milestone (50, 100, 200...)
+    const landmarks = [50, 100, 200, 300, 400, 500];
+    if (landmarks.includes(newStreak) && newStreak > prevStreak) {
+      this.animationType = 'milestone';
+      this.animStreakCount = newStreak;
+      if (newStreak === 50) this.animMilestoneName = 'Supernova';
+      else if (newStreak === 100) this.animMilestoneName = 'Cosmic Legend';
+      else if (newStreak === 200) this.animMilestoneName = 'Interstellar Master';
+      else this.animMilestoneName = 'Galaxy Voyager';
+      this.showAnimationOverlay = true;
+      this.triggerAudioGong();
+      return;
+    }
+
+    // Otherwise, normal streak increment animation
+    this.animationType = 'streak';
+    this.animStreakCount = newStreak;
+    this.animCompletionPercentage = newCompletion;
+    this.showAnimationOverlay = true;
+  }
+
+  closeAnimationOverlay(): void {
+    this.showAnimationOverlay = false;
+  }
+
+  triggerAudioGong(): void {
+    try {
+      const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+      osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.3); // Octave jump
+      gain.gain.setValueAtTime(0.5, audioCtx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 1.5);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 1.5);
+    } catch (e) {
+      console.log('Audio Context not allowed or supported yet:', e);
+    }
   }
 }
 

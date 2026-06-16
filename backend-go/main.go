@@ -8,7 +8,9 @@ import (
 	"net/http"
 	"os"
 	"time"
+	"io"
 	"strings"
+	"strconv"
 
 	pb "ace-agent/backend-go/proto"
 	calendar "ace-agent/backend-go/calendar"
@@ -155,11 +157,10 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	// 2. Read Bytes
-	fileBytes := make([]byte, header.Size)
-	_, err = file.Read(fileBytes)
+	// 2. Read Bytes using io.ReadAll to prevent corruption of large files
+	fileBytes, err := io.ReadAll(file)
 	if err != nil {
-		http.Error(w, "Failed to read file", http.StatusInternalServerError)
+		http.Error(w, "Failed to read file: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -228,10 +229,12 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message": resp.Message,
-		"nodes":   resp.NodesCreated,
-		"graph":   graphData,
-		"status":  "success",
+		"message":                         resp.Message,
+		"nodes":                           resp.NodesCreated,
+		"graph":                           graphData,
+		"status":                          "success",
+		"recommended_study_days":          resp.RecommendedStudyDays,
+		"recommended_daily_pace_minutes": resp.RecommendedDailyPaceMinutes,
 	})
 }
 
@@ -479,8 +482,7 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		if err == nil {
 			defer file.Close()
 			fileName = header.Filename
-			fileBytes = make([]byte, header.Size)
-			_, err = file.Read(fileBytes)
+			fileBytes, err = io.ReadAll(file)
 			if err != nil {
 				http.Error(w, "Failed to read uploaded file: "+err.Error(), http.StatusInternalServerError)
 				return
@@ -1178,8 +1180,7 @@ func chatUploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer file.Close()
 
-	fileBytes := make([]byte, header.Size)
-	_, err = file.Read(fileBytes)
+	fileBytes, err := io.ReadAll(file)
 	if err != nil {
 		http.Error(w, "Failed to read file: "+err.Error(), http.StatusInternalServerError)
 		return
@@ -1973,6 +1974,10 @@ func main() {
         log.Printf("[Go] Connecting locally/insecurely to: %s", tutorAddr)
         opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
     }
+    opts = append(opts, grpc.WithDefaultCallOptions(
+        grpc.MaxCallRecvMsgSize(100*1024*1024),
+        grpc.MaxCallSendMsgSize(100*1024*1024),
+    ))
 
     conn, err := grpc.NewClient(tutorAddr, opts...) // Use NewClient instead of Dial
     if err != nil {
@@ -2017,6 +2022,7 @@ func main() {
 	mux.HandleFunc("/api/v1/classes/{class_id}/materials", auth.JWTMiddleware(getMaterialsHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/materials/{material_id}", auth.JWTMiddleware(deleteMaterialHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/chat/upload", auth.JWTMiddleware(chatUploadHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/study/week/{week_number}/reset", auth.JWTMiddleware(resetWeekProgressHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", CORSMiddleware(mux)); err != nil {
@@ -2323,3 +2329,92 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(jsonResponse)
 }
+
+func resetWeekProgressHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	weekStr := r.PathValue("week_number")
+	if weekStr == "" {
+		http.Error(w, "Bad Request: Week number missing", http.StatusBadRequest)
+		return
+	}
+
+	weekNumber, err := strconv.Atoi(weekStr)
+	if err != nil || weekNumber < 1 || weekNumber > 12 {
+		http.Error(w, "Bad Request: Invalid week number", http.StatusBadRequest)
+		return
+	}
+
+	// 1. Delete scores from BigQuery for this user, class, and week
+	if bqClient != nil {
+		queryStr := fmt.Sprintf("DELETE FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND class_id = '%s' AND week_number = %d", userID, classID, weekNumber)
+		q := bqClient.Query(queryStr)
+		_, err := q.Run(r.Context())
+		if err != nil {
+			log.Printf("[ResetWeekProgress] BigQuery delete error: %v", err)
+		} else {
+			log.Printf("[ResetWeekProgress] Successfully deleted BigQuery attempts for user %s, class %s, week %d", userID, classID, weekNumber)
+		}
+	}
+
+	// 2. Call python brain to delete GeneratedContent nodes
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, grpcErr := tutorClient.ResetWeekProgress(ctx, &pb.ResetWeekProgressRequest{
+		UserId:     userID,
+		ClassId:    classID,
+		WeekNumber: int32(weekNumber),
+	})
+	if grpcErr != nil {
+		log.Printf("[ResetWeekProgress] gRPC ResetWeekProgress error: %v", grpcErr)
+		http.Error(w, "Failed to reset week progress in database: "+grpcErr.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	// 3. Reset daily session checklist state if we are resetting the current syllabus week
+	var currentWeek int = 1
+	if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
+		if sched.CourseStartDate != "" {
+			currentWeek = auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
+		}
+	}
+	if weekNumber == currentWeek {
+		sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+		sessionState.LessonCompleted = false
+		sessionState.ExercisesCompleted = false
+		sessionState.QuizUnlocked = false
+		auth.GlobalDailySessionStore.SaveSessionState(sessionState)
+		log.Printf("[ResetWeekProgress] Reset daily session state for user %s and class %s", userID, classID)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": fmt.Sprintf("Successfully reset progress for week %d.", weekNumber),
+	})
+}
+
