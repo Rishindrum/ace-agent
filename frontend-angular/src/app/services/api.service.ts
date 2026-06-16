@@ -159,7 +159,7 @@ export class ApiService {
 
   checkTopicSufficiency(classId: string, weekNumber?: number): Observable<any> {
     const cid = classId || 'default_class';
-    const q = weekNumber ? `?week_number=${weekNumber}` : '';
+    const q = weekNumber !== undefined ? `?week_number=${weekNumber}` : '';
     return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/sufficiency${q}`);
   }
 

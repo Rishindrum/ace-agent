@@ -225,6 +225,7 @@ export class DashboardComponent implements OnInit {
         this.isEditSyllabusModalOpen = false;
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
         this.loadAllTopicsSufficiency();
+        this.loadSyllabusGraph(this.selectedClass.class_id);
         alert('Syllabus updated successfully!');
       },
       error: (err) => {
@@ -301,6 +302,7 @@ export class DashboardComponent implements OnInit {
             this.selectedClass = updated;
             this.currentStreak = updated.class_streak || updated.current_streak || 0;
             this.loadAllTopicsSufficiency();
+            this.loadSyllabusGraph(updated.class_id);
           }
         }
       },
@@ -331,7 +333,57 @@ export class DashboardComponent implements OnInit {
     this.loadTopicSufficiency(classObj.class_id, this.selectedTimelineWeek);
     this.loadAllTopicsSufficiency();
     this.loadQuizScores();
+    this.loadSyllabusGraph(classObj.class_id);
     this.activeTab = 'study';
+  }
+
+  loadSyllabusGraph(classId: string): void {
+    this.api.getSyllabus(classId).subscribe({
+      next: (res: any) => {
+        if (res && res.graph_json) {
+          try {
+            const graphData = JSON.parse(res.graph_json);
+            this.api.updateGraphData(graphData);
+          } catch (e) {
+            console.error('Failed to parse graph_json:', e);
+            this.api.updateGraphData([]);
+          }
+        } else {
+          this.api.updateGraphData([]);
+        }
+      },
+      error: (err) => {
+        console.warn('Could not load syllabus graph:', err);
+        this.api.updateGraphData([]);
+      }
+    });
+  }
+
+  viewSyllabusDirect(): void {
+    if (!this.selectedClass) return;
+    this.activeTab = 'materials';
+    this.isLoadingMaterials = true;
+    this.api.getMaterials(this.selectedClass.class_id).subscribe({
+      next: (res) => {
+        this.isLoadingMaterials = false;
+        if (res && res.materials) {
+          this.materials = res.materials;
+          const syllabusMat = this.materials.find((m: any) => m.filename.toLowerCase().includes('syllabus') || m.material_id.startsWith('syllabus_'));
+          if (syllabusMat) {
+            this.selectedMaterial = syllabusMat;
+          } else {
+            this.selectedMaterial = null;
+          }
+        } else {
+          this.materials = [];
+          this.selectedMaterial = null;
+        }
+      },
+      error: (err) => {
+        this.isLoadingMaterials = false;
+        console.error('Failed to load materials:', err);
+      }
+    });
   }
 
   calculateCurrentWeek(startDateStr: string): number {
@@ -685,6 +737,7 @@ export class DashboardComponent implements OnInit {
         this.ingestMessage = 'Material successfully ingested!';
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
         this.loadAllTopicsSufficiency();
+        this.loadMaterials();
         setTimeout(() => {
           this.closeAddMaterials();
         }, 1500);
@@ -695,6 +748,13 @@ export class DashboardComponent implements OnInit {
         this.ingestMessage = 'Ingestion failed: ' + (err.error?.message || err.message || err);
       }
     });
+  }
+
+  onGeneralIngested(): void {
+    if (!this.selectedClass) return;
+    this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
+    this.loadAllTopicsSufficiency();
+    this.loadMaterials();
   }
 
   openStreakSettingsModal(): void {

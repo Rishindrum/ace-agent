@@ -196,6 +196,7 @@ message GetSyllabusResponse {
   repeated WeekTopics weeks = 1;
   bool success = 2;
   string message = 3;
+  string graph_json = 4;
 }
 
 message EditSyllabusRequest {

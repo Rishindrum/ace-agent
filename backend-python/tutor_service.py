@@ -377,6 +377,34 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 # Write to Neo4j
                 with self.driver.session() as session:
                     session.execute_write(self._create_dynamic_nodes, user_id, class_id, class_name, concepts, weeks)
+                    
+                    # Store syllabus file as a viewable material node linked to Week 1
+                    session.run("""
+                        MERGE (u:User {id: $user_id})
+                        MERGE (c:Class {id: $class_id})
+                        ON CREATE SET c.name = $class_name
+                        MERGE (u)-[:ENROLLED_IN]->(c)
+                        
+                        MERGE (w:Week {number: 1, class_id: $class_id, user_id: $user_id})
+                        MERGE (c)-[:HAS_SYLLABUS]->(w)
+                        
+                        MERGE (t:Topic {name: "Syllabus Overview", class_id: $class_id, user_id: $user_id})
+                        MERGE (w)-[:SCHEDULED_FOR]->(t)
+                        
+                        MERGE (m:Material {name: $material_id, class_id: $class_id, user_id: $user_id})
+                        ON CREATE SET m.filename = $filename,
+                                      m.content = $content,
+                                      m.created_at = timestamp()
+                        ON MATCH SET m.content = $content
+                        
+                        MERGE (m)-[:SOURCE_MATERIAL_FOR]->(t)
+                    """, 
+                    user_id=user_id,
+                    class_id=class_id,
+                    class_name=class_name,
+                    material_id=f"syllabus_{class_id}",
+                    filename=request.file_name,
+                    content=full_text)
             except Exception as e:
                 print(f"[Python] Graph/Schedule Logic Error: {e}")
         else:
@@ -1474,7 +1502,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             with self.driver.session() as session:
                 if week_number == 0:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+                    MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
                     OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
                     RETURN w.number AS week_num, t.name AS topic_name, collect(m.content) AS contents
                     ORDER BY w.number, t.name
@@ -1493,7 +1521,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                                 insufficient_topics.append(formatted)
                 else:
                     query = """
-                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+                    MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
                     WHERE w.number = $week_number
                     OPTIONAL MATCH (m:Material {user_id: $user_id, class_id: $class_id})-[:SOURCE_MATERIAL_FOR]->(t)
                     RETURN t.name AS topic_name, collect(m.content) AS contents
@@ -1599,12 +1627,31 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         result = tx.run(query, user_id=user_id, class_id=class_id)
         return [(record.get("week_num"), record.get("topics") or []) for record in result]
 
+    def _get_class_graph(self, tx, user_id, class_id):
+        query = """
+        MATCH (c:Class {id: $class_id})-[:COVERS]->(t:Topic {user_id: $user_id, class_id: $class_id})
+        OPTIONAL MATCH (p:Topic {user_id: $user_id, class_id: $class_id})-[:PREREQUISITE_TO]->(t)
+        RETURN t.name AS name, collect(p.name) AS prerequisites
+        """
+        result = tx.run(query, user_id=user_id, class_id=class_id)
+        concepts = []
+        for record in result:
+            name = record.get("name")
+            prereqs = record.get("prerequisites") or []
+            prereqs = [p for p in prereqs if p]
+            concepts.append({
+                "name": name,
+                "prerequisites": prereqs
+            })
+        return concepts
+
     def GetSyllabus(self, request, context):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GetSyllabus for user {user_id} and class {class_id}")
         try:
             weeks_pb = []
+            graph_json = ""
             if self.driver:
                 with self.driver.session() as session:
                     records = session.execute_read(self._get_syllabus_nodes, user_id, class_id)
@@ -1613,7 +1660,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             week_number=int(week_num),
                             topics=topics
                         ))
-            return ace_pb2.GetSyllabusResponse(weeks=weeks_pb, success=True, message="Syllabus retrieved successfully.")
+                    concepts = session.execute_read(self._get_class_graph, user_id, class_id)
+                    graph_json = json.dumps(concepts)
+            return ace_pb2.GetSyllabusResponse(
+                weeks=weeks_pb, 
+                success=True, 
+                message="Syllabus retrieved successfully.",
+                graph_json=graph_json
+            )
         except Exception as e:
             print(f"[Python] GetSyllabus Exception: {e}")
             context.set_code(grpc.StatusCode.INTERNAL)
@@ -1625,10 +1679,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             w_num = w.week_number
             w_topics = w.topics
             
-            # 1. Ensure Week node exists
+            # 1. Ensure Week node exists and link to Class
             tx.run("""
+                MERGE (c:Class {id: $class_id})
                 MERGE (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-            """, user_id=user_id, class_id=class_id, w_num=w_num)
+                MERGE (c)-[:HAS_SYLLABUS]->(w)
+            """, class_id=class_id, user_id=user_id, w_num=w_num)
             
             # 2. Delete all existing SCHEDULED_FOR relationships for this week
             tx.run("""

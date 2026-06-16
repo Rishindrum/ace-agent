@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
@@ -23,6 +23,7 @@ import { IngestService } from '../../services/ingest.service';
 })
 export class IngestComponent {
   @Input() classId: string = 'default_class';
+  @Output() onIngested = new EventEmitter<void>();
 
   weekNumber: number | null = null;
   topicName: string = '';
@@ -54,6 +55,7 @@ export class IngestComponent {
           this.weekNumber = null;
           this.topicName = '';
           this.rawText = '';
+          this.onIngested.emit();
         }
       },
       error: (err) => {

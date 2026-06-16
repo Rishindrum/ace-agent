@@ -1654,6 +1654,7 @@ type GetSyllabusResponse struct {
 	Weeks         []*WeekTopics          `protobuf:"bytes,1,rep,name=weeks,proto3" json:"weeks,omitempty"`
 	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
 	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	GraphJson     string                 `protobuf:"bytes,4,opt,name=graph_json,json=graphJson,proto3" json:"graph_json,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1705,6 +1706,13 @@ func (x *GetSyllabusResponse) GetSuccess() bool {
 func (x *GetSyllabusResponse) GetMessage() string {
 	if x != nil {
 		return x.Message
+	}
+	return ""
+}
+
+func (x *GetSyllabusResponse) GetGraphJson() string {
+	if x != nil {
+		return x.GraphJson
 	}
 	return ""
 }
@@ -2379,11 +2387,13 @@ const file_ace_proto_rawDesc = "" +
 	"\x06topics\x18\x02 \x03(\tR\x06topics\"H\n" +
 	"\x12GetSyllabusRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
-	"\bclass_id\x18\x02 \x01(\tR\aclassId\"p\n" +
+	"\bclass_id\x18\x02 \x01(\tR\aclassId\"\x8f\x01\n" +
 	"\x13GetSyllabusResponse\x12%\n" +
 	"\x05weeks\x18\x01 \x03(\v2\x0f.ace.WeekTopicsR\x05weeks\x12\x18\n" +
 	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"p\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\x12\x1d\n" +
+	"\n" +
+	"graph_json\x18\x04 \x01(\tR\tgraphJson\"p\n" +
 	"\x13EditSyllabusRequest\x12\x17\n" +
 	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
 	"\bclass_id\x18\x02 \x01(\tR\aclassId\x12%\n" +

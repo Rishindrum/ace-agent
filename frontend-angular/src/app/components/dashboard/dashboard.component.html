@@ -185,6 +185,9 @@
         <button class="btn-study" (click)="selectTimelineWeek(currentWeek)">
           <mat-icon>local_library</mat-icon> Study
         </button>
+        <button class="btn-view-syllabus" (click)="viewSyllabusDirect()">
+          <mat-icon>assignment</mat-icon> View Syllabus
+        </button>
         <button class="btn-cram" (click)="openCramModal()">
           <mat-icon>offline_bolt</mat-icon> Cram for Exam
         </button>
@@ -299,7 +302,7 @@
             <div class="ingest-section card">
               <h3>General Material Ingestion</h3>
               <p class="section-desc">Ingest general slides, transcripts, or notes by selecting a week number and topic name.</p>
-              <app-ingest [classId]="selectedClass.class_id"></app-ingest>
+              <app-ingest [classId]="selectedClass.class_id" (onIngested)="onGeneralIngested()"></app-ingest>
             </div>
           </div>
 
