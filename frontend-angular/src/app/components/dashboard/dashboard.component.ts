@@ -31,6 +31,7 @@ import { IngestService } from '../../services/ingest.service';
 })
 export class DashboardComponent implements OnInit {
   activeTab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings' = 'study';
+  studySubTab: 'lesson' | 'syllabus_graph' = 'lesson';
 
   // Materials and Settings state
   materials: any[] = [];
@@ -408,8 +409,10 @@ export class DashboardComponent implements OnInit {
     const startDate = new Date(startDateStr);
     const diffTime = Math.abs(new Date().getTime() - startDate.getTime());
     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    const wk = Math.floor(diffDays / 7) + 1;
-    return wk > 0 ? wk : 1;
+    let wk = Math.floor(diffDays / 7) + 1;
+    if (wk < 1) wk = 1;
+    if (wk > 12) wk = 12;
+    return wk;
   }
 
   selectTimelineWeek(week: number) {
@@ -517,6 +520,12 @@ export class DashboardComponent implements OnInit {
     const selectedDays = this.settingsDays.filter(d => d.selected).map(d => d.value);
     if (selectedDays.length === 0) {
       alert('Please select at least one preferred study day.');
+      return;
+    }
+    if (this.settingsCalendarEnabled && !this.calendarConnected) {
+      if (confirm('Please authorize Google Calendar access first so Ace Agent can sync your schedule. Redirect to Google authorization?')) {
+        this.enableCalendarInTutorial();
+      }
       return;
     }
     const classId = this.selectedClass?.class_id || 'default_class';
@@ -820,7 +829,7 @@ export class DashboardComponent implements OnInit {
     this.newMaterialText = '';
   }
 
-  submitMaterials(): void {
+  submitMaterials(force: boolean = false): void {
     if ((!this.newMaterialText.trim() && !this.newMaterialFile) || !this.addingMaterialTopic || !this.selectedClass) {
       this.ingestMessage = 'Please enter raw text or select a valid file.';
       this.ingestSuccess = false;
@@ -828,17 +837,36 @@ export class DashboardComponent implements OnInit {
     }
 
     this.isIngestingMaterial = true;
-    this.ingestMessage = 'Uploading and ingesting study materials...';
+    this.ingestMessage = force ? 'Forcing ingestion of study materials...' : 'Uploading and ingesting study materials...';
 
     this.ingestService.ingestMaterial(
       this.selectedTimelineWeek,
       this.addingMaterialTopic,
       this.newMaterialText,
       this.selectedClass.class_id,
-      this.newMaterialFile
+      this.newMaterialFile,
+      force
     ).subscribe({
       next: (res: any) => {
         this.isIngestingMaterial = false;
+        if (res && res.success === false) {
+          const msg = res.message || 'Ingestion failed.';
+          if (msg.includes('[WARNING_UNRELATED]')) {
+            const cleanMsg = msg.replace('[WARNING_UNRELATED]', '').trim();
+            const confirmed = confirm(cleanMsg + "\n\nDo you still want to upload this material under this topic?");
+            if (confirmed) {
+              this.submitMaterials(true);
+            } else {
+              this.ingestSuccess = false;
+              this.ingestMessage = 'Ingestion cancelled by user.';
+            }
+          } else {
+            this.ingestSuccess = false;
+            this.ingestMessage = msg;
+          }
+          return;
+        }
+
         this.ingestSuccess = true;
         this.ingestMessage = 'Material successfully ingested!';
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
@@ -992,19 +1020,48 @@ export class DashboardComponent implements OnInit {
     const prevStreak = this.selectedClass.class_streak || this.selectedClass.current_streak || 0;
     const prevCompletion = this.getCourseCompletion(this.selectedClass);
 
-    // Refresh class details
+    // Update strengths immediately from event payload
+    if (event && event.class_streak !== undefined) {
+      this.selectedClass.class_streak = event.class_streak;
+      this.selectedClass.current_streak = event.class_streak;
+      this.currentStreak = event.class_streak;
+    }
+    if (event && event.global_streak !== undefined) {
+      this.globalStreak = event.global_streak;
+    }
+
+    // Append score to quizScores array immediately in memory to bypass BigQuery streaming buffer delay
+    if (event && event.score !== undefined) {
+      const percentage = event.percentage !== undefined ? event.percentage : Math.round((event.score / event.total) * 100);
+      const newRecord = {
+        user_id: this.authService.getUserID() || 'default_user',
+        class_id: cid,
+        topic_name: `Week ${this.selectedTimelineWeek} Quiz`,
+        score: percentage,
+        timestamp: new Date().toISOString()
+      };
+      
+      const existingIdx = this.quizScores.findIndex(q => q.topic_name === newRecord.topic_name);
+      if (existingIdx !== -1) {
+        this.quizScores[existingIdx] = newRecord;
+      } else {
+        this.quizScores = [newRecord, ...this.quizScores];
+      }
+    }
+
+    const newStreak = event && event.class_streak !== undefined ? event.class_streak : prevStreak;
+    const newCompletion = this.getCourseCompletion(this.selectedClass);
+
+    // Trigger animation overlay immediately!
+    this.triggerAnimations(prevStreak, newStreak, prevCompletion, newCompletion);
+
+    // Refresh class details in background
     this.api.listClasses().subscribe({
       next: (res: any[]) => {
         this.classes = res || [];
-        this.globalStreak = this.classes.reduce((max, c) => c.global_streak > max ? c.global_streak : max, 0);
-        
         const updated = this.classes.find(c => c.class_id === cid);
         if (updated) {
           this.selectedClass = updated;
-          const newStreak = updated.class_streak || updated.current_streak || 0;
-          const newCompletion = this.getCourseCompletion(updated);
-
-          this.triggerAnimations(prevStreak, newStreak, prevCompletion, newCompletion);
         }
         this.loadDailyState(cid);
         this.loadQuizScores();
@@ -1037,7 +1094,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // Otherwise, normal streak increment animation
+    // Otherwise, show normal streak animation to celebrate the study session!
     this.animationType = 'streak';
     this.animStreakCount = newStreak;
     this.animCompletionPercentage = newCompletion;

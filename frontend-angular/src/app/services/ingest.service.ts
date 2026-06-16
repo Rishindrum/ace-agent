@@ -11,12 +11,15 @@ export class IngestService {
 
   constructor(private http: HttpClient) { }
 
-  ingestMaterial(weekNumber: number, topicName: string, rawText: string, classId?: string, file?: File | null): Observable<any> {
+  ingestMaterial(weekNumber: number, topicName: string, rawText: string, classId?: string, file?: File | null, force: boolean = false): Observable<any> {
     const cid = classId || 'default_class';
     const formData = new FormData();
     formData.append('week_number', weekNumber.toString());
     formData.append('topic_name', topicName);
     formData.append('raw_text', rawText);
+    if (force) {
+      formData.append('force', 'true');
+    }
     if (file) {
       formData.append('file', file);
     }

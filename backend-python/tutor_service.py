@@ -749,11 +749,42 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                         except Exception:
                             pass
 
-            if request.file_data and request.file_name and (not content or not content.strip()):
-                return ace_pb2.IngestResponse(
-                    success=False, 
-                    message=f"Failed to extract text from {request.file_name}. If you are uploading a .ppt file, please convert it to .pptx or PDF format first, as old .ppt binary files are not supported."
-                )
+            force_upload = request.raw_text.startswith("[FORCE]")
+            if force_upload:
+                if content.startswith("[FORCE]"):
+                    content = content[len("[FORCE]"):].strip()
+
+            if not force_upload and content and content.strip():
+                print(f"[Python] Checking relevance of content to topic '{request.topic_name}'...")
+                check_content = content[:3000]
+                relevance_prompt = f"""
+                Analyze the following educational material snippet and the target topic name.
+                Determine if this text is relevant to the topic: '{request.topic_name}'.
+                
+                Guidelines:
+                - Respond with "NO" if the text is completely unrelated to the topic '{request.topic_name}' (e.g. cooking recipes when the topic is linear algebra, or completely different fields with no connection).
+                - Respond with "YES" if the text is related, introductory, advanced, contains exercises, or can reasonably be used as study material for the topic '{request.topic_name}'.
+                - Be lenient: if there is any plausible academic connection, respond with "YES".
+                
+                Content snippet:
+                {check_content}
+                
+                Respond with ONLY "YES" or "NO". Do not include any other text, quotes, or formatting.
+                """
+                try:
+                    relevance_resp = self._generate_with_retry(
+                        model_name='gemini-2.5-flash-lite',
+                        contents=relevance_prompt
+                    )
+                    verdict = relevance_resp.text.strip().upper()
+                    print(f"[Python] Relevance check verdict for '{request.topic_name}': {verdict}")
+                    if "NO" in verdict and "YES" not in verdict:
+                        return ace_pb2.IngestResponse(
+                            success=False,
+                            message=f"[WARNING_UNRELATED] The uploaded material seems unrelated to the topic '{request.topic_name}'. Do you want to associate it anyway?"
+                        )
+                except Exception as rel_err:
+                    print(f"[Python] Relevance check failed: {rel_err}. Proceeding with ingestion.")
 
             import ingestion_service
             success = ingestion_service.ingest_material(

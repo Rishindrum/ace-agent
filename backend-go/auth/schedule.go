@@ -138,7 +138,18 @@ func (s *ScheduleStore) GetUpdatedSchedule(userID, classID string, now time.Time
 	key := userID + "_" + classID
 	sched, ok := s.schedules[key]
 	if !ok {
-		return sched, false
+		sched = UserSchedule{
+			UserID:          userID,
+			ClassID:         classID,
+			ClassName:       "Default Class",
+			PreferredDays:   []int{0, 1, 2, 3, 4, 5, 6}, // study every day by default
+			DailyPace:       45,
+			CurrentStreak:   0,
+			ClassStreak:     0,
+			CourseStartDate: now.Format("2006-01-02"),
+			DefaultQuizLen:  10,
+		}
+		s.schedules[key] = sched
 	}
 
 	classBroken := false
@@ -254,7 +265,11 @@ func CalculateCurrentSyllabusWeek(startDateStr string) int {
 	if days < 0 {
 		return 1
 	}
-	return (days / 7) + 1
+	wk := (days / 7) + 1
+	if wk > 12 {
+		return 12
+	}
+	return wk
 }
 
 // Custom Streak Math helpers
@@ -337,7 +352,18 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 	key := userID + "_" + classID
 	sched, ok := s.schedules[key]
 	if !ok {
-		return sched, false
+		sched = UserSchedule{
+			UserID:          userID,
+			ClassID:         classID,
+			ClassName:       "Default Class",
+			PreferredDays:   []int{0, 1, 2, 3, 4, 5, 6}, // study every day by default
+			DailyPace:       45,
+			CurrentStreak:   0,
+			ClassStreak:     0,
+			CourseStartDate: now.Format("2006-01-02"),
+			DefaultQuizLen:  10,
+		}
+		s.schedules[key] = sched
 	}
 
 	var userScheds []UserSchedule
@@ -350,15 +376,6 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 	startDate := sched.CourseStartDate
 	if startDate == "" {
 		startDate = now.Format("2006-01-02")
-	}
-	currentWeek := CalculateCurrentSyllabusWeek(startDate)
-
-	isPreferredDay := false
-	for _, d := range sched.PreferredDays {
-		if d == int(now.Weekday()) {
-			isPreferredDay = true
-			break
-		}
 	}
 
 	todayStr := now.Format("2006-01-02")
@@ -378,32 +395,26 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 		}
 	}
 
-	if quizWeek >= currentWeek {
-		if isPreferredDay {
-			prevPrefDay := GetPreviousPreferredDay(now, sched.PreferredDays)
-			if sched.LastStudyDate == "" {
-				sched.CurrentStreak = 1
-				sched.ClassStreak = 1
-				sched.LastStudyDate = todayStr
-			} else {
-				lastStudyTime, err := time.Parse("2006-01-02", sched.LastStudyDate)
-				if err != nil {
-					sched.CurrentStreak = 1
-					sched.ClassStreak = 1
-					sched.LastStudyDate = todayStr
-				} else if IsSameDay(lastStudyTime, now) {
-					// Already studied today. Do nothing to class streak.
-				} else if IsBeforeDay(lastStudyTime, prevPrefDay) {
-					sched.CurrentStreak = 1
-					sched.ClassStreak = 1
-					sched.LastStudyDate = todayStr
-				} else {
-					sched.CurrentStreak = sched.CurrentStreak + 1
-					sched.ClassStreak = sched.CurrentStreak
-					sched.LastStudyDate = todayStr
-				}
-			}
+	prevPrefDay := GetPreviousPreferredDay(now, sched.PreferredDays)
+	if sched.LastStudyDate == "" {
+		sched.CurrentStreak = 1
+		sched.ClassStreak = 1
+		sched.LastStudyDate = todayStr
+	} else {
+		lastStudyTime, err := time.Parse("2006-01-02", sched.LastStudyDate)
+		if err != nil {
+			sched.CurrentStreak = 1
+			sched.ClassStreak = 1
+			sched.LastStudyDate = todayStr
+		} else if IsSameDay(lastStudyTime, now) {
+			// Already studied today. Do nothing to class streak.
+		} else if IsBeforeDay(lastStudyTime, prevPrefDay) {
+			sched.CurrentStreak = 1
+			sched.ClassStreak = 1
+			sched.LastStudyDate = todayStr
 		} else {
+			sched.CurrentStreak = sched.CurrentStreak + 1
+			sched.ClassStreak = sched.CurrentStreak
 			sched.LastStudyDate = todayStr
 		}
 	}
@@ -439,7 +450,7 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 
 	newGlobalStreak := currentGlobalStreak
 
-	if quizWeek >= currentWeek && isPreferredDay && !alreadyStudiedTodayClass {
+	if !alreadyStudiedTodayClass {
 		if !alreadyStudiedTodayGlobal {
 			if maxLastStudyDate == "" {
 				newGlobalStreak = 1

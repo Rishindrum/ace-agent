@@ -222,8 +222,8 @@ func GetRefreshToken(ctx context.Context, userID string) (string, error) {
 	return string(result.Payload.Data), nil
 }
 
-// ScheduleStudySession renews access token, verifies availability, and inserts a calendar study event.
-func ScheduleStudySession(ctx context.Context, userID string, preferredTime string, newTopics []string, reviewTopics []string, dashboardURL string, calendarNotifs bool) error {
+// ScheduleStudySession renews access token, verifies availability, and inserts a calendar study event on targetDate.
+func ScheduleStudySession(ctx context.Context, userID string, targetDate time.Time, preferredTime string, newTopics []string, reviewTopics []string, dashboardURL string, calendarNotifs bool) error {
 	refreshToken, err := GetRefreshToken(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get refresh token: %w", err)
@@ -266,12 +266,28 @@ func ScheduleStudySession(ctx context.Context, userID string, preferredTime stri
 		hour = 21
 	}
 
-	now := time.Now()
-	sessionStart := time.Date(now.Year(), now.Month(), now.Day(), hour, 0, 0, 0, now.Location())
-	if sessionStart.Before(now) {
+	sessionStart := time.Date(targetDate.Year(), targetDate.Month(), targetDate.Day(), hour, 0, 0, 0, targetDate.Location())
+	if targetDate.Year() == time.Now().Year() && targetDate.YearDay() == time.Now().YearDay() && sessionStart.Before(time.Now()) {
 		sessionStart = sessionStart.Add(24 * time.Hour)
 	}
 	sessionEnd := sessionStart.Add(1 * time.Hour)
+
+	// Check if an Ace Agent event is already scheduled on the target day to prevent duplicates
+	dayStart := time.Date(sessionStart.Year(), sessionStart.Month(), sessionStart.Day(), 0, 0, 0, 0, sessionStart.Location())
+	dayEnd := dayStart.Add(24 * time.Hour)
+	checkCall := srv.Events.List("primary").
+		TimeMin(dayStart.Format(time.RFC3339)).
+		TimeMax(dayEnd.Format(time.RFC3339)).
+		SingleEvents(true)
+	dayEvents, err := checkCall.Do()
+	if err == nil {
+		for _, item := range dayEvents.Items {
+			if strings.Contains(item.Summary, "Ace Agent") {
+				log.Printf("[Calendar] Study session already scheduled on %s for user %s. Skipping.", sessionStart.Format("2006-01-02"), userID)
+				return nil
+			}
+		}
+	}
 
 	// List events to verify availability/conflicts
 	listCall := srv.Events.List("primary").

@@ -223,6 +223,62 @@ $border-color: #e2e8f0;
   margin: 0 auto;
 }
 
+/* Study Sub-Navigation Navbar */
+.study-sub-nav {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+  margin-bottom: 20px;
+  padding: 6px;
+  width: fit-content;
+  background: rgba(30, 41, 59, 0.3) !important;
+  border: 1px solid rgba(255, 255, 255, 0.05) !important;
+  border-radius: 12px;
+  backdrop-filter: blur(10px);
+
+  .sub-tab-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 18px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    mat-icon {
+      font-size: 18px;
+      width: 18px;
+      height: 18px;
+      color: #94a3b8;
+      transition: color 0.3s;
+    }
+
+    &:hover {
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.03);
+      mat-icon {
+        color: #f1f5f9;
+      }
+    }
+
+    &.active {
+      color: #ffffff;
+      background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(99, 102, 241, 0.05) 100%);
+      border: 1px solid rgba(99, 102, 241, 0.3) !important;
+      box-shadow: 0 0 15px rgba(99, 102, 241, 0.15);
+      
+      mat-icon {
+        color: #818cf8;
+      }
+    }
+  }
+}
+
 /* Animation Utilities */
 @keyframes fadeIn {
   from {

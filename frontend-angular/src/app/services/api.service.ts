@@ -27,6 +27,8 @@ export interface QuizTelemetryResponse {
   total_questions: number;
   percentage: number;
   confirmed: boolean;
+  class_streak?: number;
+  global_streak?: number;
 }
 
 @Injectable({

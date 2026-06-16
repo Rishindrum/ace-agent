@@ -30,6 +30,25 @@ import (
 var tutorClient pb.TutorServiceClient
 var bqClient *bigquery.Client
 var bqTable *bigquery.Table
+var bqScoresTable *bigquery.Table
+
+type QuizScoreTelemetry struct {
+	UserID    string    `bigquery:"user_id"`
+	ClassID   string    `bigquery:"class_id"`
+	TopicName string    `bigquery:"topic_name"`
+	Score     int       `bigquery:"score"`
+	Timestamp time.Time `bigquery:"timestamp"`
+}
+
+func (q *QuizScoreTelemetry) Save() (map[string]bigquery.Value, string, error) {
+	return map[string]bigquery.Value{
+		"user_id":    q.UserID,
+		"class_id":   q.ClassID,
+		"topic_name": q.TopicName,
+		"score":      q.Score,
+		"timestamp":  q.Timestamp,
+	}, "", nil
+}
 
 // Telemetry Data Schema
 type QuizAttemptTelemetry struct {
@@ -119,6 +138,34 @@ func initBigQuery() {
 		log.Println("[BigQuery] Table quiz_attempts already exists")
 	} else {
 		log.Println("[BigQuery] Table quiz_attempts created successfully")
+	}
+
+	// Ensure ace_performance.quiz_scores table also exists
+	perfDataset := bqClient.Dataset("ace_performance")
+	if err := perfDataset.Create(ctx, &bigquery.DatasetMetadata{Location: "US"}); err != nil {
+		if !hasAlreadyExistsError(err) {
+			log.Printf("[BigQuery] Failed to create dataset ace_performance: %v", err)
+		}
+	} else {
+		log.Println("[BigQuery] Dataset ace_performance created successfully")
+	}
+
+	bqScoresTable = perfDataset.Table("quiz_scores")
+	scoresSchema := bigquery.Schema{
+		{Name: "user_id", Type: bigquery.StringFieldType, Required: true},
+		{Name: "class_id", Type: bigquery.StringFieldType, Required: true},
+		{Name: "topic_name", Type: bigquery.StringFieldType, Required: true},
+		{Name: "score", Type: bigquery.IntegerFieldType, Required: true},
+		{Name: "timestamp", Type: bigquery.TimestampFieldType, Required: true},
+	}
+	if err := bqScoresTable.Create(ctx, &bigquery.TableMetadata{
+		Schema: scoresSchema,
+	}); err != nil {
+		if !hasAlreadyExistsError(err) {
+			log.Printf("[BigQuery] Failed to create table quiz_scores: %v", err)
+		}
+	} else {
+		log.Println("[BigQuery] Table quiz_scores created successfully")
 	}
 }
 
@@ -482,6 +529,9 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		topicName = r.FormValue("topic_name")
 		rawText = r.FormValue("raw_text")
 		className = r.FormValue("class_name")
+		if r.FormValue("force") == "true" {
+			rawText = "[FORCE]" + rawText
+		}
 		
 		file, header, err := r.FormFile("file")
 		if err == nil {
@@ -500,6 +550,7 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 			RawText    string `json:"raw_text"`
 			ClassID    string `json:"class_id"`
 			ClassName  string `json:"class_name"`
+			Force      bool   `json:"force"`
 		}
 		if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 			http.Error(w, "Invalid request body", http.StatusBadRequest)
@@ -509,6 +560,9 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		topicName = req.TopicName
 		rawText = req.RawText
 		className = req.ClassName
+		if req.Force {
+			rawText = "[FORCE]" + rawText
+		}
 		if classID == "" {
 			classID = req.ClassID
 		}
@@ -907,6 +961,10 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
 		return
+	}
+
+	if sched.CalendarEnabled {
+		go runDailySchedulerCheck()
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -1343,21 +1401,8 @@ func runDailySchedulerCheck() {
 	log.Println("[SchedulerWorker] Running daily schedule checks...")
 
 	schedules := auth.GlobalScheduleStore.GetAllSchedules()
-	todayWeekday := int(time.Now().Weekday())
 
 	for _, sched := range schedules {
-		isScheduledToday := false
-		for _, day := range sched.PreferredDays {
-			if day == todayWeekday {
-				isScheduledToday = true
-				break
-			}
-		}
-
-		if !isScheduledToday {
-			continue
-		}
-
 		classID := sched.ClassID
 		if classID == "" {
 			classID = "default_class"
@@ -1368,26 +1413,7 @@ func runDailySchedulerCheck() {
 			continue
 		}
 
-		log.Printf("[SchedulerWorker] User %s is scheduled to study class %s today. Checking completion...", sched.UserID, classID)
-
-		completed, err := hasCompletedQuizToday(ctx, sched.UserID, classID)
-		if err != nil {
-			log.Printf("[SchedulerWorker] Warning: Failed to check BQ quiz completion for user %s, class %s: %v. Proceeding assuming not completed.", sched.UserID, classID, err)
-			completed = false
-		}
-
-		if completed {
-			log.Printf("[SchedulerWorker] User %s has already completed their study session today for class %s. Skipping.", sched.UserID, classID)
-			continue
-		}
-
-		log.Printf("[SchedulerWorker] User %s has NOT completed a session today for class %s. Scheduling Google Calendar event...", sched.UserID, classID)
-
-		weakTopics, err := getWeakTopicsFromBigQuery(ctx, sched.UserID, classID)
-		if err != nil {
-			log.Printf("[SchedulerWorker] Warning: Failed to fetch weak topics for user %s, class %s: %v.", sched.UserID, classID, err)
-			weakTopics = []string{}
-		}
+		log.Printf("[SchedulerWorker] Checking schedule for user %s, class %s...", sched.UserID, classID)
 
 		// Calculate current week
 		currentWeek := auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
@@ -1411,6 +1437,12 @@ func runDailySchedulerCheck() {
 			newTopics = []string{fmt.Sprintf("Week %d Core Concepts", currentWeek)}
 		}
 
+		weakTopics, err := getWeakTopicsFromBigQuery(ctx, sched.UserID, classID)
+		if err != nil {
+			log.Printf("[SchedulerWorker] Warning: Failed to fetch weak topics for user %s, class %s: %v.", sched.UserID, classID, err)
+			weakTopics = []string{}
+		}
+
 		preferredTime := "afternoon" // default
 
 		frontendURL := os.Getenv("FRONTEND_URL")
@@ -1419,11 +1451,37 @@ func runDailySchedulerCheck() {
 		}
 		dashboardURL := frontendURL + "/dashboard"
 
-		err = calendar.ScheduleStudySession(ctx, sched.UserID, preferredTime, newTopics, weakTopics, dashboardURL, sched.CalendarNotifs)
-		if err != nil {
-			log.Printf("[SchedulerWorker] Error: Failed to schedule study session for user %s: %v", sched.UserID, err)
-		} else {
-			log.Printf("[SchedulerWorker] Successfully scheduled proactive study session for user %s", sched.UserID)
+		// Schedule events for the next 7 days (including today) on preferred study days
+		for i := 0; i < 7; i++ {
+			targetDate := time.Now().AddDate(0, 0, i)
+			targetWeekday := int(targetDate.Weekday())
+
+			isPreferredDay := false
+			for _, d := range sched.PreferredDays {
+				if d == targetWeekday {
+					isPreferredDay = true
+					break
+				}
+			}
+
+			if !isPreferredDay {
+				continue
+			}
+
+			// If it's today, check if they already completed their study session
+			if i == 0 {
+				completed, err := hasCompletedQuizToday(ctx, sched.UserID, classID)
+				if err == nil && completed {
+					log.Printf("[SchedulerWorker] User %s has already completed their study session today for class %s. Skipping today.", sched.UserID, classID)
+					continue
+				}
+			}
+
+			log.Printf("[SchedulerWorker] Scheduling event for user %s, class %s on date %s...", sched.UserID, classID, targetDate.Format("2006-01-02"))
+			err = calendar.ScheduleStudySession(ctx, sched.UserID, targetDate, preferredTime, newTopics, weakTopics, dashboardURL, sched.CalendarNotifs)
+			if err != nil {
+				log.Printf("[SchedulerWorker] Error scheduling study session for user %s on %s: %v", sched.UserID, targetDate.Format("2006-01-02"), err)
+			}
 		}
 	}
 }
@@ -1503,7 +1561,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if bqTable != nil {
-		go func(row *QuizAttemptTelemetry) {
+		go func(row *QuizAttemptTelemetry, userID, classID string, weekNum int, percentage float64) {
 			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 			defer cancel()
 
@@ -1513,7 +1571,24 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 			} else {
 				log.Printf("[BigQuery] Successfully streamed telemetry row for attempt: %s", row.AttemptID)
 			}
-		}(telemetry)
+
+			// Stream to quiz_scores too!
+			if bqScoresTable != nil {
+				scoresRow := &QuizScoreTelemetry{
+					UserID:    userID,
+					ClassID:   classID,
+					TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
+					Score:     int(percentage),
+					Timestamp: time.Now(),
+				}
+				scoresUploader := bqScoresTable.Uploader()
+				if err := scoresUploader.Put(ctx, scoresRow); err != nil {
+					log.Printf("[BigQuery] Failed to stream quiz_score row: %v", err)
+				} else {
+					log.Printf("[BigQuery] Successfully streamed quiz_score row to ace_performance")
+				}
+			}
+		}(telemetry, userID, classID, req.WeekNumber, scorePercentage)
 	} else {
 		log.Println("[BigQuery] Table reference is nil. Skipping telemetry insert.")
 	}

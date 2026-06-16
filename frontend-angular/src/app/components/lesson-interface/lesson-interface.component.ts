@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, OnChanges, SimpleChanges, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { MatIconModule } from '@angular/material/icon';
@@ -20,28 +20,18 @@ interface Exercise {
   templateUrl: './lesson-interface.component.html',
   styleUrls: ['./lesson-interface.component.scss']
 })
-export class LessonInterfaceComponent implements OnInit {
-  private _selectedWeek: number = 1;
-
-  @Input() set selectedWeek(value: number) {
-    if (value && value !== this._selectedWeek) {
-      this._selectedWeek = value;
-      // Load new lesson when week changes
-      if (this.initialized) {
-        this.loadLesson();
-      }
-    }
-  }
-
-  get selectedWeek(): number {
-    return this._selectedWeek;
-  }
+export class LessonInterfaceComponent implements OnInit, OnChanges {
+  @Input() selectedWeek: number = 1;
+  @Input() classId: string = 'default_class';
 
   @Output() exerciseCompleted = new EventEmitter<void>();
   @Output() startQuiz = new EventEmitter<void>();
   @Output() quizCompleted = new EventEmitter<any>();
+  @Output() redirectToSyllabus = new EventEmitter<void>();
 
-  @Input() classId: string = 'default_class';
+  onRedirectToSyllabus(): void {
+    this.redirectToSyllabus.emit();
+  }
 
   private _dailyState: any = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
 
@@ -82,6 +72,12 @@ export class LessonInterfaceComponent implements OnInit {
   ngOnInit(): void {
     this.initialized = true;
     this.loadLesson();
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if (this.initialized && (changes['classId'] || changes['selectedWeek'])) {
+      this.loadLesson();
+    }
   }
 
   updateStepFromState(): void {
@@ -263,6 +259,8 @@ export class LessonInterfaceComponent implements OnInit {
   quizPercentage: number = 0;
   quizFinished: boolean = false;
   quizStatusMessage: string = '';
+  classStreakCount: number = 0;
+  globalStreakCount: number = 0;
 
   startIntegratedQuiz(): void {
     this.isQuizActive = true;
@@ -330,11 +328,15 @@ export class LessonInterfaceComponent implements OnInit {
         this.quizScore = res.score;
         this.quizTotal = res.total_questions;
         this.quizPercentage = res.percentage;
+        this.classStreakCount = res.class_streak || 0;
+        this.globalStreakCount = res.global_streak || 0;
         this.exerciseCompleted.emit();
         this.quizCompleted.emit({
           score: res.score,
           total: res.total_questions,
-          percentage: res.percentage
+          percentage: res.percentage,
+          class_streak: res.class_streak,
+          global_streak: res.global_streak
         });
       },
       error: (err) => {

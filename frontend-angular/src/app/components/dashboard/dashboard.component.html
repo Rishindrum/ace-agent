@@ -41,14 +41,6 @@
         </div>
       </div>
 
-      <!-- Current Week Progress -->
-      <div class="header-status-widget week-widget">
-        <mat-icon class="planet-icon">travel_explore</mat-icon>
-        <div class="widget-details">
-          <span class="widget-val">Week {{ selectedTimelineWeek }}</span>
-          <span class="widget-lbl">Study Hub</span>
-        </div>
-      </div>
     </div>
 
     <!-- Global Streak Widget -->
@@ -191,18 +183,7 @@
       </div>
     </div>
 
-    <!-- Top Study Warning Banner (if insufficient topics materials are found) -->
-    <div *ngIf="activeTab === 'study' && insufficientTopics.length > 0" class="top-warning-alert card fade-in" style="background: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; color: #fca5a5; padding: 16px; border-radius: 12px; display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
-      <mat-icon style="font-size: 36px; width: 36px; height: 36px; color: #f87171; display: flex; align-items: center; justify-content: center;">warning</mat-icon>
-      <div style="flex-grow: 1;">
-        <p style="margin: 0; color: #fca5a5; font-size: 14px; font-weight: 700; line-height: 1.4;">
-          No study materials found for this week. Please upload course materials (slides, notes, transcripts, or textbooks) for this week's topics in the Syllabus tab first to generate a lesson!
-        </p>
-      </div>
-      <button class="btn btn-warning-action" (click)="viewSyllabusDirect()" style="background: #ef4444; border: none; color: white; padding: 8px 16px; border-radius: 6px; font-weight: 700; font-size: 13px; cursor: pointer; transition: all 0.2s;">
-        Go to Syllabus
-      </button>
-    </div>
+
 
     <!-- Daily Gating Progress Checklist -->
     <div class="daily-progress-container card fade-in" *ngIf="activeTab === 'study'">
@@ -235,12 +216,23 @@
         </div>
       </div>
     </div>
+    <!-- Study Sub-Navigation Navbar -->
+    <div class="study-sub-nav" *ngIf="activeTab === 'study'" style="display: flex; gap: 8px; margin-top: 16px; margin-bottom: 20px; padding: 6px; width: fit-content; background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; backdrop-filter: blur(10px);">
+      <button class="sub-tab-btn" [class.active]="studySubTab === 'lesson'" (click)="studySubTab = 'lesson'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+        <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">local_library</mat-icon>
+        <span>Today's Lesson</span>
+      </button>
+      <button class="sub-tab-btn" [class.active]="studySubTab === 'syllabus_graph'" (click)="studySubTab = 'syllabus_graph'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+        <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">route</mat-icon>
+        <span>Syllabus & Graph</span>
+      </button>
+    </div>
 
     <!-- Content Workspace -->
     <main class="app-workspace">
       <!-- Combined Study Hub Tab -->
       <div *ngIf="activeTab === 'study'" class="tab-content fade-in">
-        <div class="syllabus-layout">
+        <div class="syllabus-layout" *ngIf="studySubTab === 'syllabus_graph'">
           <div class="sidebar-column">
             
             <!-- Syllabus Timeline (All Weeks & Topics) -->
@@ -271,7 +263,7 @@
                   <div class="week-group-header" (click)="toggleSyllabusWeek(wKey)">
                     <span class="week-title-label">Week {{ wKey }}</span>
                     <span class="week-badge-summary" style="display: flex; align-items: center; gap: 8px;">
-                      <button class="btn btn-reset-week" (click)="resetWeekProgress(wKey, $event)" title="Reset this week's scores and lessons/quizzes progress" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 0.3); color: #fca5a5; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; cursor: pointer; transition: all 0.2s; font-weight: 600; vertical-align: middle;">
+                      <button class="btn btn-reset-week" (click)="resetWeekProgress(wKey, $event)" title="Reset this week's scores and lessons/quizzes progress" style="background: rgba(239, 68, 68, 0.15); border: 1px solid rgba(239, 68, 68, 3); color: #fca5a5; padding: 2px 6px; border-radius: 4px; display: inline-flex; align-items: center; gap: 4px; font-size: 10px; cursor: pointer; transition: all 0.2s; font-weight: 600; vertical-align: middle;">
                         <mat-icon style="font-size: 12px; width: 12px; height: 12px; margin: 0;">restore</mat-icon>
                         <span>RESET</span>
                       </button>
@@ -322,7 +314,7 @@
         </div>
 
         <!-- Integrated Lesson Workspace: Lesson text, exercises, and quiz -->
-        <div class="lesson-section card" style="margin-top: 24px;">
+        <div class="lesson-section card" *ngIf="studySubTab === 'lesson'" style="margin-top: 0;">
           <app-lesson-interface 
             [selectedWeek]="selectedTimelineWeek" 
             [dailyState]="dailyState"
@@ -330,6 +322,7 @@
             [className]="selectedClass.class_name"
             (exerciseCompleted)="loadDailyState()"
             (quizCompleted)="onQuizCompleted($event)"
+            (redirectToSyllabus)="studySubTab = 'syllabus_graph'"
           ></app-lesson-interface>
         </div>
       </div>
@@ -488,6 +481,21 @@
               <div class="section-title">
                 <mat-icon>today</mat-icon>
                 <h4>Google Calendar Integration</h4>
+              </div>
+              <div class="setting-row" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 16px;">
+                <div class="setting-label">
+                  <h5>Calendar Connection Status</h5>
+                  <p *ngIf="calendarConnected" style="color: #34d399; font-weight: 500;">✓ Connected to Google Calendar</p>
+                  <p *ngIf="!calendarConnected" style="color: #94a3b8;">Not connected. Authorize Ace Agent to schedule study events on your Google Calendar.</p>
+                </div>
+                <div class="setting-control" style="display: flex; align-items: center; justify-content: flex-end;">
+                  <span *ngIf="calendarConnected" class="connection-badge" style="background: rgba(16, 185, 129, 0.15); color: #34d399; padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: 600; display: inline-flex; align-items: center; gap: 4px;">
+                    <mat-icon style="font-size: 14px; width:14px; height:14px; color: #34d399;">check_circle</mat-icon> Authorized
+                  </span>
+                  <button *ngIf="!calendarConnected" class="btn btn-secondary btn-connect-calendar-action" (click)="enableCalendarInTutorial()" style="font-size: 12px; padding: 6px 12px; border: 1px solid rgba(99, 102, 241, 0.5); display: inline-flex; align-items: center; gap: 6px; border-radius: 6px; cursor: pointer; color: #a5b4fc; background: rgba(99, 102, 241, 0.1); font-weight: 600;">
+                    <mat-icon style="font-size: 16px; width:16px; height:16px;">today</mat-icon> Connect Calendar
+                  </button>
+                </div>
               </div>
               <div class="setting-row">
                 <div class="setting-label">

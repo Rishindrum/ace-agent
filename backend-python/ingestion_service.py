@@ -79,8 +79,7 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
     """
     print(f"[IngestionService] Starting ingestion for topic '{topic_name}' under Week '{week_number}' for user '{user_id}' and class '{class_id}'...")
     
-    # 1. LLM Resolution step to get a standardized topic string
-    resolved_topic = resolve_topic(content, topic_name)
+    resolved_topic = topic_name.strip()
     
     # 2. Normalize week identifier (e.g., 1 -> "Week 1")
     week_num = int(week_number)
