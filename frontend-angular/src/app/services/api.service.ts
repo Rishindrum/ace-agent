@@ -69,8 +69,9 @@ export class ApiService {
     });
   }
 
-  getQuizScores(userId: string): Observable<any> {
-    return this.http.get(`${this.baseUrl}/quiz/scores?user_id=${userId}`);
+  getQuizScores(userId: string, classId?: string): Observable<any> {
+    const qClass = classId ? `&class_id=${classId}` : '';
+    return this.http.get(`${this.baseUrl}/quiz/scores?user_id=${userId}${qClass}`);
   }
 
   generateAdaptiveQuiz(userId: string, syllabusName: string): Observable<any> {
@@ -157,6 +158,17 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/sufficiency${q}`);
   }
 
+  deleteClass(classId: string): Observable<any> {
+    return this.http.delete<any>(`${`${this.baseUrl}/api/v1/classes/${classId}`}`);
+  }
+
+  getSyllabus(classId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${classId}/syllabus`);
+  }
+
+  editSyllabus(classId: string, weeks: any[]): Observable<any> {
+    return this.http.put<any>(`${this.baseUrl}/api/v1/classes/${classId}/syllabus`, { weeks });
+  }
 
   updateGraphData(data: any) {
     this.graphDataSubject.next(data);

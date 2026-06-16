@@ -204,6 +204,25 @@ class PersistentVectorStore:
         results = [documents[idx] for idx in top_indices]
         return results
 
+    def delete_state(self, user_id: str, class_id: str):
+        filename = self._get_filename(user_id, class_id)
+        # Delete from GCS
+        if self.bucket:
+            try:
+                blob = self.bucket.blob(f"indices/{filename}")
+                if blob.exists():
+                    blob.delete()
+                    print(f"[VectorStore] Deleted Brain in Cloud: indices/{filename}")
+            except Exception as e:
+                print(f"[VectorStore] GCS Delete failed for {filename}: {e}")
+        # Delete from disk
+        if os.path.exists(filename):
+            try:
+                os.remove(filename)
+                print(f"[VectorStore] Deleted local file: {filename}")
+            except Exception as e:
+                print(f"[VectorStore] Local Delete failed for {filename}: {e}")
+
 # Initialize the store
 vector_store = PersistentVectorStore()
 
@@ -1506,6 +1525,155 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"Failed to check topic sufficiency: {str(e)}")
             return ace_pb2.SufficiencyResponse(insufficient_materials=True, insufficient_topics=[], all_topics=[])
+
+    def _delete_class_nodes(self, tx, user_id, class_id):
+        # 1. Delete GeneratedContent nodes
+        tx.run("""
+            MATCH (g:GeneratedContent)
+            WHERE g.user_id = $user_id AND g.class_id = $class_id
+            DETACH DELETE g
+        """, user_id=user_id, class_id=class_id)
+        
+        # 2. Delete Material nodes
+        tx.run("""
+            MATCH (m:Material)
+            WHERE m.user_id = $user_id AND m.class_id = $class_id
+            DETACH DELETE m
+        """, user_id=user_id, class_id=class_id)
+        
+        # 3. Delete Topic nodes
+        tx.run("""
+            MATCH (t:Topic)
+            WHERE t.user_id = $user_id AND t.class_id = $class_id
+            DETACH DELETE t
+        """, user_id=user_id, class_id=class_id)
+
+        # 4. Delete Week nodes
+        tx.run("""
+            MATCH (w:Week)
+            WHERE w.user_id = $user_id AND w.class_id = $class_id
+            DETACH DELETE w
+        """, user_id=user_id, class_id=class_id)
+
+        # 5. Delete ENROLLED_IN relationship
+        tx.run("""
+            MATCH (u:User {id: $user_id})-[r:ENROLLED_IN]->(c:Class {id: $class_id})
+            DELETE r
+        """, user_id=user_id, class_id=class_id)
+
+        # 6. Delete Class node itself if no other ENROLLED_IN exists
+        tx.run("""
+            MATCH (c:Class {id: $class_id})
+            WHERE NOT (c)<-[:ENROLLED_IN]-()
+            DETACH DELETE c
+        """, class_id=class_id)
+
+    def DeleteClass(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] DeleteClass for user {user_id} and class {class_id}")
+        try:
+            # Delete Neo4j nodes
+            if self.driver:
+                with self.driver.session() as session:
+                    session.execute_write(self._delete_class_nodes, user_id, class_id)
+            
+            # Delete Vector Store
+            vector_store.delete_state(user_id, class_id)
+            
+            return ace_pb2.DeleteClassResponse(success=True, message=f"Class {class_id} deleted successfully.")
+        except Exception as e:
+            print(f"[Python] DeleteClass Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to delete class: {str(e)}")
+            return ace_pb2.DeleteClassResponse(success=False, message=str(e))
+
+    def _get_syllabus_nodes(self, tx, user_id, class_id):
+        query = """
+        MATCH (w:Week {user_id: $user_id, class_id: $class_id})
+        OPTIONAL MATCH (w)-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
+        RETURN w.number AS week_num, collect(t.name) AS topics
+        ORDER BY w.number
+        """
+        result = tx.run(query, user_id=user_id, class_id=class_id)
+        return [(record.get("week_num"), record.get("topics") or []) for record in result]
+
+    def GetSyllabus(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GetSyllabus for user {user_id} and class {class_id}")
+        try:
+            weeks_pb = []
+            if self.driver:
+                with self.driver.session() as session:
+                    records = session.execute_read(self._get_syllabus_nodes, user_id, class_id)
+                    for week_num, topics in records:
+                        weeks_pb.append(ace_pb2.WeekTopics(
+                            week_number=int(week_num),
+                            topics=topics
+                        ))
+            return ace_pb2.GetSyllabusResponse(weeks=weeks_pb, success=True, message="Syllabus retrieved successfully.")
+        except Exception as e:
+            print(f"[Python] GetSyllabus Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to get syllabus: {str(e)}")
+            return ace_pb2.GetSyllabusResponse(success=False, message=str(e))
+
+    def _edit_syllabus_nodes(self, tx, user_id, class_id, weeks):
+        for w in weeks:
+            w_num = w.week_number
+            w_topics = w.topics
+            
+            # 1. Ensure Week node exists
+            tx.run("""
+                MERGE (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
+            """, user_id=user_id, class_id=class_id, w_num=w_num)
+            
+            # 2. Delete all existing SCHEDULED_FOR relationships for this week
+            tx.run("""
+                MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})-[r:SCHEDULED_FOR]->(t:Topic)
+                DELETE r
+            """, user_id=user_id, class_id=class_id, w_num=w_num)
+            
+            # 3. Create or Merge new Topics and link to Week & Class
+            for topic_name in w_topics:
+                tx.run("""
+                    MERGE (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                """, user_id=user_id, class_id=class_id, topic_name=topic_name)
+                
+                tx.run("""
+                    MATCH (c:Class {id: $class_id})
+                    MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                    MERGE (c)-[:COVERS]->(t)
+                """, class_id=class_id, user_id=user_id, topic_name=topic_name)
+                
+                tx.run("""
+                    MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
+                    MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                    MERGE (w)-[:SCHEDULED_FOR]->(t)
+                """, user_id=user_id, class_id=class_id, w_num=w_num, topic_name=topic_name)
+        
+        # 4. Clean up orphaned topics for this user and class
+        tx.run("""
+            MATCH (t:Topic {user_id: $user_id, class_id: $class_id})
+            WHERE NOT (t)<-[:SCHEDULED_FOR]-()
+            DETACH DELETE t
+        """, user_id=user_id, class_id=class_id)
+
+    def EditSyllabus(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] EditSyllabus for user {user_id} and class {class_id}")
+        try:
+            if self.driver:
+                with self.driver.session() as session:
+                    session.execute_write(self._edit_syllabus_nodes, user_id, class_id, request.weeks)
+            return ace_pb2.EditSyllabusResponse(success=True, message="Syllabus updated successfully.")
+        except Exception as e:
+            print(f"[Python] EditSyllabus Exception: {e}")
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f"Failed to edit syllabus: {str(e)}")
+            return ace_pb2.EditSyllabusResponse(success=False, message=str(e))
 
 def serve():
     # 1. Get the port from the environment (Google sets this)

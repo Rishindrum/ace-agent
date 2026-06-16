@@ -32,7 +32,7 @@ import { IngestService } from '../../services/ingest.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  activeTab: 'syllabus' | 'lesson' | 'tutor' = 'syllabus';
+  activeTab: 'study' | 'progress' | 'tutor' = 'study';
   
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
@@ -64,6 +64,10 @@ export class DashboardComponent implements OnInit {
   addClassErrorMessage: string = '';
   isAddingClass: boolean = false;
 
+  // Edit Syllabus Modal Flow
+  isEditSyllabusModalOpen: boolean = false;
+  editingSyllabusWeeks: any[] = [];
+
   // Topic Warnings & Materials
   allTopics: string[] = [];
   insufficientTopics: string[] = [];
@@ -89,6 +93,138 @@ export class DashboardComponent implements OnInit {
 
   // Cram Mode UI State
   isCramModalOpen: boolean = false;
+
+  // Progress/Telemetry Data
+  quizScores: any[] = [];
+
+  trackByFn(index: any, item: any): any {
+    return index;
+  }
+
+  mustStudyToday(classObj: any): boolean {
+    if (!classObj || !classObj.preferred_days) return false;
+    const today = new Date();
+    const dayOfWeek = today.getDay();
+    const isPreferredDay = classObj.preferred_days.includes(dayOfWeek);
+    
+    const todayStr = today.getFullYear() + '-' + 
+      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(today.getDate()).padStart(2, '0');
+    
+    const alreadyStudiedToday = classObj.last_study_date === todayStr;
+    return isPreferredDay && !alreadyStudiedToday;
+  }
+
+  getCourseCompletion(classObj: any): number {
+    if (!classObj || !classObj.course_start_date) return 0;
+    const currentWk = this.calculateCurrentWeek(classObj.course_start_date);
+    const pct = Math.min(Math.round(((currentWk - 1) / 12) * 100), 100);
+    return pct > 0 ? pct : 0;
+  }
+
+  getLearningMinutes(classObj: any): number {
+    if (!classObj) return 0;
+    const pace = classObj.daily_pace || 45;
+    const streak = classObj.class_streak || classObj.current_streak || 0;
+    let minutes = streak * pace;
+    const todayStr = new Date().getFullYear() + '-' + 
+      String(new Date().getMonth() + 1).padStart(2, '0') + '-' + 
+      String(new Date().getDate()).padStart(2, '0');
+    if (classObj.last_study_date === todayStr) {
+      minutes += pace;
+    }
+    return minutes;
+  }
+
+  deleteClass(classId: string, event: Event): void {
+    event.stopPropagation();
+    if (confirm('Are you sure you want to delete this class? This will permanently remove its syllabus, materials, schedule, and all generated lessons/quizzes.')) {
+      this.api.deleteClass(classId).subscribe({
+        next: () => {
+          if (this.selectedClass && this.selectedClass.class_id === classId) {
+            this.selectedClass = null;
+          }
+          this.loadClasses();
+        },
+        error: (err) => {
+          alert('Failed to delete class: ' + (err.error?.message || err.message || err));
+        }
+      });
+    }
+  }
+
+  openEditSyllabusModal(): void {
+    if (!this.selectedClass) return;
+    this.isEditSyllabusModalOpen = true;
+    this.api.getSyllabus(this.selectedClass.class_id).subscribe({
+      next: (res: any) => {
+        const weeksFromApi = res?.weeks || [];
+        this.editingSyllabusWeeks = [];
+        for (let i = 1; i <= 12; i++) {
+          const apiW = weeksFromApi.find((w: any) => w.week_number === i);
+          this.editingSyllabusWeeks.push({
+            week_number: i,
+            topics: apiW ? [...apiW.topics] : []
+          });
+        }
+      },
+      error: (err) => {
+        console.warn('Could not load syllabus from API, initializing default:', err);
+        this.editingSyllabusWeeks = [];
+        for (let i = 1; i <= 12; i++) {
+          this.editingSyllabusWeeks.push({ week_number: i, topics: [] });
+        }
+      }
+    });
+  }
+
+  closeEditSyllabusModal(): void {
+    this.isEditSyllabusModalOpen = false;
+  }
+
+  addTopicToEditSyllabus(weekIdx: number): void {
+    this.editingSyllabusWeeks[weekIdx].topics.push('');
+  }
+
+  removeTopicFromEditSyllabus(weekIdx: number, topicIdx: number): void {
+    this.editingSyllabusWeeks[weekIdx].topics.splice(topicIdx, 1);
+  }
+
+  saveSyllabus(): void {
+    if (!this.selectedClass) return;
+    
+    // Clean up topics: remove empty topic names
+    const cleanedWeeks = this.editingSyllabusWeeks.map(w => ({
+      week_number: w.week_number,
+      topics: w.topics.map((t: string) => t.trim()).filter((t: string) => t !== '')
+    }));
+
+    this.api.editSyllabus(this.selectedClass.class_id, cleanedWeeks).subscribe({
+      next: () => {
+        this.isEditSyllabusModalOpen = false;
+        this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
+        this.loadAllTopicsSufficiency();
+        alert('Syllabus updated successfully!');
+      },
+      error: (err) => {
+        alert('Failed to save syllabus: ' + (err.error?.message || err.message || err));
+      }
+    });
+  }
+
+  loadQuizScores(): void {
+    if (!this.selectedClass) return;
+    const userId = this.authService.getUserID();
+    if (!userId) return;
+    this.api.getQuizScores(userId, this.selectedClass.class_id).subscribe({
+      next: (res: any) => {
+        this.quizScores = res.scores || [];
+      },
+      error: (err) => {
+        console.warn('Could not load quiz scores:', err);
+      }
+    });
+  }
 
   constructor(
     private route: ActivatedRoute, 
@@ -173,7 +309,8 @@ export class DashboardComponent implements OnInit {
     this.loadDailyState(classObj.class_id);
     this.loadTopicSufficiency(classObj.class_id, this.selectedTimelineWeek);
     this.loadAllTopicsSufficiency();
-    this.activeTab = 'syllabus';
+    this.loadQuizScores();
+    this.activeTab = 'study';
   }
 
   calculateCurrentWeek(startDateStr: string): number {
@@ -195,11 +332,11 @@ export class DashboardComponent implements OnInit {
         if (state) {
           this.dailyState = state;
         }
-        this.activeTab = 'lesson';
+        this.activeTab = 'study';
       },
       error: (err) => {
         console.warn('Could not load daily session state on Study click:', err);
-        this.activeTab = 'lesson';
+        this.activeTab = 'study';
       }
     });
   }
@@ -211,8 +348,11 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  selectTab(tab: 'syllabus' | 'lesson' | 'tutor'): void {
+  selectTab(tab: 'study' | 'progress' | 'tutor'): void {
     this.activeTab = tab;
+    if (tab === 'progress') {
+      this.loadQuizScores();
+    }
   }
 
   loadDailyState(classId?: string): void {

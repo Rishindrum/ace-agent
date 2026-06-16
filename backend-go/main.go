@@ -964,6 +964,173 @@ func checkTopicSufficiencyHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func deleteClassHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	_, err := tutorClient.DeleteClass(ctx, &pb.DeleteClassRequest{
+		UserId:  userID,
+		ClassId: classID,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to delete class nodes: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	auth.GlobalScheduleStore.DeleteSchedule(userID, classID)
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"success": true,
+		"message": "Class deleted successfully",
+	})
+}
+
+func getSyllabusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	res, err := tutorClient.GetSyllabus(ctx, &pb.GetSyllabusRequest{
+		UserId:  userID,
+		ClassId: classID,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to get syllabus: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(res)
+}
+
+func editSyllabusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPut {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		Weeks []struct {
+			WeekNumber int32    `json:"week_number"`
+			Topics     []string `json:"topics"`
+		} `json:"weeks"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Invalid request body", http.StatusBadRequest)
+		return
+	}
+
+	pbWeeks := make([]*pb.WeekTopics, len(req.Weeks))
+	for i, w := range req.Weeks {
+		pbWeeks[i] = &pb.WeekTopics{
+			WeekNumber: w.WeekNumber,
+			Topics:     w.Topics,
+		}
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	res, err := tutorClient.EditSyllabus(ctx, &pb.EditSyllabusRequest{
+		UserId:  userID,
+		ClassId: classID,
+		Weeks:   pbWeeks,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Failed to edit syllabus: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(res)
+}
+
+func syllabusHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	if r.Method == "OPTIONS" {
+		return
+	}
+	if r.Method == http.MethodGet {
+		getSyllabusHandler(w, r)
+	} else if r.Method == http.MethodPut {
+		editSyllabusHandler(w, r)
+	} else {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+	}
+}
+
 func startBackgroundWorker() {
 	ticker := time.NewTicker(24 * time.Hour)
 	go func() {
@@ -1650,6 +1817,8 @@ func main() {
 	mux.HandleFunc("/api/v1/study/lesson", auth.JWTMiddleware(generateLessonHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/lesson", auth.JWTMiddleware(generateLessonHandler))
 	mux.HandleFunc("/api/v1/classes", auth.JWTMiddleware(listClassesHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}", auth.JWTMiddleware(deleteClassHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/syllabus", auth.JWTMiddleware(syllabusHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/sufficiency", auth.JWTMiddleware(checkTopicSufficiencyHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")

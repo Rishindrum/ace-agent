@@ -2,7 +2,7 @@
 // versions:
 // - protoc-gen-go-grpc v1.6.0
 // - protoc             v3.20.3
-// source: proto/ace.proto
+// source: ace.proto
 
 package proto
 
@@ -30,6 +30,9 @@ const (
 	TutorService_GenerateLesson_FullMethodName             = "/ace.TutorService/GenerateLesson"
 	TutorService_GenerateLessonAndExercises_FullMethodName = "/ace.TutorService/GenerateLessonAndExercises"
 	TutorService_CheckTopicSufficiency_FullMethodName      = "/ace.TutorService/CheckTopicSufficiency"
+	TutorService_DeleteClass_FullMethodName                = "/ace.TutorService/DeleteClass"
+	TutorService_GetSyllabus_FullMethodName                = "/ace.TutorService/GetSyllabus"
+	TutorService_EditSyllabus_FullMethodName               = "/ace.TutorService/EditSyllabus"
 )
 
 // TutorServiceClient is the client API for TutorService service.
@@ -47,6 +50,9 @@ type TutorServiceClient interface {
 	GenerateLesson(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
 	GenerateLessonAndExercises(ctx context.Context, in *LessonRequest, opts ...grpc.CallOption) (*LessonResponse, error)
 	CheckTopicSufficiency(ctx context.Context, in *SufficiencyRequest, opts ...grpc.CallOption) (*SufficiencyResponse, error)
+	DeleteClass(ctx context.Context, in *DeleteClassRequest, opts ...grpc.CallOption) (*DeleteClassResponse, error)
+	GetSyllabus(ctx context.Context, in *GetSyllabusRequest, opts ...grpc.CallOption) (*GetSyllabusResponse, error)
+	EditSyllabus(ctx context.Context, in *EditSyllabusRequest, opts ...grpc.CallOption) (*EditSyllabusResponse, error)
 }
 
 type tutorServiceClient struct {
@@ -167,6 +173,36 @@ func (c *tutorServiceClient) CheckTopicSufficiency(ctx context.Context, in *Suff
 	return out, nil
 }
 
+func (c *tutorServiceClient) DeleteClass(ctx context.Context, in *DeleteClassRequest, opts ...grpc.CallOption) (*DeleteClassResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteClassResponse)
+	err := c.cc.Invoke(ctx, TutorService_DeleteClass_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tutorServiceClient) GetSyllabus(ctx context.Context, in *GetSyllabusRequest, opts ...grpc.CallOption) (*GetSyllabusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetSyllabusResponse)
+	err := c.cc.Invoke(ctx, TutorService_GetSyllabus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tutorServiceClient) EditSyllabus(ctx context.Context, in *EditSyllabusRequest, opts ...grpc.CallOption) (*EditSyllabusResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(EditSyllabusResponse)
+	err := c.cc.Invoke(ctx, TutorService_EditSyllabus_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // TutorServiceServer is the server API for TutorService service.
 // All implementations must embed UnimplementedTutorServiceServer
 // for forward compatibility.
@@ -182,6 +218,9 @@ type TutorServiceServer interface {
 	GenerateLesson(context.Context, *LessonRequest) (*LessonResponse, error)
 	GenerateLessonAndExercises(context.Context, *LessonRequest) (*LessonResponse, error)
 	CheckTopicSufficiency(context.Context, *SufficiencyRequest) (*SufficiencyResponse, error)
+	DeleteClass(context.Context, *DeleteClassRequest) (*DeleteClassResponse, error)
+	GetSyllabus(context.Context, *GetSyllabusRequest) (*GetSyllabusResponse, error)
+	EditSyllabus(context.Context, *EditSyllabusRequest) (*EditSyllabusResponse, error)
 	mustEmbedUnimplementedTutorServiceServer()
 }
 
@@ -224,6 +263,15 @@ func (UnimplementedTutorServiceServer) GenerateLessonAndExercises(context.Contex
 }
 func (UnimplementedTutorServiceServer) CheckTopicSufficiency(context.Context, *SufficiencyRequest) (*SufficiencyResponse, error) {
 	return nil, status.Error(codes.Unimplemented, "method CheckTopicSufficiency not implemented")
+}
+func (UnimplementedTutorServiceServer) DeleteClass(context.Context, *DeleteClassRequest) (*DeleteClassResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method DeleteClass not implemented")
+}
+func (UnimplementedTutorServiceServer) GetSyllabus(context.Context, *GetSyllabusRequest) (*GetSyllabusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method GetSyllabus not implemented")
+}
+func (UnimplementedTutorServiceServer) EditSyllabus(context.Context, *EditSyllabusRequest) (*EditSyllabusResponse, error) {
+	return nil, status.Error(codes.Unimplemented, "method EditSyllabus not implemented")
 }
 func (UnimplementedTutorServiceServer) mustEmbedUnimplementedTutorServiceServer() {}
 func (UnimplementedTutorServiceServer) testEmbeddedByValue()                      {}
@@ -444,6 +492,60 @@ func _TutorService_CheckTopicSufficiency_Handler(srv interface{}, ctx context.Co
 	return interceptor(ctx, in, info, handler)
 }
 
+func _TutorService_DeleteClass_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteClassRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).DeleteClass(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_DeleteClass_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).DeleteClass(ctx, req.(*DeleteClassRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TutorService_GetSyllabus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetSyllabusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).GetSyllabus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_GetSyllabus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).GetSyllabus(ctx, req.(*GetSyllabusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _TutorService_EditSyllabus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(EditSyllabusRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(TutorServiceServer).EditSyllabus(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: TutorService_EditSyllabus_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(TutorServiceServer).EditSyllabus(ctx, req.(*EditSyllabusRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // TutorService_ServiceDesc is the grpc.ServiceDesc for TutorService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -495,7 +597,19 @@ var TutorService_ServiceDesc = grpc.ServiceDesc{
 			MethodName: "CheckTopicSufficiency",
 			Handler:    _TutorService_CheckTopicSufficiency_Handler,
 		},
+		{
+			MethodName: "DeleteClass",
+			Handler:    _TutorService_DeleteClass_Handler,
+		},
+		{
+			MethodName: "GetSyllabus",
+			Handler:    _TutorService_GetSyllabus_Handler,
+		},
+		{
+			MethodName: "EditSyllabus",
+			Handler:    _TutorService_EditSyllabus_Handler,
+		},
 	},
 	Streams:  []grpc.StreamDesc{},
-	Metadata: "proto/ace.proto",
+	Metadata: "ace.proto",
 }

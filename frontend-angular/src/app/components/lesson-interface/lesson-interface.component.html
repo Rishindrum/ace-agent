@@ -184,7 +184,7 @@
               <h3>Launch Official Quiz</h3>
             </div>
             <div class="step-card-body text-center">
-              <p class="unlocked-text">Orbit Established! You are clear to start your Week {{ selectedWeek }} quiz.</p>
+              <p class="unlocked-text">Checklist Completed! You are clear to start your Week {{ selectedWeek }} quiz.</p>
               <p class="unlocked-subtext">This quiz contains exactly 10 questions customized to your target topics. Submitting your answers will save analytics to BigQuery and extend your streak!</p>
             </div>
             <div class="step-card-footer">
@@ -205,7 +205,7 @@
               <div class="planet"></div>
               <div class="satellite"></div>
             </div>
-            <h3>Generating Quiz Orbit...</h3>
+            <h3>Generating Quiz...</h3>
             <p>{{ quizStatusMessage }}</p>
           </div>
 
@@ -213,7 +213,7 @@
           <div *ngIf="isQuizActive && !quizFinished && !quizLoading" class="quiz-active-state">
             <div class="step-card-header">
               <div class="step-badge-current">Week {{ selectedWeek }} Official Quiz</div>
-              <h3>Testing Orbit Knowledge</h3>
+              <h3>Testing Your Knowledge</h3>
               <p class="desc">Select your answers for all 10 questions. Telemetry will be gathered upon submission.</p>
             </div>
             

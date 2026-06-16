@@ -467,3 +467,12 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 	s.save()
 	return s.schedules[key], true
 }
+
+func (s *ScheduleStore) DeleteSchedule(userID, classID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	key := userID + "_" + classID
+	delete(s.schedules, key)
+	s.save()
+}
+

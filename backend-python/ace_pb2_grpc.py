@@ -89,6 +89,21 @@ class TutorServiceStub:
                 request_serializer=ace__pb2.SufficiencyRequest.SerializeToString,
                 response_deserializer=ace__pb2.SufficiencyResponse.FromString,
                 _registered_method=True)
+        self.DeleteClass = channel.unary_unary(
+                '/ace.TutorService/DeleteClass',
+                request_serializer=ace__pb2.DeleteClassRequest.SerializeToString,
+                response_deserializer=ace__pb2.DeleteClassResponse.FromString,
+                _registered_method=True)
+        self.GetSyllabus = channel.unary_unary(
+                '/ace.TutorService/GetSyllabus',
+                request_serializer=ace__pb2.GetSyllabusRequest.SerializeToString,
+                response_deserializer=ace__pb2.GetSyllabusResponse.FromString,
+                _registered_method=True)
+        self.EditSyllabus = channel.unary_unary(
+                '/ace.TutorService/EditSyllabus',
+                request_serializer=ace__pb2.EditSyllabusRequest.SerializeToString,
+                response_deserializer=ace__pb2.EditSyllabusResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer:
@@ -160,6 +175,24 @@ class TutorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def DeleteClass(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def GetSyllabus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def EditSyllabus(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -217,6 +250,21 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.CheckTopicSufficiency,
                     request_deserializer=ace__pb2.SufficiencyRequest.FromString,
                     response_serializer=ace__pb2.SufficiencyResponse.SerializeToString,
+            ),
+            'DeleteClass': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteClass,
+                    request_deserializer=ace__pb2.DeleteClassRequest.FromString,
+                    response_serializer=ace__pb2.DeleteClassResponse.SerializeToString,
+            ),
+            'GetSyllabus': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetSyllabus,
+                    request_deserializer=ace__pb2.GetSyllabusRequest.FromString,
+                    response_serializer=ace__pb2.GetSyllabusResponse.SerializeToString,
+            ),
+            'EditSyllabus': grpc.unary_unary_rpc_method_handler(
+                    servicer.EditSyllabus,
+                    request_deserializer=ace__pb2.EditSyllabusRequest.FromString,
+                    response_serializer=ace__pb2.EditSyllabusResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -516,6 +564,87 @@ class TutorService:
             '/ace.TutorService/CheckTopicSufficiency',
             ace__pb2.SufficiencyRequest.SerializeToString,
             ace__pb2.SufficiencyResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteClass(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/DeleteClass',
+            ace__pb2.DeleteClassRequest.SerializeToString,
+            ace__pb2.DeleteClassResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetSyllabus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GetSyllabus',
+            ace__pb2.GetSyllabusRequest.SerializeToString,
+            ace__pb2.GetSyllabusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def EditSyllabus(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/EditSyllabus',
+            ace__pb2.EditSyllabusRequest.SerializeToString,
+            ace__pb2.EditSyllabusResponse.FromString,
             options,
             channel_credentials,
             insecure,

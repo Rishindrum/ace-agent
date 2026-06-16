@@ -16,6 +16,9 @@ service TutorService {
   rpc GenerateLesson (LessonRequest) returns (LessonResponse);
   rpc GenerateLessonAndExercises (LessonRequest) returns (LessonResponse);
   rpc CheckTopicSufficiency (SufficiencyRequest) returns (SufficiencyResponse);
+  rpc DeleteClass (DeleteClassRequest) returns (DeleteClassResponse);
+  rpc GetSyllabus (GetSyllabusRequest) returns (GetSyllabusResponse);
+  rpc EditSyllabus (EditSyllabusRequest) returns (EditSyllabusResponse);
 }
 
 message SyllabusRequest {
@@ -164,4 +167,41 @@ message SufficiencyResponse {
   bool insufficient_materials = 1;
   repeated string insufficient_topics = 2;
   repeated string all_topics = 3;
+}
+
+message DeleteClassRequest {
+  string user_id = 1;
+  string class_id = 2;
+}
+
+message DeleteClassResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message WeekTopics {
+  int32 week_number = 1;
+  repeated string topics = 2;
+}
+
+message GetSyllabusRequest {
+  string user_id = 1;
+  string class_id = 2;
+}
+
+message GetSyllabusResponse {
+  repeated WeekTopics weeks = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message EditSyllabusRequest {
+  string user_id = 1;
+  string class_id = 2;
+  repeated WeekTopics weeks = 3;
+}
+
+message EditSyllabusResponse {
+  bool success = 1;
+  string message = 2;
 }
