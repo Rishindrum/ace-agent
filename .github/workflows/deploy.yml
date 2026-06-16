@@ -9,6 +9,7 @@ env:
   PROJECT_ID: ${{ secrets.GCP_PROJECT_ID }}
   REGION: us-central1
   REPO_NAME: ace-repo
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
 
 jobs:
   deploy:
@@ -20,7 +21,7 @@ jobs:
 
       # 1. Login to Google Cloud
       - name: Authenticate with Google Cloud
-        uses: google-github-actions/auth@v2
+        uses: google-github-actions/auth@v3
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
@@ -36,7 +37,7 @@ jobs:
 
       # 3. Deploy Python to Cloud Run
       - name: Deploy Python Service
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: backend-python
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-python:latest
@@ -56,7 +57,7 @@ jobs:
 
       # 6. Deploy Go to Cloud Run
       - name: Deploy Go Service
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: backend-go
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/backend-go:latest
@@ -77,7 +78,7 @@ jobs:
 
       # 9. Deploy Frontend to Cloud Run
       - name: Deploy Frontend
-        uses: google-github-actions/deploy-cloudrun@v2
+        uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: frontend-angular
           image: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/ace-repo/frontend-angular:latest
