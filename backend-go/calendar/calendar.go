@@ -2,11 +2,15 @@ package calendar
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
 	"strings"
+	"sync"
 	"time"
+
+	auth "ace-agent/backend-go/auth"
 
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
@@ -15,6 +19,66 @@ import (
 	googlecalendar "google.golang.org/api/calendar/v3"
 	"google.golang.org/api/option"
 )
+
+var tokenStoreMu sync.Mutex
+var localTokenPath = "calendar_tokens.json"
+
+func saveRefreshTokenLocal(ctx context.Context, userID, refreshToken string) error {
+	tokenStoreMu.Lock()
+	defer tokenStoreMu.Unlock()
+
+	// Download existing tokens from GCS
+	_ = auth.DownloadFromGCS(localTokenPath)
+
+	tokens := make(map[string]string)
+	file, err := os.Open(localTokenPath)
+	if err == nil {
+		_ = json.NewDecoder(file).Decode(&tokens)
+		file.Close()
+	}
+
+	tokens[userID] = refreshToken
+
+	outFile, err := os.Create(localTokenPath)
+	if err != nil {
+		return fmt.Errorf("failed to create local tokens file: %w", err)
+	}
+	defer outFile.Close()
+
+	if err := json.NewEncoder(outFile).Encode(tokens); err != nil {
+		return fmt.Errorf("failed to encode local tokens: %w", err)
+	}
+
+	// Upload to GCS
+	if err := auth.UploadToGCS(localTokenPath); err != nil {
+		log.Printf("[Calendar] Warning: failed to upload calendar tokens to GCS: %v", err)
+	}
+
+	log.Printf("[Calendar] Successfully saved refresh token locally for user %s", userID)
+	return nil
+}
+
+func getRefreshTokenLocal(ctx context.Context, userID string) (string, error) {
+	tokenStoreMu.Lock()
+	defer tokenStoreMu.Unlock()
+
+	// Download from GCS
+	_ = auth.DownloadFromGCS(localTokenPath)
+
+	tokens := make(map[string]string)
+	file, err := os.Open(localTokenPath)
+	if err == nil {
+		_ = json.NewDecoder(file).Decode(&tokens)
+		file.Close()
+	}
+
+	token, ok := tokens[userID]
+	if !ok {
+		return "", fmt.Errorf("no refresh token found for user %s", userID)
+	}
+
+	return token, nil
+}
 
 var OAuthConfig *oauth2.Config
 
@@ -67,7 +131,8 @@ func SaveRefreshToken(ctx context.Context, userID string, refreshToken string) e
 
 	client, err := secretmanager.NewClient(ctx, opts...)
 	if err != nil {
-		return fmt.Errorf("failed to create secret manager client: %w", err)
+		log.Printf("[Calendar] Secret Manager client creation failed (falling back to GCS storage): %v", err)
+		return saveRefreshTokenLocal(ctx, userID, refreshToken)
 	}
 	defer client.Close()
 
@@ -101,7 +166,8 @@ func SaveRefreshToken(ctx context.Context, userID string, refreshToken string) e
 		}
 		_, err = client.CreateSecret(ctx, createReq)
 		if err != nil {
-			return fmt.Errorf("failed to create secret in secret manager: %w", err)
+			log.Printf("[Calendar] Secret Manager CreateSecret failed (falling back to GCS storage): %v", err)
+			return saveRefreshTokenLocal(ctx, userID, refreshToken)
 		}
 		log.Printf("[SecretManager] Created secret: %s", secretName)
 	}
@@ -115,7 +181,8 @@ func SaveRefreshToken(ctx context.Context, userID string, refreshToken string) e
 	}
 	_, err = client.AddSecretVersion(ctx, addReq)
 	if err != nil {
-		return fmt.Errorf("failed to add secret version: %w", err)
+		log.Printf("[Calendar] Secret Manager AddSecretVersion failed (falling back to GCS storage): %v", err)
+		return saveRefreshTokenLocal(ctx, userID, refreshToken)
 	}
 
 	log.Printf("[SecretManager] Successfully saved refresh token version for user: %s", userID)
@@ -134,7 +201,8 @@ func GetRefreshToken(ctx context.Context, userID string) (string, error) {
 
 	client, err := secretmanager.NewClient(ctx, opts...)
 	if err != nil {
-		return "", fmt.Errorf("failed to create secret manager client: %w", err)
+		log.Printf("[Calendar] Secret Manager client creation failed (falling back to GCS storage): %v", err)
+		return getRefreshTokenLocal(ctx, userID)
 	}
 	defer client.Close()
 
@@ -147,7 +215,8 @@ func GetRefreshToken(ctx context.Context, userID string) (string, error) {
 	}
 	result, err := client.AccessSecretVersion(ctx, req)
 	if err != nil {
-		return "", fmt.Errorf("failed to access secret version: %w", err)
+		log.Printf("[Calendar] Secret Manager AccessSecretVersion failed (falling back to GCS storage): %v", err)
+		return getRefreshTokenLocal(ctx, userID)
 	}
 
 	return string(result.Payload.Data), nil

@@ -707,6 +707,22 @@ export class DashboardComponent implements OnInit {
     }
   }
 
+  addWeekToSetupSyllabus(): void {
+    const nextWeekNum = this.setupTopicsList.length + 1;
+    this.setupTopicsList.push({
+      week_number: nextWeekNum,
+      topics: ['']
+    });
+  }
+
+  removeWeekFromSetupSyllabus(weekIdx: number): void {
+    this.setupTopicsList.splice(weekIdx, 1);
+    // Re-index remaining weeks
+    this.setupTopicsList.forEach((wk, idx) => {
+      wk.week_number = idx + 1;
+    });
+  }
+
   saveSetupSettings(): void {
     const selectedDays = this.streakSettingsDays.filter(d => d.selected).map(d => d.value);
     if (selectedDays.length === 0) {

@@ -709,6 +709,9 @@
           <div *ngFor="let wk of setupTopicsList; let wIdx = index" class="preview-week-item" style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; margin-bottom: 4px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
               <strong style="font-size: 12px; color: #e2e8f0;">Week {{ wk.week_number }}</strong>
+              <button class="btn-remove-week" (click)="removeWeekFromSetupSyllabus(wIdx)" title="Remove Week" style="background: transparent; border: none; cursor: pointer; color: #ef4444; display: flex; align-items: center; justify-content: center; padding: 2px;">
+                <mat-icon style="font-size: 16px; width: 16px; height: 16px;">delete_forever</mat-icon>
+              </button>
             </div>
             <div class="setup-topics-sublist" style="display: flex; flex-direction: column; gap: 6px; padding-left: 10px;">
               <div *ngFor="let topic of wk.topics; let tIdx = index; trackBy: trackByFn" class="setup-topic-row" style="display: flex; align-items: center; gap: 6px;">
@@ -727,8 +730,20 @@
               </button>
             </div>
           </div>
-          <div *ngIf="setupTopicsList.length === 0" class="loading-preview" style="font-size: 12px; color: #94a3b8; display: flex; align-items: center; gap: 8px;">
-            <span>Loading topics list...</span>
+          
+          <!-- Add Week Button -->
+          <button *ngIf="setupTopicsList.length > 0" class="btn-add-week" (click)="addWeekToSetupSyllabus()" style="margin-top: 8px; background: rgba(56, 189, 248, 0.1); border: 1px dashed #38bdf8; cursor: pointer; color: #38bdf8; display: flex; align-items: center; justify-content: center; gap: 6px; padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 700; width: 100%; transition: all 0.2s;">
+            <mat-icon style="font-size: 16px; width: 16px; height: 16px;">add_circle_outline</mat-icon> Add New Week Split
+          </button>
+
+          <div *ngIf="setupTopicsList.length === 0" class="loading-preview" style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0;">
+            <div style="display: flex; align-items: center; gap: 8px;">
+              <mat-icon class="animate-spin" style="font-size: 18px; width: 18px; height: 18px; color: #38bdf8;">autorenew</mat-icon>
+              <span>Extracting weekly schedule from syllabus...</span>
+            </div>
+            <button class="btn btn-secondary" (click)="addWeekToSetupSyllabus()" style="font-size: 11px; padding: 6px 12px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.2); background: transparent; color: #e2e8f0; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+              Create Manually
+            </button>
           </div>
         </div>
       </div>

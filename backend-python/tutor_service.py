@@ -311,8 +311,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         """
 
         try:
-            response = client.models.generate_content(
-                model='gemini-2.5-flash-lite',
+            response = self._generate_with_retry(
+                model_name='gemini-2.5-flash',
                 contents=prompt,
                 config={
                     'response_mime_type': 'application/json',
@@ -366,7 +366,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             """
             try:
                 response = self._generate_with_retry(
-                    model_name='gemini-2.5-flash-lite',
+                    model_name='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'response_mime_type': 'application/json',
@@ -413,6 +413,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     content=full_text)
             except Exception as e:
                 print(f"[Python] Graph/Schedule Logic Error: {e}")
+                return ace_pb2.SyllabusResponse(
+                    success=False,
+                    message=f"Failed to process syllabus: {str(e)}",
+                    nodes_created=0,
+                    graph_json="[]",
+                    recommended_study_days=[1, 3, 5],
+                    recommended_daily_pace_minutes=45
+                )
         else:
             print("[Python] Skipping Graph/Schedule Extraction (DB Down)")
 
@@ -524,8 +532,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
 
             try:
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash-lite', 
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash', 
                     contents=prompt
                 )
                 answer = response.text
@@ -647,7 +655,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         try:
             # Call Gemini with strict JSON configuration
             response = self._generate_with_retry(
-                model_name='gemini-2.5-flash-lite',
+                model_name='gemini-2.5-flash',
                 contents=prompt,
                 config={'response_mime_type': 'application/json'}
             )
@@ -699,8 +707,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                         prompt = "You are a document transcription assistant. Extract all readable text, slide titles, bullet points, and content from the provided presentation slides. Output only the extracted educational text content, organized slide-by-slide. Do not include introductory notes, meta commentary, or explanations."
                         
                         from google.genai import types as genai_types
-                        response = client.models.generate_content(
-                            model='gemini-2.5-flash',
+                        response = self._generate_with_retry(
+                            model_name='gemini-2.5-flash',
                             contents=[
                                 genai_types.Part.from_bytes(
                                     data=request.file_data,
@@ -901,7 +909,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 Generate a set of {request.question_count} questions. For each question, make sure:
                 1. It has exactly 4 options.
                 2. The options are clear and plausible.
-                3. The correct_option_index is a 0-based index pointing to the correct answer in the options list.
+                3. The correct_option_index is a 0-based index pointing to the correct answer in the options list. Double check that the index matches the correct option text exactly and is factually accurate.
                 4. The id is a unique identifier string (e.g. "q1", "q2", etc.).
                 """
                 
@@ -912,9 +920,9 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
 
-                # LLM Generation: Use the google-genai SDK with gemini-2.5-flash-lite
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash-lite',
+                # LLM Generation: Use the google-genai SDK with gemini-2.5-flash
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'response_mime_type': 'application/json',
@@ -1057,8 +1065,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
                 
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash-lite',
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'response_mime_type': 'application/json',
@@ -1159,7 +1167,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 Generate a lesson matching these instructions:
                 1. Write a lesson_markdown text: a comprehensive structured lesson explaining the topics, formulas, or concepts, using markdown headers, lists, and examples.
                 2. Design 3 to 5 practice exercises testing the concepts in the lesson. Each exercise must have exactly 4 options.
-                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
+                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer. Double check that the index matches the correct option text exactly and is factually accurate.
                 4. The id for each exercise should be a unique identifier string (e.g. "ex1", "ex2", etc.).
                 5. Include an explanation field explaining the correct answer for each exercise.
                 """
@@ -1167,8 +1175,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
                 
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash-lite',
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'response_mime_type': 'application/json',
@@ -1337,7 +1345,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 Generate a lesson matching these instructions:
                 1. Write a lesson_markdown text: a detailed structured lesson explaining the topics, formulas, or concepts, using markdown headers, lists, and examples. Focus heavily on addressing the student's weak topics if they overlap.
                 2. Design exactly 3 practice questions testing the concepts in the lesson. Each question must have exactly 4 options.
-                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer.
+                3. Ensure the correct_option_index is a 0-based index pointing to the correct answer. Double check that the index matches the correct option text exactly and is factually accurate.
                 4. The id for each question should be a unique identifier string (e.g. "ex1", "ex2", "ex3").
                 """
                 
@@ -1348,8 +1356,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 if correction_instruction:
                     prompt += f"\n\nCRITICAL FIX REQUIRED FROM PREVIOUS ATTEMPT:\n{correction_instruction}"
                 
-                response = client.models.generate_content(
-                    model='gemini-2.5-flash-lite',
+                response = self._generate_with_retry(
+                    model_name='gemini-2.5-flash',
                     contents=prompt,
                     config={
                         'response_mime_type': 'application/json',
@@ -1895,8 +1903,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     mime_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation" if filename.endswith(".pptx") else "application/vnd.ms-powerpoint"
                     prompt = "You are a document transcription assistant. Extract all readable text, slide titles, bullet points, and content from the provided presentation slides. Output only the extracted educational text content, organized slide-by-slide. Do not include introductory notes, meta commentary, or explanations."
                     from google.genai import types as genai_types
-                    response = client.models.generate_content(
-                        model='gemini-2.5-flash',
+                    response = self._generate_with_retry(
+                        model_name='gemini-2.5-flash',
                         contents=[
                             genai_types.Part.from_bytes(
                                 data=request.file_data,

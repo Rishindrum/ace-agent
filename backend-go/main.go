@@ -228,11 +228,16 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		json.Unmarshal([]byte(resp.GraphJson), &graphData)
 	}
 
+	status := "success"
+	if !resp.Success {
+		status = "error"
+	}
+
 	json.NewEncoder(w).Encode(map[string]interface{}{
 		"message":                         resp.Message,
 		"nodes":                           resp.NodesCreated,
 		"graph":                           graphData,
-		"status":                          "success",
+		"status":                          status,
 		"recommended_study_days":          resp.RecommendedStudyDays,
 		"recommended_daily_pace_minutes": resp.RecommendedDailyPaceMinutes,
 	})
