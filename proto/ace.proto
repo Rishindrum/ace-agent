@@ -19,6 +19,9 @@ service TutorService {
   rpc DeleteClass (DeleteClassRequest) returns (DeleteClassResponse);
   rpc GetSyllabus (GetSyllabusRequest) returns (GetSyllabusResponse);
   rpc EditSyllabus (EditSyllabusRequest) returns (EditSyllabusResponse);
+  rpc GetMaterials (GetMaterialsRequest) returns (GetMaterialsResponse);
+  rpc DeleteMaterial (DeleteMaterialRequest) returns (DeleteMaterialResponse);
+  rpc ParseDocument (ParseDocumentRequest) returns (ParseDocumentResponse);
 }
 
 message SyllabusRequest {
@@ -204,4 +207,46 @@ message EditSyllabusRequest {
 message EditSyllabusResponse {
   bool success = 1;
   string message = 2;
+}
+
+message GetMaterialsRequest {
+  string user_id = 1;
+  string class_id = 2;
+}
+
+message MaterialInfo {
+  string material_id = 1;
+  string filename = 2;
+  string topic_name = 3;
+  int32 week_number = 4;
+  string content = 5;
+  string created_at = 6;
+}
+
+message GetMaterialsResponse {
+  repeated MaterialInfo materials = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+message DeleteMaterialRequest {
+  string user_id = 1;
+  string class_id = 2;
+  string material_id = 3;
+}
+
+message DeleteMaterialResponse {
+  bool success = 1;
+  string message = 2;
+}
+
+message ParseDocumentRequest {
+  bytes file_data = 1;
+  string file_name = 2;
+}
+
+message ParseDocumentResponse {
+  string parsed_text = 1;
+  bool success = 2;
+  string message = 3;
 }

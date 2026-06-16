@@ -1821,6 +1821,426 @@ func (x *EditSyllabusResponse) GetMessage() string {
 	return ""
 }
 
+type GetMaterialsRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMaterialsRequest) Reset() {
+	*x = GetMaterialsRequest{}
+	mi := &file_ace_proto_msgTypes[29]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMaterialsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMaterialsRequest) ProtoMessage() {}
+
+func (x *GetMaterialsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[29]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMaterialsRequest.ProtoReflect.Descriptor instead.
+func (*GetMaterialsRequest) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{29}
+}
+
+func (x *GetMaterialsRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *GetMaterialsRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+type MaterialInfo struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	MaterialId    string                 `protobuf:"bytes,1,opt,name=material_id,json=materialId,proto3" json:"material_id,omitempty"`
+	Filename      string                 `protobuf:"bytes,2,opt,name=filename,proto3" json:"filename,omitempty"`
+	TopicName     string                 `protobuf:"bytes,3,opt,name=topic_name,json=topicName,proto3" json:"topic_name,omitempty"`
+	WeekNumber    int32                  `protobuf:"varint,4,opt,name=week_number,json=weekNumber,proto3" json:"week_number,omitempty"`
+	Content       string                 `protobuf:"bytes,5,opt,name=content,proto3" json:"content,omitempty"`
+	CreatedAt     string                 `protobuf:"bytes,6,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *MaterialInfo) Reset() {
+	*x = MaterialInfo{}
+	mi := &file_ace_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *MaterialInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*MaterialInfo) ProtoMessage() {}
+
+func (x *MaterialInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use MaterialInfo.ProtoReflect.Descriptor instead.
+func (*MaterialInfo) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *MaterialInfo) GetMaterialId() string {
+	if x != nil {
+		return x.MaterialId
+	}
+	return ""
+}
+
+func (x *MaterialInfo) GetFilename() string {
+	if x != nil {
+		return x.Filename
+	}
+	return ""
+}
+
+func (x *MaterialInfo) GetTopicName() string {
+	if x != nil {
+		return x.TopicName
+	}
+	return ""
+}
+
+func (x *MaterialInfo) GetWeekNumber() int32 {
+	if x != nil {
+		return x.WeekNumber
+	}
+	return 0
+}
+
+func (x *MaterialInfo) GetContent() string {
+	if x != nil {
+		return x.Content
+	}
+	return ""
+}
+
+func (x *MaterialInfo) GetCreatedAt() string {
+	if x != nil {
+		return x.CreatedAt
+	}
+	return ""
+}
+
+type GetMaterialsResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Materials     []*MaterialInfo        `protobuf:"bytes,1,rep,name=materials,proto3" json:"materials,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetMaterialsResponse) Reset() {
+	*x = GetMaterialsResponse{}
+	mi := &file_ace_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetMaterialsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetMaterialsResponse) ProtoMessage() {}
+
+func (x *GetMaterialsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetMaterialsResponse.ProtoReflect.Descriptor instead.
+func (*GetMaterialsResponse) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{31}
+}
+
+func (x *GetMaterialsResponse) GetMaterials() []*MaterialInfo {
+	if x != nil {
+		return x.Materials
+	}
+	return nil
+}
+
+func (x *GetMaterialsResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *GetMaterialsResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type DeleteMaterialRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	UserId        string                 `protobuf:"bytes,1,opt,name=user_id,json=userId,proto3" json:"user_id,omitempty"`
+	ClassId       string                 `protobuf:"bytes,2,opt,name=class_id,json=classId,proto3" json:"class_id,omitempty"`
+	MaterialId    string                 `protobuf:"bytes,3,opt,name=material_id,json=materialId,proto3" json:"material_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteMaterialRequest) Reset() {
+	*x = DeleteMaterialRequest{}
+	mi := &file_ace_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteMaterialRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMaterialRequest) ProtoMessage() {}
+
+func (x *DeleteMaterialRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMaterialRequest.ProtoReflect.Descriptor instead.
+func (*DeleteMaterialRequest) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *DeleteMaterialRequest) GetUserId() string {
+	if x != nil {
+		return x.UserId
+	}
+	return ""
+}
+
+func (x *DeleteMaterialRequest) GetClassId() string {
+	if x != nil {
+		return x.ClassId
+	}
+	return ""
+}
+
+func (x *DeleteMaterialRequest) GetMaterialId() string {
+	if x != nil {
+		return x.MaterialId
+	}
+	return ""
+}
+
+type DeleteMaterialResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,2,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteMaterialResponse) Reset() {
+	*x = DeleteMaterialResponse{}
+	mi := &file_ace_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteMaterialResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteMaterialResponse) ProtoMessage() {}
+
+func (x *DeleteMaterialResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteMaterialResponse.ProtoReflect.Descriptor instead.
+func (*DeleteMaterialResponse) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *DeleteMaterialResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *DeleteMaterialResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
+type ParseDocumentRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	FileData      []byte                 `protobuf:"bytes,1,opt,name=file_data,json=fileData,proto3" json:"file_data,omitempty"`
+	FileName      string                 `protobuf:"bytes,2,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParseDocumentRequest) Reset() {
+	*x = ParseDocumentRequest{}
+	mi := &file_ace_proto_msgTypes[34]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParseDocumentRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParseDocumentRequest) ProtoMessage() {}
+
+func (x *ParseDocumentRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[34]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParseDocumentRequest.ProtoReflect.Descriptor instead.
+func (*ParseDocumentRequest) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *ParseDocumentRequest) GetFileData() []byte {
+	if x != nil {
+		return x.FileData
+	}
+	return nil
+}
+
+func (x *ParseDocumentRequest) GetFileName() string {
+	if x != nil {
+		return x.FileName
+	}
+	return ""
+}
+
+type ParseDocumentResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	ParsedText    string                 `protobuf:"bytes,1,opt,name=parsed_text,json=parsedText,proto3" json:"parsed_text,omitempty"`
+	Success       bool                   `protobuf:"varint,2,opt,name=success,proto3" json:"success,omitempty"`
+	Message       string                 `protobuf:"bytes,3,opt,name=message,proto3" json:"message,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ParseDocumentResponse) Reset() {
+	*x = ParseDocumentResponse{}
+	mi := &file_ace_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ParseDocumentResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ParseDocumentResponse) ProtoMessage() {}
+
+func (x *ParseDocumentResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_ace_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ParseDocumentResponse.ProtoReflect.Descriptor instead.
+func (*ParseDocumentResponse) Descriptor() ([]byte, []int) {
+	return file_ace_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *ParseDocumentResponse) GetParsedText() string {
+	if x != nil {
+		return x.ParsedText
+	}
+	return ""
+}
+
+func (x *ParseDocumentResponse) GetSuccess() bool {
+	if x != nil {
+		return x.Success
+	}
+	return false
+}
+
+func (x *ParseDocumentResponse) GetMessage() string {
+	if x != nil {
+		return x.Message
+	}
+	return ""
+}
+
 var File_ace_proto protoreflect.FileDescriptor
 
 const file_ace_proto_rawDesc = "" +
@@ -1970,7 +2390,41 @@ const file_ace_proto_rawDesc = "" +
 	"\x05weeks\x18\x03 \x03(\v2\x0f.ace.WeekTopicsR\x05weeks\"J\n" +
 	"\x14EditSyllabusResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
-	"\amessage\x18\x02 \x01(\tR\amessage2\x98\a\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"I\n" +
+	"\x13GetMaterialsRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x02 \x01(\tR\aclassId\"\xc4\x01\n" +
+	"\fMaterialInfo\x12\x1f\n" +
+	"\vmaterial_id\x18\x01 \x01(\tR\n" +
+	"materialId\x12\x1a\n" +
+	"\bfilename\x18\x02 \x01(\tR\bfilename\x12\x1d\n" +
+	"\n" +
+	"topic_name\x18\x03 \x01(\tR\ttopicName\x12\x1f\n" +
+	"\vweek_number\x18\x04 \x01(\x05R\n" +
+	"weekNumber\x12\x18\n" +
+	"\acontent\x18\x05 \x01(\tR\acontent\x12\x1d\n" +
+	"\n" +
+	"created_at\x18\x06 \x01(\tR\tcreatedAt\"{\n" +
+	"\x14GetMaterialsResponse\x12/\n" +
+	"\tmaterials\x18\x01 \x03(\v2\x11.ace.MaterialInfoR\tmaterials\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"l\n" +
+	"\x15DeleteMaterialRequest\x12\x17\n" +
+	"\auser_id\x18\x01 \x01(\tR\x06userId\x12\x19\n" +
+	"\bclass_id\x18\x02 \x01(\tR\aclassId\x12\x1f\n" +
+	"\vmaterial_id\x18\x03 \x01(\tR\n" +
+	"materialId\"L\n" +
+	"\x16DeleteMaterialResponse\x12\x18\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x02 \x01(\tR\amessage\"P\n" +
+	"\x14ParseDocumentRequest\x12\x1b\n" +
+	"\tfile_data\x18\x01 \x01(\fR\bfileData\x12\x1b\n" +
+	"\tfile_name\x18\x02 \x01(\tR\bfileName\"l\n" +
+	"\x15ParseDocumentResponse\x12\x1f\n" +
+	"\vparsed_text\x18\x01 \x01(\tR\n" +
+	"parsedText\x12\x18\n" +
+	"\asuccess\x18\x02 \x01(\bR\asuccess\x12\x18\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage2\xf0\b\n" +
 	"\fTutorService\x12>\n" +
 	"\x0fProcessSyllabus\x12\x14.ace.SyllabusRequest\x1a\x15.ace.SyllabusResponse\x12+\n" +
 	"\x04Chat\x12\x10.ace.ChatRequest\x1a\x11.ace.ChatResponse\x12C\n" +
@@ -1985,7 +2439,10 @@ const file_ace_proto_rawDesc = "" +
 	"\x15CheckTopicSufficiency\x12\x17.ace.SufficiencyRequest\x1a\x18.ace.SufficiencyResponse\x12@\n" +
 	"\vDeleteClass\x12\x17.ace.DeleteClassRequest\x1a\x18.ace.DeleteClassResponse\x12@\n" +
 	"\vGetSyllabus\x12\x17.ace.GetSyllabusRequest\x1a\x18.ace.GetSyllabusResponse\x12C\n" +
-	"\fEditSyllabus\x12\x18.ace.EditSyllabusRequest\x1a\x19.ace.EditSyllabusResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
+	"\fEditSyllabus\x12\x18.ace.EditSyllabusRequest\x1a\x19.ace.EditSyllabusResponse\x12C\n" +
+	"\fGetMaterials\x12\x18.ace.GetMaterialsRequest\x1a\x19.ace.GetMaterialsResponse\x12I\n" +
+	"\x0eDeleteMaterial\x12\x1a.ace.DeleteMaterialRequest\x1a\x1b.ace.DeleteMaterialResponse\x12F\n" +
+	"\rParseDocument\x12\x19.ace.ParseDocumentRequest\x1a\x1a.ace.ParseDocumentResponseB\x1cZ\x1aace-agent/backend-go/protob\x06proto3"
 
 var (
 	file_ace_proto_rawDescOnce sync.Once
@@ -1999,37 +2456,44 @@ func file_ace_proto_rawDescGZIP() []byte {
 	return file_ace_proto_rawDescData
 }
 
-var file_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
+var file_ace_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_ace_proto_goTypes = []any{
-	(*SyllabusRequest)(nil),       // 0: ace.SyllabusRequest
-	(*SyllabusResponse)(nil),      // 1: ace.SyllabusResponse
-	(*ChatRequest)(nil),           // 2: ace.ChatRequest
-	(*ChatResponse)(nil),          // 3: ace.ChatResponse
-	(*QuizResultRequest)(nil),     // 4: ace.QuizResultRequest
-	(*QuizResultResponse)(nil),    // 5: ace.QuizResultResponse
-	(*AdaptiveQuizRequest)(nil),   // 6: ace.AdaptiveQuizRequest
-	(*AdaptiveQuizResponse)(nil),  // 7: ace.AdaptiveQuizResponse
-	(*GetQuizScoresRequest)(nil),  // 8: ace.GetQuizScoresRequest
-	(*QuizScoreRecord)(nil),       // 9: ace.QuizScoreRecord
-	(*GetQuizScoresResponse)(nil), // 10: ace.GetQuizScoresResponse
-	(*IngestRequest)(nil),         // 11: ace.IngestRequest
-	(*IngestResponse)(nil),        // 12: ace.IngestResponse
-	(*QuizRequest)(nil),           // 13: ace.QuizRequest
-	(*Question)(nil),              // 14: ace.Question
-	(*QuizResponse)(nil),          // 15: ace.QuizResponse
-	(*CramRequest)(nil),           // 16: ace.CramRequest
-	(*CramResponse)(nil),          // 17: ace.CramResponse
-	(*LessonRequest)(nil),         // 18: ace.LessonRequest
-	(*LessonResponse)(nil),        // 19: ace.LessonResponse
-	(*SufficiencyRequest)(nil),    // 20: ace.SufficiencyRequest
-	(*SufficiencyResponse)(nil),   // 21: ace.SufficiencyResponse
-	(*DeleteClassRequest)(nil),    // 22: ace.DeleteClassRequest
-	(*DeleteClassResponse)(nil),   // 23: ace.DeleteClassResponse
-	(*WeekTopics)(nil),            // 24: ace.WeekTopics
-	(*GetSyllabusRequest)(nil),    // 25: ace.GetSyllabusRequest
-	(*GetSyllabusResponse)(nil),   // 26: ace.GetSyllabusResponse
-	(*EditSyllabusRequest)(nil),   // 27: ace.EditSyllabusRequest
-	(*EditSyllabusResponse)(nil),  // 28: ace.EditSyllabusResponse
+	(*SyllabusRequest)(nil),        // 0: ace.SyllabusRequest
+	(*SyllabusResponse)(nil),       // 1: ace.SyllabusResponse
+	(*ChatRequest)(nil),            // 2: ace.ChatRequest
+	(*ChatResponse)(nil),           // 3: ace.ChatResponse
+	(*QuizResultRequest)(nil),      // 4: ace.QuizResultRequest
+	(*QuizResultResponse)(nil),     // 5: ace.QuizResultResponse
+	(*AdaptiveQuizRequest)(nil),    // 6: ace.AdaptiveQuizRequest
+	(*AdaptiveQuizResponse)(nil),   // 7: ace.AdaptiveQuizResponse
+	(*GetQuizScoresRequest)(nil),   // 8: ace.GetQuizScoresRequest
+	(*QuizScoreRecord)(nil),        // 9: ace.QuizScoreRecord
+	(*GetQuizScoresResponse)(nil),  // 10: ace.GetQuizScoresResponse
+	(*IngestRequest)(nil),          // 11: ace.IngestRequest
+	(*IngestResponse)(nil),         // 12: ace.IngestResponse
+	(*QuizRequest)(nil),            // 13: ace.QuizRequest
+	(*Question)(nil),               // 14: ace.Question
+	(*QuizResponse)(nil),           // 15: ace.QuizResponse
+	(*CramRequest)(nil),            // 16: ace.CramRequest
+	(*CramResponse)(nil),           // 17: ace.CramResponse
+	(*LessonRequest)(nil),          // 18: ace.LessonRequest
+	(*LessonResponse)(nil),         // 19: ace.LessonResponse
+	(*SufficiencyRequest)(nil),     // 20: ace.SufficiencyRequest
+	(*SufficiencyResponse)(nil),    // 21: ace.SufficiencyResponse
+	(*DeleteClassRequest)(nil),     // 22: ace.DeleteClassRequest
+	(*DeleteClassResponse)(nil),    // 23: ace.DeleteClassResponse
+	(*WeekTopics)(nil),             // 24: ace.WeekTopics
+	(*GetSyllabusRequest)(nil),     // 25: ace.GetSyllabusRequest
+	(*GetSyllabusResponse)(nil),    // 26: ace.GetSyllabusResponse
+	(*EditSyllabusRequest)(nil),    // 27: ace.EditSyllabusRequest
+	(*EditSyllabusResponse)(nil),   // 28: ace.EditSyllabusResponse
+	(*GetMaterialsRequest)(nil),    // 29: ace.GetMaterialsRequest
+	(*MaterialInfo)(nil),           // 30: ace.MaterialInfo
+	(*GetMaterialsResponse)(nil),   // 31: ace.GetMaterialsResponse
+	(*DeleteMaterialRequest)(nil),  // 32: ace.DeleteMaterialRequest
+	(*DeleteMaterialResponse)(nil), // 33: ace.DeleteMaterialResponse
+	(*ParseDocumentRequest)(nil),   // 34: ace.ParseDocumentRequest
+	(*ParseDocumentResponse)(nil),  // 35: ace.ParseDocumentResponse
 }
 var file_ace_proto_depIdxs = []int32{
 	9,  // 0: ace.GetQuizScoresResponse.scores:type_name -> ace.QuizScoreRecord
@@ -2038,39 +2502,46 @@ var file_ace_proto_depIdxs = []int32{
 	14, // 3: ace.LessonResponse.exercises:type_name -> ace.Question
 	24, // 4: ace.GetSyllabusResponse.weeks:type_name -> ace.WeekTopics
 	24, // 5: ace.EditSyllabusRequest.weeks:type_name -> ace.WeekTopics
-	0,  // 6: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
-	2,  // 7: ace.TutorService.Chat:input_type -> ace.ChatRequest
-	4,  // 8: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
-	6,  // 9: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
-	8,  // 10: ace.TutorService.GetQuizScores:input_type -> ace.GetQuizScoresRequest
-	11, // 11: ace.TutorService.IngestMaterial:input_type -> ace.IngestRequest
-	13, // 12: ace.TutorService.GenerateQuiz:input_type -> ace.QuizRequest
-	16, // 13: ace.TutorService.GenerateCramSession:input_type -> ace.CramRequest
-	18, // 14: ace.TutorService.GenerateLesson:input_type -> ace.LessonRequest
-	18, // 15: ace.TutorService.GenerateLessonAndExercises:input_type -> ace.LessonRequest
-	20, // 16: ace.TutorService.CheckTopicSufficiency:input_type -> ace.SufficiencyRequest
-	22, // 17: ace.TutorService.DeleteClass:input_type -> ace.DeleteClassRequest
-	25, // 18: ace.TutorService.GetSyllabus:input_type -> ace.GetSyllabusRequest
-	27, // 19: ace.TutorService.EditSyllabus:input_type -> ace.EditSyllabusRequest
-	1,  // 20: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
-	3,  // 21: ace.TutorService.Chat:output_type -> ace.ChatResponse
-	5,  // 22: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
-	7,  // 23: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
-	10, // 24: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
-	12, // 25: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
-	15, // 26: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
-	17, // 27: ace.TutorService.GenerateCramSession:output_type -> ace.CramResponse
-	19, // 28: ace.TutorService.GenerateLesson:output_type -> ace.LessonResponse
-	19, // 29: ace.TutorService.GenerateLessonAndExercises:output_type -> ace.LessonResponse
-	21, // 30: ace.TutorService.CheckTopicSufficiency:output_type -> ace.SufficiencyResponse
-	23, // 31: ace.TutorService.DeleteClass:output_type -> ace.DeleteClassResponse
-	26, // 32: ace.TutorService.GetSyllabus:output_type -> ace.GetSyllabusResponse
-	28, // 33: ace.TutorService.EditSyllabus:output_type -> ace.EditSyllabusResponse
-	20, // [20:34] is the sub-list for method output_type
-	6,  // [6:20] is the sub-list for method input_type
-	6,  // [6:6] is the sub-list for extension type_name
-	6,  // [6:6] is the sub-list for extension extendee
-	0,  // [0:6] is the sub-list for field type_name
+	30, // 6: ace.GetMaterialsResponse.materials:type_name -> ace.MaterialInfo
+	0,  // 7: ace.TutorService.ProcessSyllabus:input_type -> ace.SyllabusRequest
+	2,  // 8: ace.TutorService.Chat:input_type -> ace.ChatRequest
+	4,  // 9: ace.TutorService.SubmitQuizResult:input_type -> ace.QuizResultRequest
+	6,  // 10: ace.TutorService.GenerateAdaptiveQuiz:input_type -> ace.AdaptiveQuizRequest
+	8,  // 11: ace.TutorService.GetQuizScores:input_type -> ace.GetQuizScoresRequest
+	11, // 12: ace.TutorService.IngestMaterial:input_type -> ace.IngestRequest
+	13, // 13: ace.TutorService.GenerateQuiz:input_type -> ace.QuizRequest
+	16, // 14: ace.TutorService.GenerateCramSession:input_type -> ace.CramRequest
+	18, // 15: ace.TutorService.GenerateLesson:input_type -> ace.LessonRequest
+	18, // 16: ace.TutorService.GenerateLessonAndExercises:input_type -> ace.LessonRequest
+	20, // 17: ace.TutorService.CheckTopicSufficiency:input_type -> ace.SufficiencyRequest
+	22, // 18: ace.TutorService.DeleteClass:input_type -> ace.DeleteClassRequest
+	25, // 19: ace.TutorService.GetSyllabus:input_type -> ace.GetSyllabusRequest
+	27, // 20: ace.TutorService.EditSyllabus:input_type -> ace.EditSyllabusRequest
+	29, // 21: ace.TutorService.GetMaterials:input_type -> ace.GetMaterialsRequest
+	32, // 22: ace.TutorService.DeleteMaterial:input_type -> ace.DeleteMaterialRequest
+	34, // 23: ace.TutorService.ParseDocument:input_type -> ace.ParseDocumentRequest
+	1,  // 24: ace.TutorService.ProcessSyllabus:output_type -> ace.SyllabusResponse
+	3,  // 25: ace.TutorService.Chat:output_type -> ace.ChatResponse
+	5,  // 26: ace.TutorService.SubmitQuizResult:output_type -> ace.QuizResultResponse
+	7,  // 27: ace.TutorService.GenerateAdaptiveQuiz:output_type -> ace.AdaptiveQuizResponse
+	10, // 28: ace.TutorService.GetQuizScores:output_type -> ace.GetQuizScoresResponse
+	12, // 29: ace.TutorService.IngestMaterial:output_type -> ace.IngestResponse
+	15, // 30: ace.TutorService.GenerateQuiz:output_type -> ace.QuizResponse
+	17, // 31: ace.TutorService.GenerateCramSession:output_type -> ace.CramResponse
+	19, // 32: ace.TutorService.GenerateLesson:output_type -> ace.LessonResponse
+	19, // 33: ace.TutorService.GenerateLessonAndExercises:output_type -> ace.LessonResponse
+	21, // 34: ace.TutorService.CheckTopicSufficiency:output_type -> ace.SufficiencyResponse
+	23, // 35: ace.TutorService.DeleteClass:output_type -> ace.DeleteClassResponse
+	26, // 36: ace.TutorService.GetSyllabus:output_type -> ace.GetSyllabusResponse
+	28, // 37: ace.TutorService.EditSyllabus:output_type -> ace.EditSyllabusResponse
+	31, // 38: ace.TutorService.GetMaterials:output_type -> ace.GetMaterialsResponse
+	33, // 39: ace.TutorService.DeleteMaterial:output_type -> ace.DeleteMaterialResponse
+	35, // 40: ace.TutorService.ParseDocument:output_type -> ace.ParseDocumentResponse
+	24, // [24:41] is the sub-list for method output_type
+	7,  // [7:24] is the sub-list for method input_type
+	7,  // [7:7] is the sub-list for extension type_name
+	7,  // [7:7] is the sub-list for extension extendee
+	0,  // [0:7] is the sub-list for field type_name
 }
 
 func init() { file_ace_proto_init() }
@@ -2084,7 +2555,7 @@ func file_ace_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_ace_proto_rawDesc), len(file_ace_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   29,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

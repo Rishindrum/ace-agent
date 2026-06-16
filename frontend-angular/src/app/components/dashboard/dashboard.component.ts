@@ -32,7 +32,28 @@ import { IngestService } from '../../services/ingest.service';
   styleUrls: ['./dashboard.component.scss']
 })
 export class DashboardComponent implements OnInit {
-  activeTab: 'study' | 'progress' | 'tutor' = 'study';
+  activeTab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings' = 'study';
+
+  // Materials and Settings state
+  materials: any[] = [];
+  selectedMaterial: any = null;
+  isLoadingMaterials: boolean = false;
+
+  settingsCalendarEnabled: boolean = false;
+  settingsCalendarNotifs: boolean = false;
+  settingsDefaultQuizLen: number = 10;
+  settingsStartDate: string = '';
+  settingsPace: number = 45;
+  settingsStreak: number = 0;
+  settingsDays = [
+    { name: 'Sun', value: 0, selected: false },
+    { name: 'Mon', value: 1, selected: false },
+    { name: 'Tue', value: 2, selected: false },
+    { name: 'Wed', value: 3, selected: false },
+    { name: 'Thu', value: 4, selected: false },
+    { name: 'Fri', value: 5, selected: false },
+    { name: 'Sat', value: 6, selected: false }
+  ];
   
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
@@ -348,11 +369,109 @@ export class DashboardComponent implements OnInit {
     }
   }
 
-  selectTab(tab: 'study' | 'progress' | 'tutor'): void {
+  selectTab(tab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings'): void {
     this.activeTab = tab;
     if (tab === 'progress') {
       this.loadQuizScores();
+    } else if (tab === 'materials') {
+      this.loadMaterials();
+    } else if (tab === 'settings') {
+      this.loadSettings();
     }
+  }
+
+  loadMaterials(): void {
+    if (!this.selectedClass) return;
+    this.isLoadingMaterials = true;
+    this.api.getMaterials(this.selectedClass.class_id).subscribe({
+      next: (res) => {
+        this.isLoadingMaterials = false;
+        if (res && res.materials) {
+          this.materials = res.materials;
+        } else {
+          this.materials = [];
+        }
+      },
+      error: (err) => {
+        this.isLoadingMaterials = false;
+        console.error('Failed to load materials:', err);
+      }
+    });
+  }
+
+  deleteMaterial(materialId: string): void {
+    if (!this.selectedClass) return;
+    if (!confirm('Are you sure you want to delete this study material? This will rebuild the knowledge base index.')) return;
+    this.api.deleteMaterial(this.selectedClass.class_id, materialId).subscribe({
+      next: (res) => {
+        alert('Material deleted successfully!');
+        if (this.selectedMaterial?.material_id === materialId) {
+          this.selectedMaterial = null;
+        }
+        this.loadMaterials();
+      },
+      error: (err) => {
+        alert('Failed to delete material: ' + (err.error?.message || err.message || err));
+      }
+    });
+  }
+
+  viewMaterial(material: any): void {
+    this.selectedMaterial = material;
+  }
+
+  loadSettings(): void {
+    if (!this.selectedClass) return;
+    this.api.getUserScheduleSettings(this.selectedClass.class_id).subscribe({
+      next: (sched) => {
+        if (sched) {
+          this.settingsCalendarEnabled = sched.calendar_enabled || false;
+          this.settingsCalendarNotifs = sched.calendar_notifs || false;
+          this.settingsDefaultQuizLen = sched.default_quiz_len || 10;
+          this.settingsStartDate = sched.course_start_date || '';
+          this.settingsPace = sched.daily_pace || 45;
+          this.settingsStreak = sched.current_streak || 0;
+          if (sched.preferred_days && Array.isArray(sched.preferred_days)) {
+            this.settingsDays.forEach(d => {
+              d.selected = sched.preferred_days.includes(d.value);
+            });
+          }
+        }
+      },
+      error: (err) => {
+        console.error('Failed to load settings:', err);
+      }
+    });
+  }
+
+  saveSettings(): void {
+    const selectedDays = this.settingsDays.filter(d => d.selected).map(d => d.value);
+    if (selectedDays.length === 0) {
+      alert('Please select at least one preferred study day.');
+      return;
+    }
+    const classId = this.selectedClass?.class_id || 'default_class';
+    const className = this.selectedClass?.class_name || 'Default Class';
+
+    this.api.saveUserScheduleSettings(
+      selectedDays,
+      this.settingsPace,
+      this.settingsStreak,
+      this.settingsStartDate,
+      classId,
+      className,
+      this.settingsCalendarEnabled,
+      this.settingsCalendarNotifs,
+      this.settingsDefaultQuizLen
+    ).subscribe({
+      next: (res) => {
+        alert('Settings saved successfully!');
+        this.loadClasses();
+      },
+      error: (err) => {
+        alert('Failed to save settings: ' + (err.error?.message || err.message || err));
+      }
+    });
   }
 
   loadDailyState(classId?: string): void {

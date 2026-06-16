@@ -104,6 +104,21 @@ class TutorServiceStub:
                 request_serializer=ace__pb2.EditSyllabusRequest.SerializeToString,
                 response_deserializer=ace__pb2.EditSyllabusResponse.FromString,
                 _registered_method=True)
+        self.GetMaterials = channel.unary_unary(
+                '/ace.TutorService/GetMaterials',
+                request_serializer=ace__pb2.GetMaterialsRequest.SerializeToString,
+                response_deserializer=ace__pb2.GetMaterialsResponse.FromString,
+                _registered_method=True)
+        self.DeleteMaterial = channel.unary_unary(
+                '/ace.TutorService/DeleteMaterial',
+                request_serializer=ace__pb2.DeleteMaterialRequest.SerializeToString,
+                response_deserializer=ace__pb2.DeleteMaterialResponse.FromString,
+                _registered_method=True)
+        self.ParseDocument = channel.unary_unary(
+                '/ace.TutorService/ParseDocument',
+                request_serializer=ace__pb2.ParseDocumentRequest.SerializeToString,
+                response_deserializer=ace__pb2.ParseDocumentResponse.FromString,
+                _registered_method=True)
 
 
 class TutorServiceServicer:
@@ -193,6 +208,24 @@ class TutorServiceServicer:
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def GetMaterials(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def DeleteMaterial(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+    def ParseDocument(self, request, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TutorServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -265,6 +298,21 @@ def add_TutorServiceServicer_to_server(servicer, server):
                     servicer.EditSyllabus,
                     request_deserializer=ace__pb2.EditSyllabusRequest.FromString,
                     response_serializer=ace__pb2.EditSyllabusResponse.SerializeToString,
+            ),
+            'GetMaterials': grpc.unary_unary_rpc_method_handler(
+                    servicer.GetMaterials,
+                    request_deserializer=ace__pb2.GetMaterialsRequest.FromString,
+                    response_serializer=ace__pb2.GetMaterialsResponse.SerializeToString,
+            ),
+            'DeleteMaterial': grpc.unary_unary_rpc_method_handler(
+                    servicer.DeleteMaterial,
+                    request_deserializer=ace__pb2.DeleteMaterialRequest.FromString,
+                    response_serializer=ace__pb2.DeleteMaterialResponse.SerializeToString,
+            ),
+            'ParseDocument': grpc.unary_unary_rpc_method_handler(
+                    servicer.ParseDocument,
+                    request_deserializer=ace__pb2.ParseDocumentRequest.FromString,
+                    response_serializer=ace__pb2.ParseDocumentResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -645,6 +693,87 @@ class TutorService:
             '/ace.TutorService/EditSyllabus',
             ace__pb2.EditSyllabusRequest.SerializeToString,
             ace__pb2.EditSyllabusResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def GetMaterials(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/GetMaterials',
+            ace__pb2.GetMaterialsRequest.SerializeToString,
+            ace__pb2.GetMaterialsResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def DeleteMaterial(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/DeleteMaterial',
+            ace__pb2.DeleteMaterialRequest.SerializeToString,
+            ace__pb2.DeleteMaterialResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def ParseDocument(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/ace.TutorService/ParseDocument',
+            ace__pb2.ParseDocumentRequest.SerializeToString,
+            ace__pb2.ParseDocumentResponse.FromString,
             options,
             channel_credentials,
             insecure,

@@ -2,13 +2,14 @@ import { Component, OnDestroy, OnInit, Input } from '@angular/core';
 import { CommonModule } from '@angular/common'; 
 import { FormsModule } from '@angular/forms'; 
 import { MatIconModule } from '@angular/material/icon'; 
-// 1. IMPORT THE SERVICE
 import { ApiService } from '../../services/api.service';
 
 interface ChatMessage {
   text: string;
   sender: 'user' | 'bot';
   timestamp: Date;
+  fileName?: string;
+  fileText?: string;
 }
 
 @Component({
@@ -25,8 +26,14 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
   newMessage: string = '';
   private socket: WebSocket | null = null;
 
+  // File Upload State
+  attachedFileName: string = '';
+  attachedFileText: string = '';
+  isUploadingFile: boolean = false;
+  isViewModalOpen: boolean = false;
+  viewingFileText: string = '';
+  viewingFileName: string = '';
 
-  // 2. INJECT THE SERVICE
   constructor(private tutorService: ApiService) {}
 
   ngOnInit() {
@@ -40,10 +47,7 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
   }
 
   connect() {
-    // 3. CHANGE THIS LINE (The Fix)
-    // Old: this.socket = new WebSocket('ws://localhost:8080/ws');
-    // New: Ask the service for the correct connection (Cloud or Local)
-    this.socket = this.tutorService.getChatSocket();
+    this.socket = this.tutorService.getChatSocket(this.classId);
 
     this.socket.onopen = () => {
       console.log('Connected to Chat Server');
@@ -55,17 +59,14 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     };
 
     this.socket.onmessage = (event) => {
-      // NOTE: Our Go backend sends plain text, not JSON. 
-      // I've updated this to handle text safely so it doesn't crash.
       try {
         const data = JSON.parse(event.data);
         this.messages.push({
-          text: data.text || data, // Handle object or string
+          text: data.text || data, 
           sender: 'bot',
           timestamp: new Date()
         });
       } catch (e) {
-        // If it's just plain text (not JSON), use it directly
         this.messages.push({
           text: event.data,
           sender: 'bot',
@@ -79,19 +80,89 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     };
   }
 
-  sendMessage() {
-    if (!this.newMessage.trim() || !this.socket) return;
+  triggerFileInput(): void {
+    const fileInput = document.getElementById('chat-file-input') as HTMLInputElement;
+    if (fileInput) {
+      fileInput.click();
+    }
+  }
 
-    const textToSend = this.newMessage;
-    this.messages.push({
-      text: textToSend,
-      sender: 'user',
-      timestamp: new Date()
+  onFileSelected(event: any): void {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.isUploadingFile = true;
+    this.attachedFileName = file.name;
+    this.attachedFileText = '';
+
+    this.tutorService.uploadChatFile(this.classId, file).subscribe({
+      next: (res) => {
+        this.isUploadingFile = false;
+        if (res && res.success && res.parsed_text) {
+          this.attachedFileText = res.parsed_text;
+        } else {
+          alert('Failed to parse file: ' + (res.message || 'Unknown error'));
+          this.removeAttachedFile();
+        }
+      },
+      error: (err) => {
+        this.isUploadingFile = false;
+        alert('File upload failed: ' + (err.error?.message || err.message || err));
+        this.removeAttachedFile();
+      }
     });
 
-    // Send simple text to backend (since our Go handler reads raw bytes)
+    // Reset input
+    event.target.value = '';
+  }
+
+  removeAttachedFile(): void {
+    this.attachedFileName = '';
+    this.attachedFileText = '';
+  }
+
+  openPreview(fileName: string, fileText: string): void {
+    this.viewingFileName = fileName;
+    this.viewingFileText = fileText;
+    this.isViewModalOpen = true;
+  }
+
+  closePreview(): void {
+    this.isViewModalOpen = false;
+    this.viewingFileName = '';
+    this.viewingFileText = '';
+  }
+
+  sendMessage() {
+    if (!this.newMessage.trim() && !this.attachedFileText) return;
+    if (!this.socket) return;
+
+    let textToSend = this.newMessage;
+    const fileName = this.attachedFileName;
+    const fileText = this.attachedFileText;
+
+    if (fileText) {
+      textToSend = `[Document Context:
+Filename: ${fileName}
+Content:
+${fileText}
+]
+
+Question/Instructions:
+${this.newMessage || 'Summarize this document and tell me the key takeaways.'}`;
+    }
+
+    this.messages.push({
+      text: this.newMessage || `Uploaded and analyzing document: ${fileName}`,
+      sender: 'user',
+      timestamp: new Date(),
+      fileName: fileName ? fileName : undefined,
+      fileText: fileText ? fileText : undefined
+    });
+
     this.socket.send(textToSend);
 
     this.newMessage = '';
+    this.removeAttachedFile();
   }
 }

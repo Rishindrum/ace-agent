@@ -154,7 +154,7 @@ func GetRefreshToken(ctx context.Context, userID string) (string, error) {
 }
 
 // ScheduleStudySession renews access token, verifies availability, and inserts a calendar study event.
-func ScheduleStudySession(ctx context.Context, userID string, preferredTime string, newTopics []string, reviewTopics []string, dashboardURL string) error {
+func ScheduleStudySession(ctx context.Context, userID string, preferredTime string, newTopics []string, reviewTopics []string, dashboardURL string, calendarNotifs bool) error {
 	refreshToken, err := GetRefreshToken(ctx, userID)
 	if err != nil {
 		return fmt.Errorf("failed to get refresh token: %w", err)
@@ -230,6 +230,21 @@ func ScheduleStudySession(ctx context.Context, userID string, preferredTime stri
 	}
 	desc += "\n🚀 Click here to study: " + dashboardURL
 
+	var reminders *googlecalendar.EventReminders
+	if calendarNotifs {
+		reminders = &googlecalendar.EventReminders{
+			UseDefault: false,
+			Overrides: []*googlecalendar.EventReminder{
+				{Method: "popup", Minutes: 10},
+			},
+		}
+	} else {
+		reminders = &googlecalendar.EventReminders{
+			UseDefault: false,
+			Overrides:  []*googlecalendar.EventReminder{},
+		}
+	}
+
 	event := &googlecalendar.Event{
 		Summary:     "Ace Agent: AI Study & Spaced Repetition",
 		Description: desc,
@@ -241,6 +256,7 @@ func ScheduleStudySession(ctx context.Context, userID string, preferredTime stri
 			DateTime: sessionEnd.Format(time.RFC3339),
 			TimeZone: sessionEnd.Location().String(),
 		},
+		Reminders: reminders,
 	}
 
 	_, err = srv.Events.Insert("primary", event).Do()

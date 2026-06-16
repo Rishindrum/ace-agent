@@ -20,6 +20,9 @@ type UserSchedule struct {
 	Modifications   []string `json:"modifications"`
 	ClassStreak     int      `json:"class_streak"`
 	GlobalStreak    int      `json:"global_streak"`
+	CalendarEnabled bool     `json:"calendar_enabled"`
+	CalendarNotifs  bool     `json:"calendar_notifs"`
+	DefaultQuizLen  int      `json:"default_quiz_len"`
 }
 
 type ScheduleStore struct {

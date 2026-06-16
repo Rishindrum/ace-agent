@@ -56,7 +56,7 @@ def resolve_topic(raw_text: str, topic_name: str) -> str:
     
     return topic_name.strip()
 
-def ingest_material(content: str, topic_name: str, week_number: int, user_id: str, class_id: str, class_name: str) -> bool:
+def ingest_material(content: str, topic_name: str, week_number: int, user_id: str, class_id: str, class_name: str, filename: str = "") -> bool:
     """
     Ingests text content for a specific topic and week:
     1. Resolves the topic name to a standardized string using Gemini.
@@ -72,6 +72,7 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
         user_id: Unique user identifier for database isolation.
         class_id: The identifier for the class.
         class_name: The name of the class.
+        filename: Optional original filename.
         
     Returns:
         bool: True if ingestion was successful, False otherwise.
@@ -104,6 +105,9 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
         driver = get_driver()
         material_name = f"Material_{resolved_topic.replace(' ', '_')}_{week_name.replace(' ', '_')}_{int(time.time())}"
         
+        # If filename is empty, default to something readable
+        db_filename = filename if filename else f"{resolved_topic} Material"
+
         # Cypher: MERGE User, Class, Week, Topic nodes, connect them, then CREATE Material node
         query = """
         MERGE (u:User {id: $user_id})
@@ -123,7 +127,8 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
         CREATE (m:Material {name: $material_name, class_id: $class_id, user_id: $user_id})
         SET m.content = $content,
             m.chunks = $chunks,
-            m.created_at = timestamp()
+            m.created_at = timestamp(),
+            m.filename = $filename
             
         MERGE (m)-[:SOURCE_MATERIAL_FOR]->(t)
         RETURN t.name as topic, m.name as material
@@ -140,7 +145,8 @@ def ingest_material(content: str, topic_name: str, week_number: int, user_id: st
                 topic_name=resolved_topic,
                 material_name=material_name,
                 content=content,
-                chunks=chunks
+                chunks=chunks,
+                filename=db_filename
             )
             record = result.single()
             if not record:

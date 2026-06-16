@@ -712,7 +712,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 week_number=str(request.week_number),
                 user_id=request.user_id,
                 class_id=class_id,
-                class_name=class_name
+                class_name=class_name,
+                filename=request.file_name if request.file_name else ""
             )
             if success:
                 return ace_pb2.IngestResponse(success=True, message="Material successfully ingested and embedded.")
@@ -1674,6 +1675,166 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(f"Failed to edit syllabus: {str(e)}")
             return ace_pb2.EditSyllabusResponse(success=False, message=str(e))
+
+    def GetMaterials(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        print(f"[Python] GetMaterials for user {user_id} and class {class_id}")
+        try:
+            materials_list = []
+            if self.driver:
+                with self.driver.session() as session:
+                    query = """
+                    MATCH (m:Material {class_id: $class_id, user_id: $user_id})-[:SOURCE_MATERIAL_FOR]->(t:Topic)
+                    OPTIONAL MATCH (w:Week {class_id: $class_id, user_id: $user_id})-[:SCHEDULED_FOR]->(t)
+                    RETURN m.name AS material_id, 
+                           m.filename AS filename, 
+                           t.name AS topic_name, 
+                           w.number AS week_number, 
+                           m.content AS content, 
+                           m.created_at AS created_at
+                    ORDER BY m.created_at DESC
+                    """
+                    result = session.run(query, user_id=user_id, class_id=class_id)
+                    for record in result:
+                        created_val = record["created_at"]
+                        created_str = ""
+                        if created_val:
+                            import datetime
+                            try:
+                                created_str = datetime.datetime.fromtimestamp(created_val / 1000.0, datetime.timezone.utc).isoformat()
+                            except Exception:
+                                created_str = str(created_val)
+                        
+                        materials_list.append(ace_pb2.MaterialInfo(
+                            material_id=record["material_id"] or "",
+                            filename=record["filename"] or record["material_id"] or "",
+                            topic_name=record["topic_name"] or "",
+                            week_number=int(record["week_number"]) if record["week_number"] is not None else 0,
+                            content=record["content"] or "",
+                            created_at=created_str
+                        ))
+            return ace_pb2.GetMaterialsResponse(materials=materials_list, success=True, message="Materials retrieved successfully.")
+        except Exception as e:
+            print(f"[Python] GetMaterials Exception: {e}")
+            return ace_pb2.GetMaterialsResponse(success=False, message=str(e))
+
+    def DeleteMaterial(self, request, context):
+        user_id = request.user_id if request.user_id else "default_user"
+        class_id = request.class_id if request.class_id else "default_class"
+        material_id = request.material_id
+        print(f"[Python] DeleteMaterial for user {user_id}, class {class_id}, material {material_id}")
+        try:
+            if not self.driver:
+                return ace_pb2.DeleteMaterialResponse(success=False, message="Database driver not initialized")
+            
+            with self.driver.session() as session:
+                # 1. Delete the Material node from Neo4j (and any of its relationships)
+                delete_query = """
+                MATCH (m:Material {name: $material_id, class_id: $class_id, user_id: $user_id})
+                DETACH DELETE m
+                """
+                session.run(delete_query, material_id=material_id, class_id=class_id, user_id=user_id)
+                
+                # 2. Query remaining Materials to reconstruct the vector store
+                remaining_query = """
+                MATCH (m:Material {class_id: $class_id, user_id: $user_id})
+                RETURN m.content AS content
+                """
+                result = session.run(remaining_query, class_id=class_id, user_id=user_id)
+                all_chunks = []
+                for record in result:
+                    content = record["content"]
+                    if content:
+                        chunks = [content[i:i+1000] for i in range(0, len(content), 1000)]
+                        all_chunks.extend(chunks)
+                
+                # 3. Overwrite the vector store.
+                if not all_chunks:
+                    print(f"[Python] No materials left for {user_id}/{class_id}. Deleting vector store index.")
+                    vector_store.delete_state(user_id, class_id)
+                else:
+                    print(f"[Python] Rebuilding vector store for {user_id}/{class_id} with {len(all_chunks)} chunks.")
+                    vector_store.add_documents(user_id, class_id, all_chunks)
+                    
+            return ace_pb2.DeleteMaterialResponse(success=True, message="Material deleted and vector store synchronized successfully.")
+        except Exception as e:
+            print(f"[Python] DeleteMaterial Exception: {e}")
+            return ace_pb2.DeleteMaterialResponse(success=False, message=str(e))
+
+    def ParseDocument(self, request, context):
+        print(f"[Python] ParseDocument for file '{request.file_name}'...")
+        try:
+            filename = request.file_name.lower()
+            parsed_text = ""
+            if filename.endswith(".pdf"):
+                try:
+                    import io
+                    reader = PdfReader(io.BytesIO(request.file_data))
+                    pdf_text = ""
+                    for page in reader.pages:
+                        pdf_text += page.extract_text() + "\n"
+                    parsed_text = pdf_text
+                    print(f"[Python] ParseDocument: Extracted {len(parsed_text)} chars from PDF.")
+                except Exception as pdf_err:
+                    print(f"[Python] ParseDocument PDF extraction failed: {pdf_err}")
+                    return ace_pb2.ParseDocumentResponse(success=False, message=f"Failed to parse PDF: {str(pdf_err)}")
+            elif filename.endswith(".pptx") or filename.endswith(".ppt"):
+                try:
+                    import io
+                    mime_type = "application/vnd.openxmlformats-officedocument.presentationml.presentation" if filename.endswith(".pptx") else "application/vnd.ms-powerpoint"
+                    prompt = "You are a document transcription assistant. Extract all readable text, slide titles, bullet points, and content from the provided presentation slides. Output only the extracted educational text content, organized slide-by-slide. Do not include introductory notes, meta commentary, or explanations."
+                    from google.genai import types as genai_types
+                    response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=[
+                            genai_types.Part.from_bytes(
+                                data=request.file_data,
+                                mime_type=mime_type,
+                            ),
+                            prompt
+                        ]
+                    )
+                    parsed_text = response.text
+                    print(f"[Python] ParseDocument: Extracted {len(parsed_text)} chars from PPT using Gemini.")
+                except Exception as ppt_err:
+                    print(f"[Python] ParseDocument PPT extraction failed: {ppt_err}")
+                    if filename.endswith(".pptx"):
+                        try:
+                            import zipfile
+                            import xml.etree.ElementTree as ET
+                            text_runs = []
+                            with zipfile.ZipFile(io.BytesIO(request.file_data)) as z:
+                                slide_files = sorted([f for f in z.namelist() if f.startswith("ppt/slides/slide") and f.endswith(".xml")])
+                                for slide_file in slide_files:
+                                    slide_xml = z.read(slide_file)
+                                    root = ET.fromstring(slide_xml)
+                                    namespaces = {
+                                        'a': 'http://schemas.openxmlformats.org/drawingml/2006/main',
+                                        'p': 'http://schemas.openxmlformats.org/presentationml/2006/main'
+                                    }
+                                    for t in root.findall('.//a:t', namespaces):
+                                        if t.text:
+                                            text_runs.append(t.text)
+                            parsed_text = "\n".join(text_runs)
+                            print(f"[Python] ParseDocument: Extracted {len(parsed_text)} chars from PPTX locally.")
+                        except Exception as local_err:
+                            return ace_pb2.ParseDocumentResponse(success=False, message=f"Failed to parse PPTX: {str(ppt_err)} (Local fallback also failed: {str(local_err)})")
+                    else:
+                        return ace_pb2.ParseDocumentResponse(success=False, message=f"Failed to parse PPT: {str(ppt_err)}")
+            else:
+                try:
+                    parsed_text = request.file_data.decode("utf-8")
+                except Exception:
+                    try:
+                        parsed_text = request.file_data.decode("latin-1")
+                    except Exception:
+                        return ace_pb2.ParseDocumentResponse(success=False, message="Could not decode text file.")
+            
+            return ace_pb2.ParseDocumentResponse(parsed_text=parsed_text, success=True, message="Document parsed successfully.")
+        except Exception as e:
+            print(f"[Python] ParseDocument exception: {e}")
+            return ace_pb2.ParseDocumentResponse(success=False, message=str(e))
 
 def serve():
     # 1. Get the port from the environment (Google sets this)

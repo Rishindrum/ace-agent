@@ -600,12 +600,16 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	// Calculate current syllabus week
 	var currentWeek int32 = 1
 	var courseStartDate string
+	defaultQuizLen := 10
 	if sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
 		courseStartDate = sched.CourseStartDate
 		if courseStartDate == "" {
 			courseStartDate = time.Now().Format("2006-01-02")
 		}
 		currentWeek = int32(auth.CalculateCurrentSyllabusWeek(courseStartDate))
+		if sched.DefaultQuizLen > 0 {
+			defaultQuizLen = sched.DefaultQuizLen
+		}
 	}
 
 	targetWeek := req.WeekNumber
@@ -629,9 +633,14 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 		weakTopics = []string{}
 	}
 
+	qCount := req.QuestionCount
+	if qCount <= 0 {
+		qCount = int32(defaultQuizLen)
+	}
+
 	grpcReq := &pb.QuizRequest{
 		WeekNumber:         targetWeek,
-		QuestionCount:      req.QuestionCount,
+		QuestionCount:      qCount,
 		UserId:             userID,
 		WeakTopics:         weakTopics,
 		ClassId:            classID,
@@ -766,6 +775,9 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 				"daily_pace":        0,
 				"current_streak":    0,
 				"course_start_date": "",
+				"calendar_enabled":  false,
+				"calendar_notifs":   false,
+				"default_quiz_len":  10,
 			})
 			return
 		}
@@ -786,6 +798,9 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		CourseStartDate string `json:"course_start_date"`
 		ClassID         string `json:"class_id"`
 		ClassName       string `json:"class_name"`
+		CalendarEnabled *bool  `json:"calendar_enabled"`
+		CalendarNotifs  *bool  `json:"calendar_notifs"`
+		DefaultQuizLen  *int   `json:"default_quiz_len"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -815,14 +830,44 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID)
-	isModified := false
-	if ok {
-		if !slicesEqual(sched.PreferredDays, req.PreferredDays) || sched.DailyPace != req.DailyPace || sched.CourseStartDate != courseStartDate || (req.ClassName != "" && sched.ClassName != req.ClassName) {
-			isModified = true
+	
+	if !ok {
+		sched = auth.UserSchedule{
+			UserID:          userID,
+			ClassID:         classID,
+			ClassName:       className,
+			PreferredDays:   req.PreferredDays,
+			DailyPace:       req.DailyPace,
+			CurrentStreak:   req.CurrentStreak,
+			ClassStreak:     req.CurrentStreak,
+			CourseStartDate: courseStartDate,
+			DefaultQuizLen:  10, // Default to 10
 		}
 	}
 
-	if isModified && ok {
+	if req.CalendarEnabled != nil {
+		sched.CalendarEnabled = *req.CalendarEnabled
+	}
+	if req.CalendarNotifs != nil {
+		sched.CalendarNotifs = *req.CalendarNotifs
+	}
+	if req.DefaultQuizLen != nil {
+		sched.DefaultQuizLen = *req.DefaultQuizLen
+	}
+
+	// Check if core streak/schedule settings are modified
+	coreModified := false
+	if ok {
+		if !slicesEqual(sched.PreferredDays, req.PreferredDays) || 
+		   sched.DailyPace != req.DailyPace || 
+		   sched.CourseStartDate != courseStartDate || 
+		   (req.ClassName != "" && sched.ClassName != req.ClassName) {
+			coreModified = true
+		}
+	}
+
+	if coreModified {
+		// core settings modified, enforce limits
 		now := time.Now()
 		allowed, reason := auth.CanModifySchedule(sched, now)
 		if !allowed {
@@ -841,17 +886,20 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 			sched.ClassName = req.ClassName
 		}
 		sched.Modifications = append(sched.Modifications, now.Format(time.RFC3339))
-		err := auth.GlobalScheduleStore.SaveScheduleStruct(sched)
-		if err != nil {
-			http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
-			return
+	} else if !ok {
+		// New schedule creation
+		sched.PreferredDays = req.PreferredDays
+		sched.DailyPace = req.DailyPace
+		sched.CourseStartDate = courseStartDate
+		if req.ClassName != "" {
+			sched.ClassName = req.ClassName
 		}
-	} else {
-		err := auth.GlobalScheduleStore.SaveSchedule(userID, classID, className, req.PreferredDays, req.DailyPace, req.CurrentStreak, courseStartDate)
-		if err != nil {
-			http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
-			return
-		}
+	}
+
+	err := auth.GlobalScheduleStore.SaveScheduleStruct(sched)
+	if err != nil {
+		http.Error(w, "Failed to save schedule settings: "+err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
@@ -1011,6 +1059,148 @@ func deleteClassHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+func getMaterialsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodGet {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.GetMaterials(ctx, &pb.GetMaterialsRequest{
+		UserId:  userID,
+		ClassId: classID,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("gRPC failure: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func deleteMaterialHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodDelete {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	materialID := r.PathValue("material_id")
+	if classID == "" || materialID == "" {
+		http.Error(w, "Bad Request: Class ID or Material ID missing", http.StatusBadRequest)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.DeleteMaterial(ctx, &pb.DeleteMaterialRequest{
+		UserId:     userID,
+		ClassId:    classID,
+		MaterialId: materialID,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("gRPC failure: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
+func chatUploadHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	err := r.ParseMultipartForm(32 << 20) // 32MB
+	if err != nil {
+		http.Error(w, "Failed to parse multipart form: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	file, header, err := r.FormFile("file")
+	if err != nil {
+		http.Error(w, "Failed to get FormFile: "+err.Error(), http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	fileBytes := make([]byte, header.Size)
+	_, err = file.Read(fileBytes)
+	if err != nil {
+		http.Error(w, "Failed to read file: "+err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 90*time.Second)
+	defer cancel()
+
+	resp, err := tutorClient.ParseDocument(ctx, &pb.ParseDocumentRequest{
+		FileData: fileBytes,
+		FileName: header.Filename,
+	})
+	if err != nil {
+		http.Error(w, fmt.Sprintf("gRPC ParseDocument failed: %v", err), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(resp)
+}
+
 func getSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
@@ -1167,6 +1357,11 @@ func runDailySchedulerCheck() {
 			classID = "default_class"
 		}
 
+		if !sched.CalendarEnabled {
+			log.Printf("[SchedulerWorker] Calendar integration disabled for user %s, class %s. Skipping scheduling.", sched.UserID, classID)
+			continue
+		}
+
 		log.Printf("[SchedulerWorker] User %s is scheduled to study class %s today. Checking completion...", sched.UserID, classID)
 
 		completed, err := hasCompletedQuizToday(ctx, sched.UserID, classID)
@@ -1212,14 +1407,13 @@ func runDailySchedulerCheck() {
 
 		preferredTime := "afternoon" // default
 
-
 		frontendURL := os.Getenv("FRONTEND_URL")
 		if frontendURL == "" {
 			frontendURL = "http://localhost:4200"
 		}
 		dashboardURL := frontendURL + "/dashboard"
 
-		err = calendar.ScheduleStudySession(ctx, sched.UserID, preferredTime, newTopics, weakTopics, dashboardURL)
+		err = calendar.ScheduleStudySession(ctx, sched.UserID, preferredTime, newTopics, weakTopics, dashboardURL, sched.CalendarNotifs)
 		if err != nil {
 			log.Printf("[SchedulerWorker] Error: Failed to schedule study session for user %s: %v", sched.UserID, err)
 		} else {
@@ -1820,6 +2014,9 @@ func main() {
 	mux.HandleFunc("/api/v1/classes/{class_id}", auth.JWTMiddleware(deleteClassHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/syllabus", auth.JWTMiddleware(syllabusHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/sufficiency", auth.JWTMiddleware(checkTopicSufficiencyHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/materials", auth.JWTMiddleware(getMaterialsHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/materials/{material_id}", auth.JWTMiddleware(deleteMaterialHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/chat/upload", auth.JWTMiddleware(chatUploadHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", CORSMiddleware(mux)); err != nil {

@@ -7,21 +7,66 @@
       
       <p>{{ msg.text }}</p>
       
+      <!-- Attached File Chip inside Message -->
+      <div *ngIf="msg.fileName && msg.fileText" class="message-file-chip" (click)="openPreview(msg.fileName, msg.fileText)">
+        <mat-icon>insert_drive_file</mat-icon>
+        <span class="file-name">{{ msg.fileName }}</span>
+        <span class="file-action">View Doc</span>
+      </div>
+      
       <span class="timestamp">{{ msg.timestamp | date:'shortTime' }}</span>
     </div>
   </div>
 
+  <!-- Attached File Input Area banner -->
+  <div *ngIf="attachedFileName" class="attached-file-banner">
+    <div class="banner-info">
+      <mat-icon>insert_drive_file</mat-icon>
+      <span class="file-name">{{ attachedFileName }}</span>
+      <span class="file-status" *ngIf="isUploadingFile">Parsing...</span>
+      <span class="file-status ready" *ngIf="!isUploadingFile" (click)="openPreview(attachedFileName, attachedFileText)">Click to Preview</span>
+    </div>
+    <button class="btn-remove-file" (click)="removeAttachedFile()" [disabled]="isUploadingFile">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+
   <div class="input-area">
+    <button class="btn-attach" (click)="triggerFileInput()" [disabled]="isUploadingFile" title="Upload PDF or PPT">
+      <mat-icon>attach_file</mat-icon>
+    </button>
+    <input 
+      id="chat-file-input"
+      type="file" 
+      style="display: none;" 
+      accept=".pdf,.ppt,.pptx,.txt"
+      (change)="onFileSelected($event)"
+    >
+
     <input 
       type="text" 
-      placeholder="Ask a question about the syllabus..." 
+      placeholder="Ask a question or upload a file..." 
       [(ngModel)]="newMessage" 
       (keyup.enter)="sendMessage()"
+      [disabled]="isUploadingFile"
     >
     
-    <button (click)="sendMessage()" [disabled]="!newMessage.trim()">
+    <button (click)="sendMessage()" [disabled]="(!newMessage.trim() && !attachedFileText) || isUploadingFile">
       <mat-icon>send</mat-icon>
     </button>
+  </div>
+
+  <!-- Document Viewer Modal -->
+  <div class="preview-modal-overlay" *ngIf="isViewModalOpen" (click)="closePreview()">
+    <div class="preview-modal card" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h3><mat-icon>description</mat-icon> {{ viewingFileName }}</h3>
+        <button class="btn-close" (click)="closePreview()"><mat-icon>close</mat-icon></button>
+      </div>
+      <div class="modal-body">
+        <pre>{{ viewingFileText }}</pre>
+      </div>
+    </div>
   </div>
 
 </div>

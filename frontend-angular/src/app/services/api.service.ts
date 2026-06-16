@@ -53,8 +53,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}/api/v1/classes/${cid}/syllabus/upload`, formData);
   }
 
-  getChatSocket(): WebSocket {
-    return new WebSocket(`${this.wsBaseUrl}/ws`);
+  getChatSocket(classId?: string): WebSocket {
+    const userId = localStorage.getItem('user_id') || 'default_user';
+    const cid = classId || 'default_class';
+    return new WebSocket(`${this.wsBaseUrl}/ws?user_id=${userId}&class_id=${cid}`);
   }
 
   listClasses(): Observable<any[]> {
@@ -112,14 +114,17 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}/api/v1/user/schedule-settings${q}`);
   }
 
-  saveUserScheduleSettings(preferredDays: number[], dailyPace: number, currentStreak: number, courseStartDate: string, classId?: string, className?: string): Observable<any> {
+  saveUserScheduleSettings(preferredDays: number[], dailyPace: number, currentStreak: number, courseStartDate: string, classId?: string, className?: string, calendarEnabled?: boolean, calendarNotifs?: boolean, defaultQuizLen?: number): Observable<any> {
     return this.http.post<any>(`${this.baseUrl}/api/v1/user/schedule-settings`, {
       preferred_days: preferredDays,
       daily_pace: dailyPace,
       current_streak: currentStreak,
       course_start_date: courseStartDate,
       class_id: classId || 'default_class',
-      class_name: className || 'Default Class'
+      class_name: className || 'Default Class',
+      calendar_enabled: calendarEnabled !== undefined ? calendarEnabled : undefined,
+      calendar_notifs: calendarNotifs !== undefined ? calendarNotifs : undefined,
+      default_quiz_len: defaultQuizLen !== undefined ? defaultQuizLen : undefined
     });
   }
 
@@ -168,6 +173,21 @@ export class ApiService {
 
   editSyllabus(classId: string, weeks: any[]): Observable<any> {
     return this.http.put<any>(`${this.baseUrl}/api/v1/classes/${classId}/syllabus`, { weeks });
+  }
+
+  getMaterials(classId: string): Observable<any> {
+    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${classId}/materials`);
+  }
+
+  deleteMaterial(classId: string, materialId: string): Observable<any> {
+    return this.http.delete<any>(`${this.baseUrl}/api/v1/classes/${classId}/materials/${materialId}`);
+  }
+
+  uploadChatFile(classId: string, file: File): Observable<any> {
+    const cid = classId || 'default_class';
+    const formData = new FormData();
+    formData.append('file', file);
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/chat/upload`, formData);
   }
 
   updateGraphData(data: any) {
