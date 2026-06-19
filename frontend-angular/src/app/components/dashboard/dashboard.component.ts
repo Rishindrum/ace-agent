@@ -135,6 +135,7 @@ export class DashboardComponent implements OnInit {
 
   // Progress/Telemetry Data
   quizScores: any[] = [];
+  classCompletions: { [key: string]: number } = {};
 
   trackByFn(index: any, item: any): any {
     return index;
@@ -155,7 +156,38 @@ export class DashboardComponent implements OnInit {
   }
 
   getCourseCompletion(classObj: any): number {
-    if (!classObj || !classObj.course_start_date) return 0;
+    if (!classObj) return 0;
+
+    // If it is the currently selected class, calculate it reactively and cache the result
+    if (this.selectedClass && classObj.class_id === this.selectedClass.class_id) {
+      const weekNumbers = Object.keys(this.allWeeksData).map(k => parseInt(k, 10));
+      if (weekNumbers.length > 0) {
+        let completedWeeksCount = 0;
+        for (const weekNum of weekNumbers) {
+          const weekTopics = this.allWeeksData[weekNum]?.topics || [];
+          if (weekTopics.length === 0) continue;
+          
+          const hasCompletedQuizForWeek = this.quizScores.some(score => 
+            weekTopics.includes(score.topic_name)
+          );
+          if (hasCompletedQuizForWeek) {
+            completedWeeksCount++;
+          }
+        }
+        const totalWeeks = weekNumbers.length;
+        const pct = Math.round((completedWeeksCount / totalWeeks) * 100);
+        this.classCompletions[classObj.class_id] = pct;
+        return pct;
+      }
+    }
+
+    // Return cached completion value if it exists
+    if (this.classCompletions[classObj.class_id] !== undefined) {
+      return this.classCompletions[classObj.class_id];
+    }
+
+    // Fallback: Time elapsed based calculation
+    if (!classObj.course_start_date) return 0;
     const currentWk = this.calculateCurrentWeek(classObj.course_start_date);
     const pct = Math.min(Math.round(((currentWk - 1) / 12) * 100), 100);
     return pct > 0 ? pct : 0;
@@ -1094,11 +1126,16 @@ export class DashboardComponent implements OnInit {
       return;
     }
 
-    // Otherwise, show normal streak animation to celebrate the study session!
-    this.animationType = 'streak';
-    this.animStreakCount = newStreak;
-    this.animCompletionPercentage = newCompletion;
-    this.showAnimationOverlay = true;
+    // ONLY trigger the full-screen study overlay if the streak actually increased!
+    if (newStreak > prevStreak) {
+      this.animationType = 'streak';
+      this.animStreakCount = newStreak;
+      this.animCompletionPercentage = newCompletion;
+      this.showAnimationOverlay = true;
+      this.triggerAudioGong();
+    } else {
+      console.log('[Dashboard] Streak maintained (no increment). Skipping full-screen animation overlay.');
+    }
   }
 
   closeAnimationOverlay(): void {

@@ -94,3 +94,13 @@ func (s *DailySessionStore) SaveSessionState(state DailySessionState) {
 	s.sessions[key] = state
 	s.save()
 }
+
+func (s *DailySessionStore) DeleteSessionState(userID, classID string) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	key := userID + "_" + classID
+	delete(s.sessions, key)
+	s.save()
+}
+

@@ -1116,6 +1116,7 @@ func deleteClassHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	auth.GlobalScheduleStore.DeleteSchedule(userID, classID)
+	auth.GlobalDailySessionStore.DeleteSessionState(userID, classID)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{

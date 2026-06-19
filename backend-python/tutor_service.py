@@ -331,43 +331,44 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_name = request.class_name if request.class_name else "Default Class"
         print(f"[Python] Processing syllabus for class {class_name} ({class_id}): {request.file_name}")
         
-        # 1. READ PDF
+        # 1. Try to read local text fallback for vector store chunking
+        full_text = ""
         try:
             pdf_file = io.BytesIO(request.file_data)
             reader = PdfReader(pdf_file)
-            full_text = ""
             for page in reader.pages:
                 full_text += page.extract_text() + "\n"
         except Exception as e:
-            print(f"[Python] PDF Error: {e}")
-            return ace_pb2.SyllabusResponse(success=False, message="Failed to read PDF")
+            print(f"[Python] PDF fallback reader warning: {e}")
 
-        # 2. CHUNK & EMBED (RAG)
-        # Split text into ~1000 char chunks
-        chunks = [full_text[i:i+1000] for i in range(0, len(full_text), 1000)]
-        
-        # Store in our custom "ScaNN-style" store
-        vector_store.add_documents(user_id, class_id, chunks)
-
-        # 3. EXTRACT GRAPH & WEEKLY SCHEDULE (If Neo4j is alive)
+        # 2. Extract Syllabus structure with direct PDF upload or text fallback
         concepts = []
         weeks = []
         rec_days = [1, 3, 5]
         rec_pace = 45
+        
         if self.driver:
-            print("[Python] Extracting graph and schedule with Gemini...")
-            prompt = f"""
-            Analyze the following syllabus text. Extract:
+            print("[Python] Extracting syllabus structure with Gemini...")
+            prompt = """
+            Analyze the provided syllabus document. Extract:
             1. The knowledge graph of concepts/topics covered in the course, along with any prerequisite relationships between them.
             2. The weekly schedule (calendar timeline), mapping week numbers to topics covered in that week, and noting any exams/tests scheduled for that week.
-            
-            Syllabus Text:
-            {full_text[:50000]}
+            3. Recommended study days of the week as integers (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). E.g. [1, 3, 5] for Mon/Wed/Fri.
+            4. Recommended daily study pace in minutes (e.g. 30, 45, 60).
             """
+            
             try:
+                from google.genai import types as genai_types
+                # Pass raw PDF bytes directly to Gemini for visual/native parsing
                 response = self._generate_with_retry(
                     model_name='gemini-2.5-flash',
-                    contents=prompt,
+                    contents=[
+                        genai_types.Part.from_bytes(
+                            data=request.file_data,
+                            mime_type="application/pdf",
+                        ),
+                        prompt
+                    ],
                     config={
                         'response_mime_type': 'application/json',
                         'response_schema': SyllabusResponseModel
@@ -378,9 +379,71 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 weeks = data.get("weeks", [])
                 rec_days = data.get("recommended_study_days", [1, 3, 5])
                 rec_pace = data.get("recommended_daily_pace_minutes", 45)
-                print(f"[Python] Extracted {len(concepts)} concepts, {len(weeks)} weeks, recommended study days {rec_days}, pace {rec_pace}.")
+                print(f"[Python] Direct PDF API call parsed {len(concepts)} concepts and {len(weeks)} weeks.")
+            except Exception as direct_err:
+                print(f"[Python] Direct PDF API extraction failed: {direct_err}. Trying local text-based fallback...")
+                if not full_text.strip():
+                    return ace_pb2.SyllabusResponse(
+                        success=False,
+                        message="Failed to read PDF text locally, and direct Gemini PDF transcription failed.",
+                        nodes_created=0,
+                        graph_json="[]",
+                        recommended_study_days=[1, 3, 5],
+                        recommended_daily_pace_minutes=45
+                    )
                 
-                # Write to Neo4j
+                fallback_prompt = f"""
+                Analyze the following syllabus text. Extract:
+                1. The knowledge graph of concepts/topics covered in the course, along with any prerequisite relationships between them.
+                2. The weekly schedule (calendar timeline), mapping week numbers to topics covered in that week, and noting any exams/tests scheduled for that week.
+                3. Recommended study days of the week as integers (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). E.g. [1, 3, 5] for Mon/Wed/Fri.
+                4. Recommended daily study pace in minutes (e.g. 30, 45, 60).
+                
+                Syllabus Text:
+                {full_text[:50000]}
+                """
+                try:
+                    response = self._generate_with_retry(
+                        model_name='gemini-2.5-flash',
+                        contents=fallback_prompt,
+                        config={
+                            'response_mime_type': 'application/json',
+                            'response_schema': SyllabusResponseModel
+                        }
+                    )
+                    data = json.loads(response.text)
+                    concepts = data.get("concepts", [])
+                    weeks = data.get("weeks", [])
+                    rec_days = data.get("recommended_study_days", [1, 3, 5])
+                    rec_pace = data.get("recommended_daily_pace_minutes", 45)
+                except Exception as text_err:
+                    print(f"[Python] Text-based fallback also failed: {text_err}")
+                    return ace_pb2.SyllabusResponse(
+                        success=False,
+                        message=f"Failed to process syllabus: {str(text_err)}",
+                        nodes_created=0,
+                        graph_json="[]",
+                        recommended_study_days=[1, 3, 5],
+                        recommended_daily_pace_minutes=45
+                    )
+
+            if not weeks:
+                return ace_pb2.SyllabusResponse(
+                    success=False,
+                    message="Syllabus format could not be understood. No weekly schedule or topics were extracted.",
+                    nodes_created=0,
+                    graph_json="[]",
+                    recommended_study_days=[1, 3, 5],
+                    recommended_daily_pace_minutes=45
+                )
+
+            # 3. Store extracted chunks in Vector Store for RAG
+            chunks_text = full_text if full_text.strip() else f"Syllabus: {class_name}\n" + "\n".join([f"Week {w.get('number')}: " + ", ".join(w.get('topics', [])) for w in weeks])
+            chunks = [chunks_text[i:i+1000] for i in range(0, len(chunks_text), 1000)]
+            vector_store.add_documents(user_id, class_id, chunks)
+
+            # 4. Write to Neo4j Graph
+            try:
                 with self.driver.session() as session:
                     session.execute_write(self._create_dynamic_nodes, user_id, class_id, class_name, concepts, weeks)
                     
@@ -410,12 +473,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     class_name=class_name,
                     material_id=f"syllabus_{class_id}",
                     filename=request.file_name,
-                    content=full_text)
-            except Exception as e:
-                print(f"[Python] Graph/Schedule Logic Error: {e}")
+                    content=full_text if full_text.strip() else "Syllabus processed directly via Gemini.")
+            except Exception as db_err:
+                print(f"[Python] Neo4j Write Error: {db_err}")
                 return ace_pb2.SyllabusResponse(
                     success=False,
-                    message=f"Failed to process syllabus: {str(e)}",
+                    message=f"Failed to save syllabus to database: {str(db_err)}",
                     nodes_created=0,
                     graph_json="[]",
                     recommended_study_days=[1, 3, 5],
@@ -432,6 +495,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             recommended_study_days=rec_days,
             recommended_daily_pace_minutes=rec_pace
         )
+
 
 
     def _query_graph_context(self, user_id, class_id, user_text):
@@ -983,11 +1047,16 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     generated_content_str += f"Q: {q.question_text}\nOptions: {q.options}\nCorrect: {q.correct_option_index}\n\n"
 
                 # Step 2: Pass generated content to the Judge
-                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "quiz")
-                print(f"[Python] GenerateQuiz attempt {attempts} judge result: {judge_result}")
+                if request.regenerate:
+                    print("[Python] Bypassing Judge for user-steered quiz regeneration...")
+                    passed = True
+                else:
+                    judge_result = self._evaluate_generation(generated_content_str, context_chunks, "quiz")
+                    print(f"[Python] GenerateQuiz attempt {attempts} judge result: {judge_result}")
+                    passed = judge_result.get("passed")
 
                 # Step 3: If Judge passed, save to DB and return
-                if judge_result.get("passed"):
+                if passed:
                     # --- PERSISTENCE: WRITE STEP ---
                     if self.driver and topic_names and request.week_number != -1:
                         primary_topic = topic_names[0]
@@ -1223,10 +1292,15 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     generated_content_str += f"Q: {e.question_text}\nOptions: {e.options}\nCorrect: {e.correct_option_index}\n\n"
                 
                 # Step 2: Pass generated content to the Judge
-                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
-                print(f"[Python] GenerateLesson attempt {attempts} judge result: {judge_result}")
+                if request.regenerate:
+                    print("[Python] Bypassing Judge for user-steered lesson regeneration...")
+                    passed = True
+                else:
+                    judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
+                    print(f"[Python] GenerateLesson attempt {attempts} judge result: {judge_result}")
+                    passed = judge_result.get("passed")
                 
-                if judge_result.get("passed"):
+                if passed:
                     grpc_exercises = []
                     for e in lesson_data.exercises:
                         grpc_exercises.append(
@@ -1404,10 +1478,15 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     generated_content_str += f"Q: {e.question_text}\nOptions: {e.options}\nCorrect: {e.correct_option_index}\n\n"
                 
                 # Step 2: Pass generated content to the Judge
-                judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
-                print(f"[Python] GenerateLessonAndExercises attempt {attempts} judge result: {judge_result}")
+                if request.regenerate:
+                    print("[Python] Bypassing Judge for user-steered lesson regeneration...")
+                    passed = True
+                else:
+                    judge_result = self._evaluate_generation(generated_content_str, context_chunks, "lesson")
+                    print(f"[Python] GenerateLessonAndExercises attempt {attempts} judge result: {judge_result}")
+                    passed = judge_result.get("passed")
                 
-                if judge_result.get("passed"):
+                if passed:
                     grpc_exercises = []
                     for e in lesson_data.exercises:
                         grpc_exercises.append(
@@ -1629,46 +1708,26 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.SufficiencyResponse(insufficient_materials=True, insufficient_topics=[], all_topics=[])
 
     def _delete_class_nodes(self, tx, user_id, class_id):
-        # 1. Delete GeneratedContent nodes
+        # 1. Delete all class-specific nodes associated with this user and class_id
         tx.run("""
-            MATCH (g:GeneratedContent)
-            WHERE g.user_id = $user_id AND g.class_id = $class_id
-            DETACH DELETE g
+            MATCH (n)
+            WHERE n.class_id = $class_id AND n.user_id = $user_id
+            DETACH DELETE n
         """, user_id=user_id, class_id=class_id)
         
-        # 2. Delete Material nodes
-        tx.run("""
-            MATCH (m:Material)
-            WHERE m.user_id = $user_id AND m.class_id = $class_id
-            DETACH DELETE m
-        """, user_id=user_id, class_id=class_id)
-        
-        # 3. Delete Topic nodes
-        tx.run("""
-            MATCH (t:Topic)
-            WHERE t.user_id = $user_id AND t.class_id = $class_id
-            DETACH DELETE t
-        """, user_id=user_id, class_id=class_id)
-
-        # 4. Delete Week nodes
-        tx.run("""
-            MATCH (w:Week)
-            WHERE w.user_id = $user_id AND w.class_id = $class_id
-            DETACH DELETE w
-        """, user_id=user_id, class_id=class_id)
-
-        # 5. Delete ENROLLED_IN relationship
+        # 2. Detach user enrollment from the class
         tx.run("""
             MATCH (u:User {id: $user_id})-[r:ENROLLED_IN]->(c:Class {id: $class_id})
             DELETE r
         """, user_id=user_id, class_id=class_id)
 
-        # 6. Delete Class node itself if no other ENROLLED_IN exists
+        # 3. Delete Class node itself if no other ENROLLED_IN exists
         tx.run("""
             MATCH (c:Class {id: $class_id})
             WHERE NOT (c)<-[:ENROLLED_IN]-()
             DETACH DELETE c
         """, class_id=class_id)
+
 
     def DeleteClass(self, request, context):
         user_id = request.user_id if request.user_id else "default_user"
