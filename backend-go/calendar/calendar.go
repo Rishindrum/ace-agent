@@ -243,15 +243,12 @@ func ScheduleStudySession(ctx context.Context, userID string, targetDate time.Ti
 		return fmt.Errorf("failed to renew access token: %w", err)
 	}
 
-	// Create calendar service
-	var opts []option.ClientOption
-	if _, err := os.Stat("key.json"); err == nil {
-		opts = append(opts, option.WithCredentialsFile("key.json"))
-	} else if _, err := os.Stat("../key.json"); err == nil {
-		opts = append(opts, option.WithCredentialsFile("../key.json"))
-	}
+	// Create calendar service using the user's OAuth HTTP client only.
+	// Do NOT pass the GCP service account credentials (key.json) as they would override
+	// the OAuth client credentials and insert events on the service account's own calendar
+	// instead of the user's.
 	client := OAuthConfig.Client(ctx, newToken)
-	srv, err := googlecalendar.NewService(ctx, append(opts, option.WithHTTPClient(client))...)
+	srv, err := googlecalendar.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
 		return fmt.Errorf("failed to create calendar service: %w", err)
 	}

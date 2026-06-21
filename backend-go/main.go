@@ -250,7 +250,9 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 		ClassName: className,
 	}
 
-	resp, err := tutorClient.ProcessSyllabus(context.Background(), req)
+	ctx, cancel := context.WithTimeout(r.Context(), 60*time.Second)
+	defer cancel()
+	resp, err := tutorClient.ProcessSyllabus(ctx, req)
 
 	// --- FIX START: HANDLE PYTHON ERRORS ---
 	if err != nil {
@@ -1561,38 +1563,50 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		log.Printf("[Streak] User %s daily streak updated: class_streak=%d, global_streak=%d (completed week %d)", userID, classStreak, globalStreak, req.WeekNumber)
 	}
 
-	if bqTable != nil {
-		go func(row *QuizAttemptTelemetry, userID, classID string, weekNum int, percentage float64) {
-			ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-			defer cancel()
+	go func(row *QuizAttemptTelemetry, uID, cID string, weekNum int, percentage float64) {
+		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
+		defer cancel()
 
+		// 1. Call Python brain to write score (for Neo4j graph fallback + BigQuery backup)
+		if tutorClient != nil {
+			_, err := tutorClient.SubmitQuizResult(ctx, &pb.QuizResultRequest{
+				UserId:    uID,
+				ClassId:   cID,
+				TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
+				Score:     int32(percentage),
+			})
+			if err != nil {
+				log.Printf("[gRPC] Failed to save quiz result via Python brain: %v", err)
+			} else {
+				log.Printf("[gRPC] Successfully saved quiz result via Python brain (Neo4j fallback active)")
+			}
+		}
+
+		// 2. Stream to Go's BigQuery telemetry tables if available
+		if bqTable != nil {
 			uploader := bqTable.Uploader()
 			if err := uploader.Put(ctx, row); err != nil {
 				log.Printf("[BigQuery] Failed to stream telemetry row: %v", err)
 			} else {
 				log.Printf("[BigQuery] Successfully streamed telemetry row for attempt: %s", row.AttemptID)
 			}
-
-			// Stream to quiz_scores too!
-			if bqScoresTable != nil {
-				scoresRow := &QuizScoreTelemetry{
-					UserID:    userID,
-					ClassID:   classID,
-					TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
-					Score:     int(percentage),
-					Timestamp: time.Now(),
-				}
-				scoresUploader := bqScoresTable.Uploader()
-				if err := scoresUploader.Put(ctx, scoresRow); err != nil {
-					log.Printf("[BigQuery] Failed to stream quiz_score row: %v", err)
-				} else {
-					log.Printf("[BigQuery] Successfully streamed quiz_score row to ace_performance")
-				}
+		}
+		if bqScoresTable != nil {
+			scoresRow := &QuizScoreTelemetry{
+				UserID:    uID,
+				ClassID:   cID,
+				TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
+				Score:     int(percentage),
+				Timestamp: time.Now(),
 			}
-		}(telemetry, userID, classID, req.WeekNumber, scorePercentage)
-	} else {
-		log.Println("[BigQuery] Table reference is nil. Skipping telemetry insert.")
-	}
+			scoresUploader := bqScoresTable.Uploader()
+			if err := scoresUploader.Put(ctx, scoresRow); err != nil {
+				log.Printf("[BigQuery] Failed to stream quiz_score row: %v", err)
+			} else {
+				log.Printf("[BigQuery] Successfully streamed quiz_score row to ace_performance")
+			}
+		}
+	}(telemetry, userID, classID, req.WeekNumber, scorePercentage)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{

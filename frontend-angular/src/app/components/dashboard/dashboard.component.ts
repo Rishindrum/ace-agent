@@ -168,7 +168,7 @@ export class DashboardComponent implements OnInit {
           if (weekTopics.length === 0) continue;
           
           const hasCompletedQuizForWeek = this.quizScores.some(score => 
-            weekTopics.includes(score.topic_name)
+            score.topic_name === `Week ${weekNum} Quiz` || weekTopics.includes(score.topic_name)
           );
           if (hasCompletedQuizForWeek) {
             completedWeeksCount++;

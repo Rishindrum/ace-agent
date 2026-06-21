@@ -279,7 +279,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
         print("[Python] Connecting to Graph Database...")
         try:
-            self.driver = GraphDatabase.driver(NEO4J_URI, auth=(NEO4J_USER, NEO4J_PASSWORD))
+            self.driver = GraphDatabase.driver(
+                NEO4J_URI, 
+                auth=(NEO4J_USER, NEO4J_PASSWORD),
+                connection_timeout=5.0,
+                connection_acquisition_timeout=5.0
+            )
             self.driver.verify_connectivity()
         except Exception as e:
             print(f"[Python] WARNING: Neo4j Connection FAILED. Setting driver to None. Error: {e}")
@@ -350,7 +355,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         if self.driver:
             print("[Python] Extracting syllabus structure with Gemini...")
             prompt = """
-            Analyze the provided syllabus document. Extract:
+            Analyze the provided syllabus document/text. Extract:
             1. The knowledge graph of concepts/topics covered in the course, along with any prerequisite relationships between them.
             2. The weekly schedule (calendar timeline), mapping week numbers to topics covered in that week, and noting any exams/tests scheduled for that week.
             3. Recommended study days of the week as integers (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). E.g. [1, 3, 5] for Mon/Wed/Fri.
@@ -359,29 +364,50 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             
             try:
                 from google.genai import types as genai_types
-                # Pass raw PDF bytes directly to Gemini for visual/native parsing
-                response = self._generate_with_retry(
-                    model_name='gemini-2.5-flash',
-                    contents=[
-                        genai_types.Part.from_bytes(
-                            data=request.file_data,
-                            mime_type="application/pdf",
-                        ),
-                        prompt
-                    ],
-                    config={
-                        'response_mime_type': 'application/json',
-                        'response_schema': SyllabusResponseModel
-                    }
-                )
+                if len(full_text.strip()) >= 1000:
+                    print(f"[Python] Local text extraction succeeded ({len(full_text.strip())} chars). Using fast text-based prompt...")
+                    text_prompt = f"""
+                    Analyze the following syllabus text. Extract:
+                    1. The knowledge graph of concepts/topics covered in the course, along with any prerequisite relationships between them.
+                    2. The weekly schedule (calendar timeline), mapping week numbers to topics covered in that week, and noting any exams/tests scheduled for that week.
+                    3. Recommended study days of the week as integers (0=Sunday, 1=Monday, 2=Tuesday, 3=Wednesday, 4=Thursday, 5=Friday, 6=Saturday). E.g. [1, 3, 5] for Mon/Wed/Fri.
+                    4. Recommended daily study pace in minutes (e.g. 30, 45, 60).
+                    
+                    Syllabus Text:
+                    {full_text[:50000]}
+                    """
+                    response = self._generate_with_retry(
+                        model_name='gemini-2.5-flash',
+                        contents=text_prompt,
+                        config={
+                            'response_mime_type': 'application/json',
+                            'response_schema': SyllabusResponseModel
+                        }
+                    )
+                else:
+                    print(f"[Python] Local text too short ({len(full_text.strip())} chars) or empty. Using native visual PDF upload fallback...")
+                    response = self._generate_with_retry(
+                        model_name='gemini-2.5-flash',
+                        contents=[
+                            genai_types.Part.from_bytes(
+                                data=request.file_data,
+                                mime_type="application/pdf",
+                            ),
+                            prompt
+                        ],
+                        config={
+                            'response_mime_type': 'application/json',
+                            'response_schema': SyllabusResponseModel
+                        }
+                    )
                 data = json.loads(response.text)
                 concepts = data.get("concepts", [])
                 weeks = data.get("weeks", [])
                 rec_days = data.get("recommended_study_days", [1, 3, 5])
                 rec_pace = data.get("recommended_daily_pace_minutes", 45)
-                print(f"[Python] Direct PDF API call parsed {len(concepts)} concepts and {len(weeks)} weeks.")
+                print(f"[Python] Gemini syllabus parsing finished: {len(concepts)} concepts and {len(weeks)} weeks.")
             except Exception as direct_err:
-                print(f"[Python] Direct PDF API extraction failed: {direct_err}. Trying local text-based fallback...")
+                print(f"[Python] Primary Gemini syllabus parsing failed: {direct_err}. Trying local text-based fallback...")
                 if not full_text.strip():
                     return ace_pb2.SyllabusResponse(
                         success=False,
@@ -625,21 +651,75 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def SubmitQuizResult(self, request, context):
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] SubmitQuizResult for user {request.user_id} on topic {request.topic_name} with score {request.score} in class {class_id}")
+        
+        # 1. Attempt write to BigQuery
         success = analytical_memory.write_quiz_score(
             user_id=request.user_id,
             class_id=class_id,
             topic_name=request.topic_name,
             score=request.score
         )
+        
+        # 2. Always back up the score record inside Neo4j Graph DB
+        if self.driver:
+            try:
+                import datetime
+                timestamp_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
+                with self.driver.session() as session:
+                    session.run("""
+                        MERGE (u:User {id: $user_id})
+                        CREATE (qs:QuizScore {
+                            user_id: $user_id,
+                            class_id: $class_id,
+                            topic_name: $topic_name,
+                            score: $score,
+                            timestamp: $timestamp
+                        })
+                        MERGE (u)-[:HAS_SCORE]->(qs)
+                    """,
+                    user_id=request.user_id,
+                    class_id=class_id,
+                    topic_name=request.topic_name,
+                    score=request.score,
+                    timestamp=timestamp_str)
+                    print("[Python] Successfully archived quiz score in Neo4j.")
+                    success = True  # Consider it a success if Neo4j write goes through
+            except Exception as graph_err:
+                print(f"[Python] Failed to save quiz score to Neo4j fallback: {graph_err}")
+
         if success:
-            return ace_pb2.QuizResultResponse(success=True, message="Quiz result successfully stored in BigQuery.")
+            return ace_pb2.QuizResultResponse(success=True, message="Quiz result successfully stored.")
         else:
-            return ace_pb2.QuizResultResponse(success=False, message="Failed to store quiz result in BigQuery.")
+            return ace_pb2.QuizResultResponse(success=False, message="Failed to store quiz result.")
 
     def GetQuizScores(self, request, context):
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GetQuizScores requested for user {request.user_id} and class {class_id}")
+        
+        # 1. Read from BigQuery
         records = analytical_memory.read_quiz_scores(user_id=request.user_id, class_id=class_id)
+        
+        # 2. If BigQuery is empty or fails, load from Neo4j fallback
+        if not records and self.driver:
+            try:
+                print("[Python] BigQuery returned empty scores. Fetching from Neo4j fallback...")
+                with self.driver.session() as session:
+                    result = session.run("""
+                        MATCH (u:User {id: $user_id})-[:HAS_SCORE]->(qs:QuizScore {class_id: $class_id})
+                        RETURN qs.topic_name AS topic_name, qs.score AS score, qs.timestamp AS timestamp
+                        ORDER BY qs.timestamp DESC
+                    """, user_id=request.user_id, class_id=class_id)
+                    for r in result:
+                        records.append({
+                            "user_id": request.user_id,
+                            "class_id": class_id,
+                            "topic_name": r["topic_name"],
+                            "score": r["score"],
+                            "timestamp": r["timestamp"]
+                        })
+                print(f"[Python] Successfully retrieved {len(records)} records from Neo4j.")
+            except Exception as graph_err:
+                print(f"[Python] Failed to read quiz scores from Neo4j: {graph_err}")
         
         scores_pb = []
         for r in records:
@@ -654,7 +734,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         return ace_pb2.GetQuizScoresResponse(
             scores=scores_pb,
             success=True,
-            message="Retrieved student quiz scores from BigQuery."
+            message="Retrieved student quiz scores."
         )
 
     def GenerateAdaptiveQuiz(self, request, context):
@@ -1553,6 +1633,38 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     
     @staticmethod
     def _create_dynamic_nodes(tx, user_id, class_id, class_name, concepts, weeks=None):
+        # Convert concepts to plain list of dicts to prevent serialization errors
+        plain_concepts = []
+        for concept in concepts:
+            if hasattr(concept, 'name'):
+                plain_concepts.append({
+                    'name': concept.name,
+                    'prerequisites': list(concept.prerequisites or [])
+                })
+            else:
+                plain_concepts.append({
+                    'name': concept.get('name'),
+                    'prerequisites': list(concept.get('prerequisites', []))
+                })
+
+        # Convert weeks to plain list of dicts to prevent serialization errors
+        plain_weeks = []
+        if weeks:
+            for w in weeks:
+                if hasattr(w, 'number'):
+                    plain_weeks.append({
+                        'number': int(w.number),
+                        'topics': list(w.topics or []),
+                        'exams': list(w.exams or [])
+                    })
+                else:
+                    plain_weeks.append({
+                        'number': int(w.get('number')),
+                        'topics': list(w.get('topics', [])),
+                        'exams': list(w.get('exams', []))
+                    })
+
+        # 1. Merge User and Class nodes
         tx.run("""
             MERGE (u:User {id: $user_id})
             MERGE (c:Class {id: $class_id})
@@ -1560,65 +1672,67 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             MERGE (u)-[:ENROLLED_IN]->(c)
         """, user_id=user_id, class_id=class_id, class_name=class_name)
         
-        for concept in concepts:
-            # concept could be a dict or ConceptModel object (Gemini SDK returns parsed Pydantic objects or dicts depending on genai config)
-            if hasattr(concept, 'name'):
-                name = concept.name
-                prereqs = concept.prerequisites or []
-            else:
-                name = concept.get('name')
-                prereqs = concept.get('prerequisites', [])
-                
+        # 2. Batch-create Concepts/Topics and link them to Class
+        if plain_concepts:
             tx.run("""
                 MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})
-                MERGE (t:Topic {name: $name, user_id: $user_id, class_id: $class_id})
+                UNWIND $concepts AS concept
+                MERGE (t:Topic {name: concept.name, user_id: $user_id, class_id: $class_id})
                 MERGE (c)-[:COVERS]->(t)
-            """, user_id=user_id, class_id=class_id, name=name)
-            for p_name in prereqs:
+            """, user_id=user_id, class_id=class_id, concepts=plain_concepts)
+            
+            # Prerequisite links (only for concepts that actually have prerequisites)
+            prereq_data = []
+            for pc in plain_concepts:
+                for p_name in pc['prerequisites']:
+                    prereq_data.append({
+                        'name': pc['name'],
+                        'p_name': p_name
+                    })
+            if prereq_data:
                 tx.run("""
                     MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})
-                    MERGE (t:Topic {name: $name, user_id: $user_id, class_id: $class_id})
-                    MERGE (p:Topic {name: $p_name, user_id: $user_id, class_id: $class_id})
+                    UNWIND $prereqs AS pr
+                    MERGE (t:Topic {name: pr.name, user_id: $user_id, class_id: $class_id})
+                    MERGE (p:Topic {name: pr.p_name, user_id: $user_id, class_id: $class_id})
                     MERGE (c)-[:COVERS]->(p)
                     MERGE (p)-[:PREREQUISITE_TO]->(t)
-                """, user_id=user_id, class_id=class_id, name=name, p_name=p_name)
-        
-        if weeks:
-            for w in weeks:
-                if hasattr(w, 'number'):
-                    w_num = w.number
-                    w_topics = w.topics or []
-                    w_exams = w.exams or []
-                else:
-                    w_num = w.get('number')
-                    w_topics = w.get('topics', [])
-                    w_exams = w.get('exams', [])
-                
-                # 1. MERGE Week node
+                """, user_id=user_id, class_id=class_id, prereqs=prereq_data)
+
+        # 3. Batch-create Weeks and link them to Class & Topics
+        if plain_weeks:
+            # Create all Weeks and link to Class
+            tx.run("""
+                MATCH (c:Class {id: $class_id})
+                UNWIND $weeks AS w
+                MERGE (wNode:Week {number: w.number, user_id: $user_id, class_id: $class_id})
+                ON CREATE SET wNode.exams = w.exams
+                ON MATCH SET wNode.exams = w.exams
+                MERGE (c)-[:HAS_SYLLABUS]->(wNode)
+            """, user_id=user_id, class_id=class_id, weeks=plain_weeks)
+
+            # Link Weeks to Topics
+            week_topic_data = []
+            for pw in plain_weeks:
+                for topic_name in pw['topics']:
+                    week_topic_data.append({
+                        'w_num': pw['number'],
+                        'topic_name': topic_name
+                    })
+            if week_topic_data:
+                # Merge Topic node
                 tx.run("""
-                    MERGE (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-                    ON CREATE SET w.exams = $w_exams
-                    ON MATCH SET w.exams = $w_exams
-                """, user_id=user_id, class_id=class_id, w_num=w_num, w_exams=w_exams)
+                    UNWIND $wt_list AS wt
+                    MERGE (t:Topic {name: wt.topic_name, user_id: $user_id, class_id: $class_id})
+                """, user_id=user_id, class_id=class_id, wt_list=week_topic_data)
                 
-                # 2. Link Class -> Week
+                # Merge SCHEDULED_FOR relationship
                 tx.run("""
-                    MATCH (c:Class {id: $class_id})
-                    MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-                    MERGE (c)-[:HAS_SYLLABUS]->(w)
-                """, class_id=class_id, user_id=user_id, w_num=w_num)
-                
-                # 3. Link Week -> Topic
-                for topic_name in w_topics:
-                    tx.run("""
-                        MERGE (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                    """, user_id=user_id, class_id=class_id, topic_name=topic_name)
-                    
-                    tx.run("""
-                        MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-                        MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                        MERGE (w)-[:SCHEDULED_FOR]->(t)
-                    """, user_id=user_id, class_id=class_id, w_num=w_num, topic_name=topic_name)
+                    UNWIND $wt_list AS wt
+                    MATCH (w:Week {number: wt.w_num, user_id: $user_id, class_id: $class_id})
+                    MATCH (t:Topic {name: wt.topic_name, user_id: $user_id, class_id: $class_id})
+                    MERGE (w)-[:SCHEDULED_FOR]->(t)
+                """, user_id=user_id, class_id=class_id, wt_list=week_topic_data)
 
 
     def _generate_with_retry(self, model_name, contents, retries=3, delay=2, config=None):
