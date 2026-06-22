@@ -32,6 +32,7 @@ import { IngestService } from '../../services/ingest.service';
 export class DashboardComponent implements OnInit {
   activeTab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings' = 'study';
   studySubTab: 'lesson' | 'syllabus_graph' = 'lesson';
+  isMobileMenuOpen: boolean = false;
 
   // Materials and Settings state
   materials: any[] = [];
@@ -475,6 +476,7 @@ export class DashboardComponent implements OnInit {
 
   selectTab(tab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings'): void {
     this.activeTab = tab;
+    this.isMobileMenuOpen = false;
     if (tab === 'progress') {
       this.loadQuizScores();
     } else if (tab === 'materials') {
@@ -482,6 +484,10 @@ export class DashboardComponent implements OnInit {
     } else if (tab === 'settings') {
       this.loadSettings();
     }
+  }
+
+  toggleMobileMenu(): void {
+    this.isMobileMenuOpen = !this.isMobileMenuOpen;
   }
 
   loadMaterials(): void {

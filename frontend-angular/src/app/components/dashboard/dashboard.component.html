@@ -9,27 +9,27 @@
       <span>Cosmic Study Space</span>
     </div>
   </div>
+
+  <!-- Navigation Tabs - Center aligned -->
+  <nav class="tab-nav" [class.mobile-open]="isMobileMenuOpen" *ngIf="selectedClass">
+    <button class="nav-tab" [class.active]="activeTab === 'study'" (click)="selectTab('study')">
+      <mat-icon>local_library</mat-icon> Study Hub
+    </button>
+    <button class="nav-tab" [class.active]="activeTab === 'progress'" (click)="selectTab('progress')">
+      <mat-icon>show_chart</mat-icon> Progress
+    </button>
+    <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
+      <mat-icon>forum</mat-icon> Ask Ace
+    </button>
+    <button class="nav-tab" [class.active]="activeTab === 'materials'" (click)="selectTab('materials')">
+      <mat-icon>inventory_2</mat-icon> Materials
+    </button>
+    <button class="nav-tab" [class.active]="activeTab === 'settings'" (click)="selectTab('settings')">
+      <mat-icon>settings</mat-icon> Settings
+    </button>
+  </nav>
   
   <div class="header-right">
-    <!-- Navigation Tabs -->
-    <nav class="tab-nav" *ngIf="selectedClass">
-      <button class="nav-tab" [class.active]="activeTab === 'study'" (click)="selectTab('study')">
-        <mat-icon>local_library</mat-icon> Study Hub
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'progress'" (click)="selectTab('progress')">
-        <mat-icon>show_chart</mat-icon> Progress
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'tutor'" (click)="selectTab('tutor')">
-        <mat-icon>forum</mat-icon> Ask Ace
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'materials'" (click)="selectTab('materials')">
-        <mat-icon>inventory_2</mat-icon> Materials
-      </button>
-      <button class="nav-tab" [class.active]="activeTab === 'settings'" (click)="selectTab('settings')">
-        <mat-icon>settings</mat-icon> Settings
-      </button>
-    </nav>
-
     <!-- Streaks & Progress Indicators in the Taskbar -->
     <div class="header-status-area" *ngIf="selectedClass">
       <!-- Class Streak -->
@@ -40,7 +40,6 @@
           <span class="widget-lbl">Class Streak</span>
         </div>
       </div>
-
     </div>
 
     <!-- Global Streak Widget -->
@@ -55,6 +54,11 @@
     <button class="btn-logout" (click)="logout()">
       <mat-icon>logout</mat-icon> Logout
     </button>
+
+    <!-- Toggle Menu Button for Responsive View -->
+    <button class="mobile-menu-toggle" (click)="toggleMobileMenu()" *ngIf="selectedClass" aria-label="Toggle Menu">
+      <mat-icon>{{ isMobileMenuOpen ? 'close' : 'menu' }}</mat-icon>
+    </button>
   </div>
 </header>
 
@@ -64,7 +68,7 @@
     <div class="manager-header card">
       <div class="header-details">
         <h1>My Classes</h1>
-        <p class="subtitle">Select a course to start your daily study loop, check syllabus completeness, and take quizzes.</p>
+        <p class="subtitle">Select a course to start your daily study loop, check curriculum roadmap completeness, and take quizzes.</p>
       </div>
       <button class="btn-add-class" (click)="openAddClassModal()">
         <mat-icon>add</mat-icon> Add Class
@@ -75,7 +79,7 @@
     <div *ngIf="classes.length === 0" class="empty-state card fade-in">
       <mat-icon class="empty-icon">school</mat-icon>
       <h2>No classes added.</h2>
-      <p>To begin, create your first class by providing a class name and uploading its syllabus PDF.</p>
+      <p>To begin, create your first class by providing a class name and uploading its curriculum PDF.</p>
       <button class="btn btn-primary" (click)="openAddClassModal()">
         <mat-icon>add</mat-icon> Add Class Now
       </button>
@@ -175,7 +179,7 @@
           <mat-icon>local_library</mat-icon> Study
         </button>
         <button class="btn-view-syllabus" (click)="viewSyllabusDirect()">
-          <mat-icon>assignment</mat-icon> View Syllabus
+          <mat-icon>assignment</mat-icon> View Roadmap
         </button>
         <button class="btn-cram" (click)="openCramModal()">
           <mat-icon>offline_bolt</mat-icon> Cram for Exam
@@ -196,7 +200,7 @@
         <div class="checklist-item" [class.completed]="dailyState.lesson_completed">
           <mat-icon class="check-icon">{{ dailyState.lesson_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
           <div class="item-text">
-            <span class="item-title">1. Read Today's Lesson</span>
+            <span class="item-title">1. Study Daily Lecture</span>
             <span class="item-desc">Learn the core concepts for this week</span>
           </div>
         </div>
@@ -220,11 +224,11 @@
     <div class="study-sub-nav" *ngIf="activeTab === 'study'" style="display: flex; gap: 8px; margin-top: 16px; margin-bottom: 20px; padding: 6px; width: fit-content; background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; backdrop-filter: blur(10px);">
       <button class="sub-tab-btn" [class.active]="studySubTab === 'lesson'" (click)="studySubTab = 'lesson'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
         <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">local_library</mat-icon>
-        <span>Today's Lesson</span>
+        <span>Daily Lecture</span>
       </button>
       <button class="sub-tab-btn" [class.active]="studySubTab === 'syllabus_graph'" (click)="studySubTab = 'syllabus_graph'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
         <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">route</mat-icon>
-        <span>Syllabus & Graph</span>
+        <span>Roadmap & Graph</span>
       </button>
     </div>
 
@@ -240,10 +244,10 @@
               <div class="card-header-row" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; width: 100%;">
                 <div style="display: flex; align-items: center; gap: 8px;">
                   <mat-icon>calendar_view_week</mat-icon>
-                  <h3>Syllabus Timeline</h3>
+                  <h3>Curriculum Roadmap</h3>
                 </div>
                 <button class="btn btn-secondary btn-edit-syllabus-action" (click)="openEditSyllabusModal()" style="font-size: 11px; padding: 4px 10px; height: auto; border: 1px solid rgba(99,102,241,0.5); display: inline-flex; align-items: center; gap: 4px; border-radius: 6px; cursor: pointer; color: #a5b4fc; background: rgba(99,102,241,0.1);">
-                  <mat-icon style="font-size: 14px; width:14px; height:14px;">edit</mat-icon> Edit Syllabus
+                  <mat-icon style="font-size: 14px; width:14px; height:14px;">edit</mat-icon> Edit Roadmap
                 </button>
               </div>
               <p class="section-desc">Review topics, sufficiency statuses, and upload course materials per week.</p>
@@ -255,7 +259,7 @@
               
               <div *ngIf="!allWeeksLoading && (!allWeeksData || weeks.length === 0)" class="empty-topics">
                 <mat-icon>info_outline</mat-icon>
-                <p>No timeline or week schedule has been extracted yet. Please verify your syllabus PDF was parsed successfully.</p>
+                <p>No timeline or week schedule has been extracted yet. Please verify your curriculum roadmap PDF was parsed successfully.</p>
               </div>
 
               <div *ngIf="!allWeeksLoading && weeks.length > 0" class="weeks-accordion">
@@ -403,7 +407,7 @@
       <div *ngIf="activeTab === 'tutor'" class="tab-content fade-in tutor-tab">
         <div class="chat-layout card">
           <h3>Ask Ace</h3>
-          <p class="section-desc">Ask questions about policies, prerequisites, syllabus content, or educational topics.</p>
+          <p class="section-desc">Ask questions about policies, prerequisites, curriculum roadmap content, or educational topics.</p>
           <app-chat-interface [classId]="selectedClass.class_id" [className]="selectedClass.class_name"></app-chat-interface>
         </div>
       </div>
@@ -426,7 +430,7 @@
           <div *ngIf="!isLoadingMaterials && materials.length === 0" class="empty-materials" style="text-align: center; padding: 60px 20px; color: #94a3b8;">
             <mat-icon style="font-size: 48px; height: 48px; width: 48px; margin-bottom: 15px;">folder_open</mat-icon>
             <h4 style="margin: 0; font-size: 18px; color: #f1f5f9;">No study materials uploaded yet.</h4>
-            <p style="margin-top: 5px; font-size: 14px;">Upload slides or lecture documents under the syllabus weekly topics in Study Hub to start learning!</p>
+            <p style="margin-top: 5px; font-size: 14px;">Upload slides or lecture documents under the curriculum roadmap weekly topics in Study Hub to start learning!</p>
           </div>
 
           <div *ngIf="!isLoadingMaterials && materials.length > 0" class="materials-content-grid">
@@ -554,7 +558,7 @@
               <div class="setting-row">
                 <div class="setting-label">
                   <h5>Course Start Date</h5>
-                  <p>Adjust the date your course began (used to determine your current syllabus week).</p>
+                  <p>Adjust the date your course began (used to determine your current curriculum roadmap week).</p>
                 </div>
                 <div class="setting-control">
                   <input type="date" [(ngModel)]="settingsStartDate" class="settings-date-input">
@@ -637,7 +641,7 @@
     <!-- STEP 1: Syllabus Upload -->
     <div *ngIf="addClassStep === 1" class="modal-body" style="display: flex; flex-direction: column; gap: 16px;">
       <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
-        To register a class, enter a class name and upload its Syllabus or Class Calendar PDF. Ace Agent will parse key topics, weekly timelines, and dependent structures.
+        To register a class, enter a class name and upload its Curriculum or Class Calendar PDF. Ace Agent will parse key topics, weekly timelines, and dependent structures.
       </p>
 
       <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
@@ -654,7 +658,7 @@
       </div>
 
       <div class="form-group" style="display: flex; flex-direction: column; gap: 6px;">
-        <label style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Syllabus / Class Calendar PDF</label>
+        <label style="font-size: 11px; font-weight: 700; color: #38bdf8; text-transform: uppercase;">Curriculum / Class Calendar PDF</label>
         <div class="file-uploader-dropzone" [class.file-selected]="newClassSyllabusFile" style="border: 2px dashed rgba(99, 102, 241, 0.4); border-radius: 8px; padding: 20px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(99, 102, 241, 0.02);">
           <input 
             type="file" 
@@ -672,7 +676,7 @@
               <span>Only PDF format allowed</span>
             </div>
             <div class="upload-text" *ngIf="newClassSyllabusFile" style="font-size: 12px; color: #e2e8f0;">
-              <strong>Syllabus PDF Selected:</strong>
+              <strong>Curriculum PDF Selected:</strong>
               <span class="selected-filename" style="color: #38bdf8; display: block; margin-top: 4px; word-break: break-all;">{{ newClassSyllabusFile.name }}</span>
             </div>
           </div>
@@ -688,7 +692,7 @@
       <!-- Ingest Progress Bar -->
       <div *ngIf="isAddingClass" class="modal-progress-container" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;">
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
-        <span class="progress-subtext" style="font-size: 11px; color: #94a3b8; text-align: center;">AI Brain parsing syllabus and mapping knowledge graph nodes...</span>
+        <span class="progress-subtext" style="font-size: 11px; color: #94a3b8; text-align: center;">AI Brain parsing curriculum and mapping knowledge graph nodes...</span>
       </div>
     </div>
 
@@ -707,7 +711,7 @@
     <!-- STEP 2: Recommended Streak & Topics Config -->
     <div *ngIf="addClassStep === 2" class="modal-body setup-modal-body" style="display: flex; flex-direction: column; gap: 16px; overflow-y: auto; max-height: 55vh; padding-right: 4px;">
       <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
-        Gemini has successfully processed your syllabus! Verify the extracted weekly topics and configure your personalized study settings.
+        Gemini has successfully processed your curriculum! Verify the extracted weekly topics and configure your personalized study settings.
       </p>
 
       <!-- Extracted Topics List & Split Editor -->
@@ -747,7 +751,7 @@
           <div *ngIf="setupTopicsList.length === 0" class="loading-preview" style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0;">
             <div style="display: flex; align-items: center; gap: 8px;">
               <mat-icon class="animate-spin" style="font-size: 18px; width: 18px; height: 18px; color: #38bdf8;">autorenew</mat-icon>
-              <span>Extracting weekly schedule from syllabus...</span>
+              <span>Extracting weekly schedule from curriculum roadmap...</span>
             </div>
             <button class="btn btn-secondary" (click)="addWeekToSetupSyllabus()" style="font-size: 11px; padding: 6px 12px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.2); background: transparent; color: #e2e8f0; cursor: pointer; font-weight: 600; transition: all 0.2s;">
               Create Manually
@@ -828,7 +832,7 @@
     <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 12px;">
       <div class="modal-title-container" style="display: flex; align-items: center; gap: 8px; font-weight: 800; font-size: 18px; color: #38bdf8;">
         <mat-icon style="color: #38bdf8;">edit_calendar</mat-icon>
-        <span>Edit Syllabus Schedule</span>
+        <span>Edit Roadmap Schedule</span>
       </div>
       <button class="btn-modal-close" (click)="closeEditSyllabusModal()" style="background: transparent; border: none; cursor: pointer; color: #94a3b8;">
         <mat-icon>close</mat-icon>
@@ -869,7 +873,7 @@
         style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
       >
         <mat-icon style="font-size: 16px; width: 16px; height: 16px;">save</mat-icon>
-        <span>Save Syllabus</span>
+        <span>Save Roadmap</span>
       </button>
     </div>
 
@@ -1024,7 +1028,7 @@
       <div class="tutorial-step-badge" style="background: rgba(99, 102, 241, 0.2); border: 1px solid #6366f1; color: #a5b4fc; padding: 4px 8px; border-radius: 12px; font-size: 10px; font-weight: 700; display: inline-block; margin-bottom: 6px; text-transform: uppercase;">Step {{ tutorialStep }} of 5</div>
       <h3 style="margin: 0; font-size: 18px; color: #38bdf8; font-weight: 800;">{{ 
         tutorialStep === 1 ? 'Welcome to Study Hub!' :
-        tutorialStep === 2 ? 'Browse the Syllabus Timeline' :
+        tutorialStep === 2 ? 'Browse the Curriculum Roadmap' :
         tutorialStep === 3 ? 'Understand concepts in the Knowledge Graph' :
         tutorialStep === 4 ? 'Tailored Chatbot Assistant - Ask Ace' :
         'Enable Calendar Notifications & Sync'
@@ -1042,9 +1046,9 @@
         </ul>
       </div>
 
-      <!-- Step 2: Syllabus Timeline -->
+      <!-- Step 2: Curriculum Roadmap -->
       <div *ngIf="tutorialStep === 2" class="tutorial-step-content">
-        <p>Use the <strong>Syllabus Timeline</strong> to browse topics for each week of the semester.</p>
+        <p>Use the <strong>Curriculum Roadmap</strong> to browse topics for each week of the semester.</p>
         <p>You can see sufficiency check statuses, upload material for specific topics, and even reset progress for any week to clear BQ scores and start over!</p>
       </div>
 
@@ -1057,7 +1061,7 @@
       <!-- Step 4: Ask Ace -->
       <div *ngIf="tutorialStep === 4" class="tutorial-step-content">
         <p>Need extra help? The <strong>Ask Ace</strong> tab opens a tailored chat interface with your cosmic AI teaching assistant.</p>
-        <p>Ace is primed with your course syllabus and materials, making it easy to clarify equations, guidelines, or vocabulary.</p>
+        <p>Ace is primed with your course curriculum and materials, making it easy to clarify equations, guidelines, or vocabulary.</p>
       </div>
 
       <!-- Step 5: Calendar Integration -->
@@ -1136,7 +1140,7 @@
       </div>
       <h1 class="anim-title text-glow-green" style="margin: 0; font-size: 28px; font-weight: 800; color: #22c55e; text-shadow: 0 0 15px rgba(34, 197, 94, 0.6); text-transform: uppercase;">Course Mastered!</h1>
       <div class="completion-value-display text-glow-green" style="font-size: 54px; font-weight: 950; color: #22c55e;">100% Complete</div>
-      <p class="anim-desc" style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">Congratulations! You have completed all 12 weeks of course materials and mastered every single topic in this syllabus!</p>
+      <p class="anim-desc" style="margin: 0; font-size: 14px; color: #94a3b8; text-align: center; line-height: 1.5;">Congratulations! You have completed all 12 weeks of course materials and mastered every single topic in this curriculum roadmap!</p>
       <div class="green-card-badge" style="background: rgba(34, 197, 94, 0.2); border: 1px solid #22c55e; color: #86efac; padding: 6px 16px; border-radius: 20px; font-weight: 800; font-size: 12px; display: inline-block; margin-top: 10px;">🎓 Graduated with honors on Ace Agent</div>
     </div>
 

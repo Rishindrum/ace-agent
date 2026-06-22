@@ -53,7 +53,7 @@ export class ChatInterfaceComponent implements OnInit, OnDestroy {
     this.socket.onopen = () => {
       console.log('Connected to Chat Server');
       this.messages.push({
-        text: `Hello! Welcome to ${this.className}. I'm Ace, your study assistant for this class. Whether you need help understanding the syllabus, reviewing course materials, or mastering this week's topics, feel free to ask me anything about our course!`, 
+        text: `Hello! Welcome to ${this.className}. I'm Ace, your study assistant for this class. Whether you need help understanding the curriculum roadmap, reviewing course materials, or mastering this week's topics, feel free to ask me anything about our course!`, 
         sender: 'bot', 
         timestamp: new Date()
       });

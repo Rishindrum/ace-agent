@@ -32,6 +32,10 @@ export class GraphVisualizerComponent implements OnInit {
     });
   }
 
+  sanitizeId(val: string): string {
+    return 'node-' + val.replace(/[^a-zA-Z0-9_-]/g, '_');
+  }
+
   processGraphData(concepts: any[]) {
     const newNodes: any[] = [];
     const newLinks: any[] = [];
@@ -41,28 +45,30 @@ export class GraphVisualizerComponent implements OnInit {
 
     concepts.forEach((concept, index) => {
       // 2. Topic Node
-      if (!newNodes.find(n => n.id === concept.name)) {
-        newNodes.push({ id: concept.name, label: concept.name });
+      const topicId = this.sanitizeId(concept.name);
+      if (!newNodes.find(n => n.id === topicId)) {
+        newNodes.push({ id: topicId, label: concept.name });
       }
 
       // 3. Link Root -> Topic
       newLinks.push({
         id: `link-root-${index}`,
         source: 'root',
-        target: concept.name,
+        target: topicId,
         label: 'Covers'
       });
 
       // 4. Prereqs
       if (concept.prerequisites) {
         concept.prerequisites.forEach((prereqName: string, pIndex: number) => {
-          if (!newNodes.find(n => n.id === prereqName)) {
-            newNodes.push({ id: prereqName, label: prereqName });
+          const prereqId = this.sanitizeId(prereqName);
+          if (!newNodes.find(n => n.id === prereqId)) {
+            newNodes.push({ id: prereqId, label: prereqName });
           }
           newLinks.push({
-            id: `link-${prereqName}-${concept.name}-${index}-${pIndex}`,
-            source: prereqName,
-            target: concept.name,
+            id: `link-prereq-${index}-${pIndex}`,
+            source: prereqId,
+            target: topicId,
             label: 'Prereq'
           });
         });
