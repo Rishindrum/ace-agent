@@ -166,10 +166,10 @@ export class DashboardComponent implements OnInit {
         let completedWeeksCount = 0;
         for (const weekNum of weekNumbers) {
           const weekTopics = this.allWeeksData[weekNum]?.topics || [];
-          if (weekTopics.length === 0) continue;
           
           const hasCompletedQuizForWeek = this.quizScores.some(score => 
-            score.topic_name === `Week ${weekNum} Quiz` || weekTopics.includes(score.topic_name)
+            score.topic_name === `Week ${weekNum} Quiz` || 
+            (weekTopics.length > 0 && weekTopics.includes(score.topic_name))
           );
           if (hasCompletedQuizForWeek) {
             completedWeeksCount++;
@@ -291,7 +291,27 @@ export class DashboardComponent implements OnInit {
     if (!userId) return;
     this.api.getQuizScores(userId, this.selectedClass.class_id).subscribe({
       next: (res: any) => {
-        this.quizScores = res.scores || [];
+        const fetchedScores: any[] = res.scores || [];
+        const mergedScores = [...this.quizScores];
+        
+        fetchedScores.forEach(fetched => {
+          const idx = mergedScores.findIndex(s => s.topic_name === fetched.topic_name);
+          if (idx !== -1) {
+            const local = mergedScores[idx];
+            const localTime = new Date(local.timestamp || 0).getTime();
+            const fetchedTime = new Date(fetched.timestamp || 0).getTime();
+            const isLocalNewer = localTime > fetchedTime;
+            const isLocalRecent = (Date.now() - localTime) < 5 * 60 * 1000;
+            if (!(isLocalNewer && isLocalRecent)) {
+              mergedScores[idx] = fetched;
+            }
+          } else {
+            mergedScores.push(fetched);
+          }
+        });
+        
+        mergedScores.sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime());
+        this.quizScores = mergedScores;
       },
       error: (err) => {
         console.warn('Could not load quiz scores:', err);
@@ -332,6 +352,7 @@ export class DashboardComponent implements OnInit {
       if (params['calendar_connected'] === 'true') {
         this.calendarConnected = true;
         localStorage.setItem('calendar_connected', 'true');
+        this.settingsCalendarEnabled = true;
         
         this.router.navigate([], {
           queryParams: { calendar_connected: null },

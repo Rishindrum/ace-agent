@@ -828,7 +828,7 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 		if classID == "" {
 			classID = "default_class"
 		}
-		sched, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, classID, time.Now())
+		sched, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, classID, GetClientTime(r))
 		if !ok {
 			w.Header().Set("Content-Type", "application/json")
 			json.NewEncoder(w).Encode(map[string]interface{}{
@@ -906,6 +906,13 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 			CourseStartDate: courseStartDate,
 			DefaultQuizLen:  10, // Default to 10
 		}
+	}
+
+	timezone := r.Header.Get("X-Timezone")
+	if timezone != "" {
+		sched.TimeZone = timezone
+	} else if sched.TimeZone == "" {
+		sched.TimeZone = "UTC"
 	}
 
 	if req.CalendarEnabled != nil {
@@ -1000,7 +1007,7 @@ func listClassesHandler(w http.ResponseWriter, r *http.Request) {
 	schedules := auth.GlobalScheduleStore.GetAllSchedules()
 	for _, s := range schedules {
 		if s.UserID == userID {
-			updated, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, s.ClassID, time.Now())
+			updated, ok := auth.GlobalScheduleStore.GetUpdatedSchedule(userID, s.ClassID, GetClientTime(r))
 			if ok {
 				list = append(list, updated)
 			} else {
@@ -1418,6 +1425,14 @@ func runDailySchedulerCheck() {
 
 		log.Printf("[SchedulerWorker] Checking schedule for user %s, class %s...", sched.UserID, classID)
 
+		// Get local time context based on user's saved TimeZone
+		loc, err := time.LoadLocation(sched.TimeZone)
+		if err != nil {
+			log.Printf("[SchedulerWorker] Warning: Invalid timezone %s for user %s. Defaulting to UTC. Error: %v", sched.TimeZone, sched.UserID, err)
+			loc = time.UTC
+		}
+		nowLocal := time.Now().In(loc)
+
 		// Calculate current week
 		currentWeek := auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
 
@@ -1456,7 +1471,7 @@ func runDailySchedulerCheck() {
 
 		// Schedule events for the next 7 days (including today) on preferred study days
 		for i := 0; i < 7; i++ {
-			targetDate := time.Now().AddDate(0, 0, i)
+			targetDate := nowLocal.AddDate(0, 0, i)
 			targetWeekday := int(targetDate.Weekday())
 
 			isPreferredDay := false
@@ -1480,7 +1495,7 @@ func runDailySchedulerCheck() {
 				}
 			}
 
-			log.Printf("[SchedulerWorker] Scheduling event for user %s, class %s on date %s...", sched.UserID, classID, targetDate.Format("2006-01-02"))
+			log.Printf("[SchedulerWorker] Scheduling event for user %s, class %s on date %s (Timezone: %s)...", sched.UserID, classID, targetDate.Format("2006-01-02"), loc.String())
 			err = calendar.ScheduleStudySession(ctx, sched.UserID, targetDate, preferredTime, newTopics, weakTopics, dashboardURL, sched.CalendarNotifs)
 			if err != nil {
 				log.Printf("[SchedulerWorker] Error scheduling study session for user %s on %s: %v", sched.UserID, targetDate.Format("2006-01-02"), err)
@@ -1557,7 +1572,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var classStreak, globalStreak int
-	if updatedSched, ok := auth.GlobalScheduleStore.UpdateStreaks(userID, classID, req.WeekNumber, time.Now()); ok {
+	if updatedSched, ok := auth.GlobalScheduleStore.UpdateStreaks(userID, classID, req.WeekNumber, GetClientTime(r)); ok {
 		classStreak = updatedSched.ClassStreak
 		globalStreak = updatedSched.GlobalStreak
 		log.Printf("[Streak] User %s daily streak updated: class_streak=%d, global_streak=%d (completed week %d)", userID, classStreak, globalStreak, req.WeekNumber)
@@ -2511,5 +2526,16 @@ func resetWeekProgressHandler(w http.ResponseWriter, r *http.Request) {
 		"success": true,
 		"message": fmt.Sprintf("Successfully reset progress for week %d.", weekNumber),
 	})
+}
+
+func GetClientTime(r *http.Request) time.Time {
+	localDateHeader := r.Header.Get("X-Local-Date")
+	if localDateHeader != "" {
+		parsedDate, err := time.Parse("2006-01-02", localDateHeader)
+		if err == nil {
+			return parsedDate
+		}
+	}
+	return time.Now()
 }
 

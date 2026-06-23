@@ -65,7 +65,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
   flex-direction: column;
   min-height: 100vh;
   background-color: $bg-color;
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   color: $text-main;
 }
 
@@ -1599,22 +1599,23 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     align-items: center;
     flex-wrap: wrap;
     gap: 15px;
-    background: white;
+    background: $card-bg;
     border-radius: 16px;
     padding: 24px 30px;
-    border: 1px solid #e2e8f0;
+    border: 1px solid $border-color;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
     h1 {
       margin: 0;
       font-size: 26px;
       font-weight: 800;
       letter-spacing: -0.5px;
-      color: #0f172a;
+      color: $text-main;
     }
 
     .subtitle {
       margin: 4px 0 0 0;
-      color: #64748b;
+      color: $text-muted;
       font-size: 14px;
     }
 
@@ -1649,9 +1650,10 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
   padding: 60px 40px;
   text-align: center;
   border-radius: 16px;
-  border: 2px dashed #cbd5e1;
-  background: white;
+  border: 2px dashed rgba(255, 255, 255, 0.15);
+  background: $card-bg;
   margin-top: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   .empty-icon {
     font-size: 64px;
@@ -1664,12 +1666,12 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
   h2 {
     font-size: 20px;
     font-weight: 700;
-    color: #1e293b;
+    color: $text-main;
     margin: 0 0 8px 0;
   }
 
   p {
-    color: #64748b;
+    color: $text-muted;
     font-size: 14px;
     max-width: 400px;
     margin: 0 0 24px 0;
@@ -1684,14 +1686,15 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     border-radius: 8px;
     font-size: 14px;
     font-weight: 700;
-    border: none;
+    border: 1px solid rgba(99, 102, 241, 0.4);
     cursor: pointer;
-    background: #4f46e5;
-    color: white;
+    background: rgba(99, 102, 241, 0.15);
+    color: #38bdf8;
     transition: all 0.2s;
 
     &:hover {
-      background: #4338ca;
+      background: rgba(99, 102, 241, 0.3);
+      border-color: rgba(99, 102, 241, 0.6);
     }
   }
 }
@@ -1706,8 +1709,8 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
 .class-card {
   position: relative;
   border-radius: 16px;
-  background: white;
-  border: 1px solid #e2e8f0;
+  background: $card-bg;
+  border: 1px solid $border-color;
   padding: 24px;
   cursor: pointer;
   overflow: hidden;
@@ -1716,7 +1719,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
   height: 200px;
   box-sizing: border-box;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
 
   .class-card-glow {
     position: absolute;
@@ -1731,8 +1734,8 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
 
   &:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 20px -5px rgba(0, 0, 0, 0.08);
-    border-color: #cbd5e1;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.6), 0 0 20px rgba(99, 102, 241, 0.1);
+    border-color: rgba(99, 102, 241, 0.4);
 
     .class-card-glow {
       opacity: 1;
@@ -1750,21 +1753,22 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     margin-bottom: 20px;
 
     .class-icon {
-      color: #6366f1;
+      color: #38bdf8;
       font-size: 28px;
       width: 28px;
       height: 28px;
+      filter: drop-shadow(0 0 6px rgba(56, 189, 248, 0.3));
     }
 
     .class-streak-badge {
       display: flex;
       align-items: center;
       gap: 4px;
-      background: #fff5f5;
-      border: 1px solid #fee2e2;
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.2);
       padding: 4px 8px;
       border-radius: 20px;
-      color: #ef4444;
+      color: #fca5a5;
       font-size: 11px;
       font-weight: 700;
 
@@ -1782,7 +1786,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     h3 {
       font-size: 19px;
       font-weight: 700;
-      color: #0f172a;
+      color: $text-main;
       margin: 0 0 6px 0;
       overflow: hidden;
       text-overflow: ellipsis;
@@ -1801,11 +1805,11 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-top: 1px solid #f1f5f9;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     padding-top: 12px;
     font-size: 12px;
     font-weight: 600;
-    color: #4f46e5;
+    color: #38bdf8;
 
     mat-icon {
       font-size: 16px;
@@ -1818,7 +1822,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
 
 .class-card.course-complete-card {
   border-color: rgba(34, 197, 94, 0.35) !important;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.04) !important;
+  box-shadow: 0 8px 30px rgba(34, 197, 94, 0.1) !important;
 
   .class-card-glow {
     background: linear-gradient(90deg, #22c55e, #4ade80) !important;
@@ -1834,7 +1838,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
   }
 
   &:hover {
-    box-shadow: 0 12px 25px rgba(34, 197, 94, 0.12) !important;
+    box-shadow: 0 12px 30px rgba(34, 197, 94, 0.2), 0 0 20px rgba(34, 197, 94, 0.1) !important;
     border-color: rgba(34, 197, 94, 0.6) !important;
   }
 }
@@ -1855,10 +1859,10 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
       align-items: center;
       gap: 6px;
       padding: 8px 14px;
-      background: white;
-      border: 1px solid #e2e8f0;
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid $border-color;
       border-radius: 8px;
-      color: #475569;
+      color: $text-muted;
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
@@ -1871,9 +1875,9 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
       }
 
       &:hover {
-        background: #f8fafc;
-        color: #0f172a;
-        border-color: #cbd5e1;
+        background: rgba(255, 255, 255, 0.08);
+        color: $text-main;
+        border-color: rgba(255, 255, 255, 0.2);
       }
     }
 
@@ -1886,17 +1890,17 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
         margin: 0;
         font-size: 22px;
         font-weight: 800;
-        color: #0f172a;
+        color: $text-main;
       }
 
       .class-id-badge {
         font-size: 11px;
         font-family: monospace;
-        background: #f1f5f9;
-        color: #64748b;
+        background: rgba(255, 255, 255, 0.05);
+        color: $text-muted;
         padding: 2px 8px;
         border-radius: 4px;
-        border: 1px solid #e2e8f0;
+        border: 1px solid $border-color;
       }
     }
   }
@@ -1956,21 +1960,21 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
     align-items: center;
     padding: 12px 16px;
     border-radius: 10px;
-    border: 1px solid #e2e8f0;
-    background: #f8fafc;
+    border: 1px solid $border-color;
+    background: rgba(255, 255, 255, 0.02);
     gap: 12px;
     transition: all 0.2s ease;
 
     &:hover {
-      background: #f1f5f9;
+      background: rgba(255, 255, 255, 0.05);
     }
 
     &.insufficient {
-      border-color: #fef08a;
-      background: #fffdf5;
+      border-color: rgba(234, 179, 8, 0.3);
+      background: rgba(234, 179, 8, 0.05);
 
       &:hover {
-        background: #fffbeb;
+        background: rgba(234, 179, 8, 0.08);
       }
     }
 
@@ -1997,7 +2001,7 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
       .topic-name-label {
         font-size: 14px;
         font-weight: 600;
-        color: #334155;
+        color: $text-main;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -2012,10 +2016,11 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
       .warning-badge {
         font-size: 10px;
         font-weight: 700;
-        background: #fef08a;
-        color: #713f12;
+        background: rgba(234, 179, 8, 0.2);
+        color: #fef08a;
         padding: 2px 6px;
         border-radius: 4px;
+        border: 1px solid rgba(234, 179, 8, 0.3);
         white-space: nowrap;
       }
 
@@ -2025,9 +2030,9 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
         gap: 4px;
         padding: 6px 10px;
         border-radius: 6px;
-        border: 1px solid #cbd5e1;
-        background: white;
-        color: #475569;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        background: rgba(255, 255, 255, 0.03);
+        color: $text-muted;
         font-size: 11px;
         font-weight: 700;
         cursor: pointer;
@@ -2040,9 +2045,9 @@ $border-color: rgba(255, 255, 255, 0.08); /* Ultra-thin border */
         }
 
         &:hover {
-          background: #e2e8f0;
-          color: #0f172a;
-          border-color: #94a3b8;
+          background: rgba(255, 255, 255, 0.08);
+          color: $text-main;
+          border-color: rgba(255, 255, 255, 0.2);
         }
       }
     }

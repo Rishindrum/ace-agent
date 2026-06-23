@@ -23,6 +23,7 @@ type UserSchedule struct {
 	CalendarEnabled bool     `json:"calendar_enabled"`
 	CalendarNotifs  bool     `json:"calendar_notifs"`
 	DefaultQuizLen  int      `json:"default_quiz_len"`
+	TimeZone        string   `json:"timezone"`
 }
 
 type ScheduleStore struct {
@@ -94,6 +95,10 @@ func (s *ScheduleStore) SaveSchedule(userID, classID, className string, preferre
 		}
 	}
 
+	tz := existing.TimeZone
+	if tz == "" {
+		tz = "UTC"
+	}
 	sched := UserSchedule{
 		UserID:          userID,
 		ClassID:         classID,
@@ -106,6 +111,7 @@ func (s *ScheduleStore) SaveSchedule(userID, classID, className string, preferre
 		CourseStartDate: courseStartDate,
 		LastStudyDate:   lastStudyDate,
 		Modifications:   mods,
+		TimeZone:        tz,
 	}
 	s.schedules[key] = sched
 	s.save()
@@ -148,6 +154,7 @@ func (s *ScheduleStore) GetUpdatedSchedule(userID, classID string, now time.Time
 			ClassStreak:     0,
 			CourseStartDate: now.Format("2006-01-02"),
 			DefaultQuizLen:  10,
+			TimeZone:        "UTC",
 		}
 		s.schedules[key] = sched
 	}
@@ -362,6 +369,7 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 			ClassStreak:     0,
 			CourseStartDate: now.Format("2006-01-02"),
 			DefaultQuizLen:  10,
+			TimeZone:        "UTC",
 		}
 		s.schedules[key] = sched
 	}

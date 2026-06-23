@@ -9,14 +9,21 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
 
-  let cloned = req;
+  const localDate = new Date().toLocaleDateString('en-CA');
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+  
+  const headers: { [key: string]: string } = {
+    'X-Local-Date': localDate,
+    'X-Timezone': timezone
+  };
+
   if (token) {
-    cloned = req.clone({
-      setHeaders: {
-        Authorization: `Bearer ${token}`
-      }
-    });
+    headers['Authorization'] = `Bearer ${token}`;
   }
+
+  const cloned = req.clone({
+    setHeaders: headers
+  });
 
   return next(cloned).pipe(
     catchError((error: any) => {

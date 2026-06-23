@@ -264,7 +264,8 @@ func ScheduleStudySession(ctx context.Context, userID string, targetDate time.Ti
 	}
 
 	sessionStart := time.Date(targetDate.Year(), targetDate.Month(), targetDate.Day(), hour, 0, 0, 0, targetDate.Location())
-	if targetDate.Year() == time.Now().Year() && targetDate.YearDay() == time.Now().YearDay() && sessionStart.Before(time.Now()) {
+	nowLocal := time.Now().In(targetDate.Location())
+	if targetDate.Year() == nowLocal.Year() && targetDate.YearDay() == nowLocal.YearDay() && sessionStart.Before(nowLocal) {
 		sessionStart = sessionStart.Add(24 * time.Hour)
 	}
 	sessionEnd := sessionStart.Add(1 * time.Hour)
