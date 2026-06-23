@@ -179,7 +179,7 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	// Allow Angular (localhost:4200) to talk to us
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -359,7 +359,7 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 func submitQuizResultHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -411,7 +411,7 @@ func submitQuizResultHandler(w http.ResponseWriter, r *http.Request) {
 func getQuizScoresHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -454,7 +454,7 @@ func getQuizScoresHandler(w http.ResponseWriter, r *http.Request) {
 func generateAdaptiveQuizHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -499,7 +499,7 @@ func generateAdaptiveQuizHandler(w http.ResponseWriter, r *http.Request) {
 func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -612,7 +612,7 @@ type QuestionJSON struct {
 func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -812,7 +812,7 @@ func hasCompletedWeekQuiz(ctx context.Context, userID, classID string, weekNum i
 func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -986,7 +986,7 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 func listClassesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1023,7 +1023,7 @@ func listClassesHandler(w http.ResponseWriter, r *http.Request) {
 func checkTopicSufficiencyHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1089,7 +1089,7 @@ func checkTopicSufficiencyHandler(w http.ResponseWriter, r *http.Request) {
 func deleteClassHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1137,7 +1137,7 @@ func deleteClassHandler(w http.ResponseWriter, r *http.Request) {
 func getMaterialsHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1179,7 +1179,7 @@ func getMaterialsHandler(w http.ResponseWriter, r *http.Request) {
 func deleteMaterialHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "DELETE, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1223,7 +1223,7 @@ func deleteMaterialHandler(w http.ResponseWriter, r *http.Request) {
 func chatUploadHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1278,7 +1278,7 @@ func chatUploadHandler(w http.ResponseWriter, r *http.Request) {
 func getSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1320,7 +1320,7 @@ func getSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 func editSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1382,7 +1382,7 @@ func editSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 func syllabusHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, PUT, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 	if r.Method == "OPTIONS" {
 		return
 	}
@@ -1507,7 +1507,7 @@ func runDailySchedulerCheck() {
 func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1637,7 +1637,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1762,7 +1762,7 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 func userConfigHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1797,7 +1797,7 @@ func userConfigHandler(w http.ResponseWriter, r *http.Request) {
 func schedulePreferencesHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1830,7 +1830,7 @@ func schedulePreferencesHandler(w http.ResponseWriter, r *http.Request) {
 func registerHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1879,7 +1879,7 @@ func registerHandler(w http.ResponseWriter, r *http.Request) {
 func loginHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -1923,7 +1923,7 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 func cramSessionHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -2144,7 +2144,7 @@ func CORSMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
 		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 		w.Header().Set("Access-Control-Expose-Headers", "Authorization")
 
 		if r.Method == "OPTIONS" {
@@ -2176,7 +2176,7 @@ func slicesEqual(a, b []int) bool {
 func getDailySessionStateHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "GET, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -2243,7 +2243,7 @@ func getDailySessionStateHandler(w http.ResponseWriter, r *http.Request) {
 func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -2319,7 +2319,7 @@ func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
@@ -2443,7 +2443,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 func resetWeekProgressHandler(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
-	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
 
 	if r.Method == "OPTIONS" {
 		return
