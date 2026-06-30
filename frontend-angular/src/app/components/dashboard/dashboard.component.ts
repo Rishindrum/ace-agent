@@ -58,6 +58,15 @@ export class DashboardComponent implements OnInit {
   calendarConnected: boolean = false;
   isScheduleConfigured: boolean = false;
 
+  // Manual Calendar Sync Modal State
+  isCalendarSyncModalOpen: boolean = false;
+  isSyncingCalendar: boolean = false;
+  syncPreferredTime: string = 'afternoon';
+
+  // Duolingo-like Streak Calendar State
+  calendarDays: any[] = [];
+  currentMonthYearLabel: string = '';
+
   // Streak Settings Modal State
   isStreakSettingsModalOpen: boolean = false;
   streakSettingsStartDate: string = '';
@@ -158,6 +167,12 @@ export class DashboardComponent implements OnInit {
 
   getCourseCompletion(classObj: any): number {
     if (!classObj) return 0;
+
+    // Prioritize backend-persisted progress percentage
+    if (classObj.progress_pct !== undefined && classObj.progress_pct > 0) {
+      this.classCompletions[classObj.class_id] = classObj.progress_pct;
+      return classObj.progress_pct;
+    }
 
     // If it is the currently selected class, calculate it reactively and cache the result
     if (this.selectedClass && classObj.class_id === this.selectedClass.class_id) {
@@ -312,6 +327,7 @@ export class DashboardComponent implements OnInit {
         
         mergedScores.sort((a, b) => new Date(b.timestamp || 0).getTime() - new Date(a.timestamp || 0).getTime());
         this.quizScores = mergedScores;
+        this.generateStreakCalendar();
       },
       error: (err) => {
         console.warn('Could not load quiz scores:', err);
@@ -368,13 +384,21 @@ export class DashboardComponent implements OnInit {
         this.classes = res || [];
         this.globalStreak = this.classes.reduce((max, c) => c.global_streak > max ? c.global_streak : max, 0);
         
-        if (this.selectedClass) {
+        // Auto-select class from localStorage if none is selected
+        const savedClassId = localStorage.getItem('selectedClassId');
+        if (!this.selectedClass && savedClassId) {
+          const matched = this.classes.find(c => c.class_id === savedClassId);
+          if (matched) {
+            this.selectClass(matched);
+          }
+        } else if (this.selectedClass) {
           const updated = this.classes.find(c => c.class_id === this.selectedClass.class_id);
           if (updated) {
             this.selectedClass = updated;
             this.currentStreak = updated.class_streak || updated.current_streak || 0;
             this.loadAllTopicsSufficiency();
             this.loadSyllabusGraph(updated.class_id);
+            this.generateStreakCalendar();
           }
         }
       },
@@ -389,8 +413,10 @@ export class DashboardComponent implements OnInit {
     if (!classObj) {
       this.allTopics = [];
       this.insufficientTopics = [];
+      localStorage.removeItem('selectedClassId');
       return;
     }
+    localStorage.setItem('selectedClassId', classObj.class_id);
 
     // Set class-specific values
     this.currentStreak = classObj.class_streak || classObj.current_streak || 0;
@@ -406,6 +432,7 @@ export class DashboardComponent implements OnInit {
     this.loadAllTopicsSufficiency();
     this.loadQuizScores();
     this.loadSyllabusGraph(classObj.class_id);
+    this.generateStreakCalendar();
     this.activeTab = 'study';
   }
 
@@ -1186,6 +1213,96 @@ export class DashboardComponent implements OnInit {
     } catch (e) {
       console.log('Audio Context not allowed or supported yet:', e);
     }
+  }
+
+  getCompletedStudyDays(): Set<string> {
+    const days = new Set<string>();
+    this.quizScores.forEach(s => {
+      if (s.timestamp) {
+        const d = new Date(s.timestamp);
+        const yyyymmdd = d.getFullYear() + '-' + 
+          String(d.getMonth() + 1).padStart(2, '0') + '-' + 
+          String(d.getDate()).padStart(2, '0');
+        days.add(yyyymmdd);
+      }
+    });
+    if (this.selectedClass?.last_study_date) {
+      days.add(this.selectedClass.last_study_date);
+    }
+    return days;
+  }
+
+  generateStreakCalendar(): void {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    
+    this.currentMonthYearLabel = today.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+    
+    const firstDayOfMonth = new Date(year, month, 1).getDay();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    
+    const daysList = [];
+    for (let i = 0; i < firstDayOfMonth; i++) {
+      daysList.push({ dayNum: null, dateStr: '', isCompleted: false, isPreferred: false, isToday: false, isPast: false });
+    }
+    
+    const completedSet = this.getCompletedStudyDays();
+    const todayStr = today.getFullYear() + '-' + 
+      String(today.getMonth() + 1).padStart(2, '0') + '-' + 
+      String(today.getDate()).padStart(2, '0');
+      
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dateObj = new Date(year, month, d);
+      const dateStr = year + '-' + 
+        String(month + 1).padStart(2, '0') + '-' + 
+        String(d).padStart(2, '0');
+        
+      const dayOfWeek = dateObj.getDay();
+      const isCompleted = completedSet.has(dateStr);
+      const isPreferred = this.selectedClass?.preferred_days?.includes(dayOfWeek) || false;
+      const isToday = dateStr === todayStr;
+      const isPast = dateObj.getTime() < new Date(year, month, today.getDate()).getTime();
+      
+      daysList.push({
+        dayNum: d,
+        dateStr,
+        isCompleted,
+        isPreferred,
+        isToday,
+        isPast,
+        dayOfWeek
+      });
+    }
+    this.calendarDays = daysList;
+  }
+
+  triggerManualCalendarSync(): void {
+    if (!this.selectedClass) return;
+    this.syncPreferredTime = 'afternoon';
+    this.isCalendarSyncModalOpen = true;
+  }
+
+  executeCalendarSync(): void {
+    if (!this.selectedClass) return;
+    this.isSyncingCalendar = true;
+    this.api.syncCalendarEvents(this.selectedClass.class_id, this.syncPreferredTime).subscribe({
+      next: (res) => {
+        this.isSyncingCalendar = false;
+        this.isCalendarSyncModalOpen = false;
+        alert(res.message || 'Successfully synced study events to Google Calendar!');
+      },
+      error: (err) => {
+        this.isSyncingCalendar = false;
+        alert('Failed to sync study events: ' + (err.error?.message || err.message || err));
+      }
+    });
+  }
+
+  getSelectedDaysNames(): string {
+    if (!this.selectedClass) return 'None';
+    const days = this.settingsDays.filter(d => d.selected).map(d => d.name);
+    return days.length > 0 ? days.join(', ') : 'None';
   }
 }
 

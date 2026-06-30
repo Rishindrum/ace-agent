@@ -130,6 +130,12 @@ export class ApiService {
     });
   }
 
+  syncCalendarEvents(classId: string, preferredTime: string): Observable<any> {
+    return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${classId}/calendar/sync`, {
+      preferred_time: preferredTime
+    });
+  }
+
   generateCramSession(startWeek: number, endWeek: number, classId?: string): Observable<any> {
     const cid = classId || 'default_class';
     return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/cram`, {

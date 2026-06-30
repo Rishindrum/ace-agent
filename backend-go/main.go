@@ -1571,11 +1571,16 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		Timestamp:       time.Now(),
 	}
 
-	var classStreak, globalStreak int
+	var classStreak, globalStreak, progressPct int
 	if updatedSched, ok := auth.GlobalScheduleStore.UpdateStreaks(userID, classID, req.WeekNumber, GetClientTime(r)); ok {
 		classStreak = updatedSched.ClassStreak
 		globalStreak = updatedSched.GlobalStreak
+		progressPct = updatedSched.ProgressPct
 		log.Printf("[Streak] User %s daily streak updated: class_streak=%d, global_streak=%d (completed week %d)", userID, classStreak, globalStreak, req.WeekNumber)
+	} else {
+		if s, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID); ok {
+			progressPct = s.ProgressPct
+		}
 	}
 
 	go func(row *QuizAttemptTelemetry, uID, cID string, weekNum int, percentage float64) {
@@ -1631,6 +1636,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		"confirmed":       true,
 		"class_streak":    classStreak,
 		"global_streak":   globalStreak,
+		"progress_pct":    progressPct,
 	})
 }
 
@@ -2133,6 +2139,7 @@ func main() {
 	mux.HandleFunc("/api/v1/classes/{class_id}/materials/{material_id}", auth.JWTMiddleware(deleteMaterialHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/chat/upload", auth.JWTMiddleware(chatUploadHandler))
 	mux.HandleFunc("/api/v1/classes/{class_id}/study/week/{week_number}/reset", auth.JWTMiddleware(resetWeekProgressHandler))
+	mux.HandleFunc("/api/v1/classes/{class_id}/calendar/sync", auth.JWTMiddleware(manualCalendarSyncHandler))
 
 	fmt.Println("[Go] Gateway running on :8080")
 	if err := http.ListenAndServe(":8080", CORSMiddleware(mux)); err != nil {
@@ -2511,6 +2518,19 @@ func resetWeekProgressHandler(w http.ResponseWriter, r *http.Request) {
 		if sched.CourseStartDate != "" {
 			currentWeek = auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
 		}
+		// Remove weekNumber from CompletedWeeks list
+		var updatedWeeks []int
+		for _, w := range sched.CompletedWeeks {
+			if w != weekNumber {
+				updatedWeeks = append(updatedWeeks, w)
+			}
+		}
+		sched.CompletedWeeks = updatedWeeks
+		sched.ProgressPct = int(float64(len(updatedWeeks)) / 12.0 * 100.0)
+		if sched.ProgressPct > 100 {
+			sched.ProgressPct = 100
+		}
+		auth.GlobalScheduleStore.SaveScheduleStruct(sched)
 	}
 	if weekNumber == currentWeek {
 		sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
@@ -2537,5 +2557,136 @@ func GetClientTime(r *http.Request) time.Time {
 		}
 	}
 	return time.Now()
+}
+
+func manualCalendarSyncHandler(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Local-Date, X-Timezone")
+
+	if r.Method == "OPTIONS" {
+		return
+	}
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+		return
+	}
+
+	userID := auth.GetUserID(r.Context())
+	if userID == "" {
+		http.Error(w, "Unauthorized: User ID missing", http.StatusUnauthorized)
+		return
+	}
+
+	classID := r.PathValue("class_id")
+	if classID == "" {
+		http.Error(w, "Bad Request: Class ID missing", http.StatusBadRequest)
+		return
+	}
+
+	var req struct {
+		PreferredTime string `json:"preferred_time"`
+	}
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		req.PreferredTime = "afternoon"
+	}
+	if req.PreferredTime == "" {
+		req.PreferredTime = "afternoon"
+	}
+
+	ctx := r.Context()
+	sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID)
+	if !ok {
+		http.Error(w, "Class schedule settings not found", http.StatusNotFound)
+		return
+	}
+
+	refreshToken, err := calendar.GetRefreshToken(ctx, userID)
+	if err != nil || refreshToken == "" {
+		http.Error(w, "Google Calendar not connected. Please connect calendar in settings first.", http.StatusBadRequest)
+		return
+	}
+
+	loc, err := time.LoadLocation(sched.TimeZone)
+	if err != nil {
+		loc = time.UTC
+	}
+	nowLocal := time.Now().In(loc)
+
+	currentWeek := auth.CalculateCurrentSyllabusWeek(sched.CourseStartDate)
+
+	var newTopics []string
+	if tutorClient != nil {
+		suffResp, err := tutorClient.CheckTopicSufficiency(ctx, &pb.SufficiencyRequest{
+			UserId:     userID,
+			ClassId:    classID,
+			WeekNumber: int32(currentWeek),
+		})
+		if err == nil && suffResp != nil {
+			newTopics = suffResp.AllTopics
+		}
+	}
+
+	if len(newTopics) == 0 {
+		newTopics = []string{fmt.Sprintf("Week %d Core Concepts", currentWeek)}
+	}
+
+	weakTopics, err := getWeakTopicsFromBigQuery(ctx, userID, classID)
+	if err != nil {
+		weakTopics = []string{}
+	}
+
+	frontendURL := os.Getenv("FRONTEND_URL")
+	if frontendURL == "" {
+		frontendURL = "http://localhost:4200"
+	}
+	dashboardURL := frontendURL + "/dashboard"
+
+	eventsScheduled := 0
+	var lastErr error
+
+	for i := 0; i < 7; i++ {
+		targetDate := nowLocal.AddDate(0, 0, i)
+		targetWeekday := int(targetDate.Weekday())
+
+		isPreferredDay := false
+		for _, d := range sched.PreferredDays {
+			if d == targetWeekday {
+				isPreferredDay = true
+				break
+			}
+		}
+
+		if !isPreferredDay {
+			continue
+		}
+
+		if i == 0 {
+			completed, err := hasCompletedQuizToday(ctx, userID, classID)
+			if err == nil && completed {
+				continue
+			}
+		}
+
+		err = calendar.ScheduleStudySession(ctx, userID, targetDate, req.PreferredTime, newTopics, weakTopics, dashboardURL, sched.CalendarNotifs)
+		if err != nil {
+			lastErr = err
+		} else {
+			eventsScheduled++
+		}
+	}
+
+	if eventsScheduled == 0 && lastErr != nil {
+		http.Error(w, "Failed to schedule calendar events: "+lastErr.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":           "success",
+		"message":          fmt.Sprintf("Successfully synced %d study events to your Google Calendar!", eventsScheduled),
+		"events_scheduled": eventsScheduled,
+	})
 }
 

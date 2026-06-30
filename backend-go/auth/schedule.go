@@ -24,6 +24,8 @@ type UserSchedule struct {
 	CalendarNotifs  bool     `json:"calendar_notifs"`
 	DefaultQuizLen  int      `json:"default_quiz_len"`
 	TimeZone        string   `json:"timezone"`
+	CompletedWeeks  []int    `json:"completed_weeks"`
+	ProgressPct     int      `json:"progress_pct"`
 }
 
 type ScheduleStore struct {
@@ -477,6 +479,24 @@ func (s *ScheduleStore) UpdateStreaks(userID, classID string, quizWeek int, now 
 
 	sched.GlobalStreak = newGlobalStreak
 	sched.ClassStreak = sched.CurrentStreak
+
+	if quizWeek > 0 {
+		found := false
+		for _, w := range sched.CompletedWeeks {
+			if w == quizWeek {
+				found = true
+				break
+			}
+		}
+		if !found {
+			sched.CompletedWeeks = append(sched.CompletedWeeks, quizWeek)
+		}
+		sched.ProgressPct = int(float64(len(sched.CompletedWeeks)) / 12.0 * 100.0)
+		if sched.ProgressPct > 100 {
+			sched.ProgressPct = 100
+		}
+	}
+
 	s.schedules[key] = sched
 
 	for k, v := range s.schedules {

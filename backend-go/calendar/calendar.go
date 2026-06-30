@@ -114,8 +114,8 @@ func GetLoginURL(state string) string {
 		InitOAuthConfig()
 	}
 	// AccessTypeOffline forces Google to return a refresh token
-	// ApprovalForce prompts the user even if they've already authorized the app
-	return OAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	// prompt=consent ensures Google prompts for consent every time to guarantee we receive a refresh token
+	return OAuthConfig.AuthCodeURL(state, oauth2.AccessTypeOffline, oauth2.SetAuthURLParam("prompt", "consent"))
 }
 
 // SaveRefreshToken saves the user's refresh token into GCP Secret Manager
