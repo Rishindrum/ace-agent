@@ -78,6 +78,7 @@ resource "google_cloud_run_v2_service" "backend_python" {
     ignore_changes = [
       template[0].containers[0].image,
       template[0].containers[0].env,
+      template[0].labels,
     ]
   }
 }
@@ -108,6 +109,8 @@ resource "google_cloud_run_v2_service" "backend_go" {
   lifecycle {
     ignore_changes = [
       template[0].containers[0].image,
+      template[0].containers[0].env,
+      template[0].labels,
     ]
   }
 }
@@ -149,6 +152,7 @@ resource "google_cloud_run_v2_service" "frontend_angular" {
     ignore_changes = [
       template[0].containers[0].image,
       template[0].containers[0].env,
+      template[0].labels,
     ]
   }
 }
@@ -220,4 +224,17 @@ output "go_url" {
 
 output "frontend_url" {
   value = google_cloud_run_v2_service.frontend_angular.uri
+}
+
+# 8. ENABLE SERVICES
+resource "google_project_service" "calendar" {
+  project            = var.project_id
+  service            = "calendar-json.googleapis.com"
+  disable_on_destroy = false
+}
+
+resource "google_project_service" "secretmanager" {
+  project            = var.project_id
+  service            = "secretmanager.googleapis.com"
+  disable_on_destroy = false
 }
