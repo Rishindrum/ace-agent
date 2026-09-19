@@ -48,6 +48,7 @@ def get_project_id():
     except Exception:
         return None
 
+# Runtime credentials are injected by the deployment pipeline; keep them out of source control.
 # Initialize Gemini
 NEO4J_URI = os.getenv("NEO4J_URI")
 NEO4J_USER = os.getenv("NEO4J_USER")
