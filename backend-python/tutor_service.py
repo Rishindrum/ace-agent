@@ -952,6 +952,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def GenerateQuiz(self, request, context):
         weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
         class_id = request.class_id if request.class_id else "default_class"
+        unit_topic = request.topic_name.strip() if request.topic_name else ""
+        content_type = "unit_quiz" if unit_topic else "quiz"
         print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', class '{class_id}', weak topics {weak_topics_list}...")
         try:
             current_topics = []
@@ -962,7 +964,14 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             # Graph Traversal: Pull matching failed/weak topics along with the current week's scheduled topics.
             if self.driver:
                 with self.driver.session() as session:
-                    if request.week_number == -1:
+                    if unit_topic:
+                        query = """
+                        MATCH (w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
+                        WHERE w.number = $week_number AND NOT m.name STARTS WITH 'syllabus_'
+                        RETURN t.name AS topic_name, w.number AS week_number, m.chunks AS chunks
+                        """
+                        result = session.run(query, week_number=request.week_number, topic_name=unit_topic, user_id=request.user_id, class_id=class_id)
+                    elif request.week_number == -1:
                         # Maintenance Review: strictly weak topics
                         print(f"[Python] Maintenance Review Quiz: pulling strictly weak topics.")
                         if not weak_topics_list:
@@ -1022,12 +1031,12 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             if not request.regenerate and request.week_number != -1 and self.driver:
                 with self.driver.session() as session:
                     read_query = """
-                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: 'quiz', user_id: $user_id, class_id: $class_id})
-                    WHERE w.number = $week_number
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: $content_type, user_id: $user_id, class_id: $class_id, week_number: $week_number})
+                    WHERE w.number = $week_number AND ($topic_name = '' OR t.name = $topic_name)
                     RETURN g.questions_json AS questions_json
                     LIMIT 1
                     """
-                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number)
+                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number, topic_name=unit_topic, content_type=content_type)
                     record = read_res.single()
                     if record:
                         saved_content = {
@@ -1061,7 +1070,9 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 print(f"[Python] GenerateQuiz attempt {attempts}...")
 
                 # Construct prompt for LLM with split focus
-                if request.week_number != -1:
+                if unit_topic:
+                    focus_instruction = f"Test only the unit topic '{unit_topic}' using its uploaded source material. Do not include other syllabus topics."
+                elif request.week_number != -1:
                     focus_instruction = f"""
                     The quiz must test a mixture of:
                     1. Current Week {request.week_number} topics (more focus on these): {', '.join(current_topics) if current_topics else 'None'}
@@ -1139,11 +1150,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 if passed:
                     # --- PERSISTENCE: WRITE STEP ---
                     if self.driver and topic_names and request.week_number != -1:
-                        primary_topic = topic_names[0]
+                        primary_topic = unit_topic or topic_names[0]
                         with self.driver.session() as session:
                             write_query = """
-                            MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: 'quiz', user_id: $user_id, class_id: $class_id})
+                            MATCH (w:Week {number: $week_number, user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: $content_type, user_id: $user_id, class_id: $class_id, week_number: $week_number})
                             SET g.questions_json = $questions_json,
                                 g.updated_at = timestamp()
                             """
@@ -1158,6 +1169,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             session.run(
                                 write_query,
                                 topic_name=primary_topic,
+                                week_number=request.week_number,
+                                content_type=content_type,
                                 user_id=request.user_id,
                                 class_id=class_id,
                                 questions_json=json.dumps(questions_list)
@@ -1412,6 +1425,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
 
     def GenerateLessonAndExercises(self, request, context):
         class_id = request.class_id if request.class_id else "default_class"
+        unit_topic = request.topic_name.strip() if request.topic_name else ""
+        content_type = "unit_lesson" if unit_topic else "lesson"
         print(f"[Python] GenerateLessonAndExercises for week '{request.week_number}' for user '{request.user_id}', class '{class_id}'...")
         try:
             topic_names = []
@@ -1422,10 +1437,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 with self.driver.session() as session:
                     query = """
                     MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})<-[:SOURCE_MATERIAL_FOR]-(m:Material {user_id: $user_id, class_id: $class_id})
-                    WHERE w.number = $week_number
+                    WHERE w.number = $week_number AND ($topic_name = '' OR t.name = $topic_name)
+                      AND ($topic_name = '' OR NOT m.name STARTS WITH 'syllabus_')
                     RETURN t.name AS topic_name, m.chunks AS chunks
                     """
-                    result = session.run(query, week_number=request.week_number, user_id=request.user_id, class_id=class_id)
+                    result = session.run(query, week_number=request.week_number, topic_name=unit_topic, user_id=request.user_id, class_id=class_id)
                     for record in result:
                         tname = record.get("topic_name")
                         if tname and tname not in topic_names:
@@ -1466,19 +1482,20 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 context.set_details("NO_MATERIALS_FOUND")
                 return ace_pb2.LessonResponse(insufficient_materials=True)
                 
-            is_insufficient, _, _ = self._check_sufficiency(request.user_id, class_id, request.week_number)
+            _, insufficient_topics, _ = self._check_sufficiency(request.user_id, class_id, request.week_number)
+            is_insufficient = unit_topic in insufficient_topics if unit_topic else bool(insufficient_topics)
             
             # --- PERSISTENCE: READ STEP ---
             saved_content = None
             if not request.regenerate and self.driver:
                 with self.driver.session() as session:
                     read_query = """
-                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: 'lesson', user_id: $user_id, class_id: $class_id})
-                    WHERE w.number = $week_number
+                    MATCH (u:User {id: $user_id})-[:ENROLLED_IN]->(c:Class {id: $class_id})-[:HAS_SYLLABUS]->(w:Week {user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})-[:HAS_CONTENT]->(g:GeneratedContent {type: $content_type, user_id: $user_id, class_id: $class_id, week_number: $week_number})
+                    WHERE w.number = $week_number AND ($topic_name = '' OR t.name = $topic_name)
                     RETURN g.lesson_markdown AS lesson_markdown, g.exercises_json AS exercises_json
                     LIMIT 1
                     """
-                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number)
+                    read_res = session.run(read_query, user_id=request.user_id, class_id=class_id, week_number=request.week_number, topic_name=unit_topic, content_type=content_type)
                     record = read_res.single()
                     if record:
                         saved_content = {
@@ -1521,6 +1538,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                 Generate a detailed structured educational lesson and exactly 3 practice questions.
                 
                 Week Number: {request.week_number}
+                Unit Topic: {unit_topic or 'All topics for this week'}
                 Covered Topics: {topics_str}
                 Student's Weak Topics to address: {weak_topics_str}
                 
@@ -1580,11 +1598,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     
                     # --- PERSISTENCE: WRITE STEP ---
                     if self.driver and topic_names:
-                        primary_topic = topic_names[0]
+                        primary_topic = unit_topic or topic_names[0]
                         with self.driver.session() as session:
                             write_query = """
-                            MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: 'lesson', user_id: $user_id, class_id: $class_id})
+                            MATCH (w:Week {number: $week_number, user_id: $user_id, class_id: $class_id})-[:SCHEDULED_FOR]->(t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
+                            MERGE (t)-[:HAS_CONTENT]->(g:GeneratedContent {type: $content_type, user_id: $user_id, class_id: $class_id, week_number: $week_number})
                             SET g.lesson_markdown = $lesson_markdown,
                                 g.exercises_json = $exercises_json,
                                 g.updated_at = timestamp()
@@ -1600,6 +1618,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                             session.run(
                                 write_query,
                                 topic_name=primary_topic,
+                                week_number=request.week_number,
+                                content_type=content_type,
                                 user_id=request.user_id,
                                 class_id=class_id,
                                 lesson_markdown=lesson_data.lesson_markdown,
@@ -1887,11 +1907,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         query = """
         MATCH (w:Week {user_id: $user_id, class_id: $class_id})
         OPTIONAL MATCH (w)-[:SCHEDULED_FOR]->(t:Topic {user_id: $user_id, class_id: $class_id})
-        RETURN w.number AS week_num, collect(t.name) AS topics
+        RETURN w.number AS week_num, collect(t.name) AS topics, w.exams AS exams
         ORDER BY w.number
         """
         result = tx.run(query, user_id=user_id, class_id=class_id)
-        return [(record.get("week_num"), record.get("topics") or []) for record in result]
+        return [(record.get("week_num"), record.get("topics") or [], record.get("exams") or []) for record in result]
 
     def _get_class_graph(self, tx, user_id, class_id):
         query = """
@@ -1921,10 +1941,11 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             if self.driver:
                 with self.driver.session() as session:
                     records = session.execute_read(self._get_syllabus_nodes, user_id, class_id)
-                    for week_num, topics in records:
+                    for week_num, topics, exams in records:
                         weeks_pb.append(ace_pb2.WeekTopics(
                             week_number=int(week_num),
-                            topics=topics
+                            topics=topics,
+                            exams=exams
                         ))
                     concepts = session.execute_read(self._get_class_graph, user_id, class_id)
                     graph_json = json.dumps(concepts)
@@ -1988,6 +2009,10 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] EditSyllabus for user {user_id} and class {class_id}")
         try:
+            if not any(topic.strip() for week in request.weeks for topic in week.topics):
+                context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
+                context.set_details("Refusing to replace a saved syllabus with no topics.")
+                return ace_pb2.EditSyllabusResponse(success=False, message="At least one topic is required.")
             if self.driver:
                 with self.driver.session() as session:
                     session.execute_write(self._edit_syllabus_nodes, user_id, class_id, request.weeks)

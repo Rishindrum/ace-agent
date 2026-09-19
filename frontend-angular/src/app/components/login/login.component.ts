@@ -22,6 +22,10 @@ export class LoginComponent implements OnInit {
   }
 
   signInWithGoogle(): void {
-    window.location.href = `${environment.apiUrl}/api/v1/auth/google/login`;
+    const loginUrl = new URL(`${environment.apiUrl}/api/v1/auth/google/login`);
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      loginUrl.searchParams.set('return_origin', window.location.origin);
+    }
+    window.location.href = loginUrl.toString();
   }
 }

@@ -19,6 +19,7 @@ export interface QuizTelemetryQuestion {
 
 export interface QuizTelemetryPayload {
   week_number: number;
+  topic_name?: string;
   questions: QuizTelemetryQuestion[];
 }
 
@@ -82,10 +83,11 @@ export class ApiService {
     return this.http.get(`${this.baseUrl}/quiz/adaptive?user_id=${userId}&syllabus_name=${syllabusName}`);
   }
 
-  generateQuiz(weekNumber: number, questionCount: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string): Observable<SyllabusQuestionPayload[]> {
+  generateQuiz(weekNumber: number, questionCount: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string, topicName?: string): Observable<SyllabusQuestionPayload[]> {
     const cid = classId || 'default_class';
     return this.http.post<SyllabusQuestionPayload[]>(`${this.baseUrl}/api/v1/classes/${cid}/study/quiz`, {
       week_number: weekNumber,
+      topic_name: topicName || '',
       question_count: questionCount,
       regenerate: regenerate || false,
       regeneration_prompt: regenerationPrompt || ''
@@ -144,22 +146,26 @@ export class ApiService {
     });
   }
 
-  getDailySessionState(classId?: string): Observable<any> {
+  getDailySessionState(classId?: string, weekNumber?: number, topicName?: string): Observable<any> {
     const cid = classId || 'default_class';
-    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/today/state`);
+    const params = topicName ? `?week_number=${weekNumber || 0}&topic_name=${encodeURIComponent(topicName)}` : '';
+    return this.http.get<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/today/state${params}`);
   }
 
-  submitExercises(answers: any[], classId?: string): Observable<any> {
+  submitExercises(answers: any[], classId?: string, weekNumber?: number, topicName?: string): Observable<any> {
     const cid = classId || 'default_class';
     return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/exercise/submit`, {
-      answers: answers
+      answers: answers,
+      week_number: weekNumber || 0,
+      topic_name: topicName || ''
     });
   }
 
-  generateLesson(weekNumber: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string): Observable<any> {
+  generateLesson(weekNumber: number, classId?: string, regenerate?: boolean, regenerationPrompt?: string, topicName?: string): Observable<any> {
     const cid = classId || 'default_class';
     return this.http.post<any>(`${this.baseUrl}/api/v1/classes/${cid}/study/lesson`, {
       week_number: weekNumber,
+      topic_name: topicName || '',
       regenerate: regenerate || false,
       regeneration_prompt: regenerationPrompt || ''
     });

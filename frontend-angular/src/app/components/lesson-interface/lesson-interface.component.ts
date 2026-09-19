@@ -22,6 +22,7 @@ interface Exercise {
 })
 export class LessonInterfaceComponent implements OnInit, OnChanges {
   @Input() selectedWeek: number = 1;
+  @Input() topicName: string = '';
   @Input() classId: string = 'default_class';
 
   @Output() exerciseCompleted = new EventEmitter<void>();
@@ -75,7 +76,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (this.initialized && (changes['classId'] || changes['selectedWeek'])) {
+    if (this.initialized && (changes['classId'] || changes['selectedWeek'] || changes['topicName'])) {
       this.loadLesson();
     }
   }
@@ -116,7 +117,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
     this.exercises = [];
     this.exerciseAnswersSubmitted = false;
 
-    this.api.generateLesson(this.selectedWeek, this.classId).subscribe({
+    this.api.generateLesson(this.selectedWeek, this.classId, false, '', this.topicName).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         this.statusMessage = '';
@@ -159,7 +160,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
     this.statusMessage = 'Steering Gemini with instruction and regenerating lesson...';
     this.errorMessage = '';
 
-    this.api.generateLesson(this.selectedWeek, this.classId, true, this.regenPrompt).subscribe({
+    this.api.generateLesson(this.selectedWeek, this.classId, true, this.regenPrompt, this.topicName).subscribe({
       next: (res: any) => {
         this.isLoading = false;
         this.isRegenerating = false;
@@ -214,7 +215,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
       correct_option_index: e.correct_option_index
     }));
 
-    this.api.submitExercises(payload, this.classId).subscribe({
+    this.api.submitExercises(payload, this.classId, this.selectedWeek, this.topicName).subscribe({
 
       next: (res: any) => {
         this.isLoading = false;
@@ -267,7 +268,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
     this.quizLoading = true;
     this.quizStatusMessage = 'Requesting 10 custom questions from Gemini...';
     
-    this.api.generateQuiz(this.selectedWeek, 10, this.classId).subscribe({
+    this.api.generateQuiz(this.selectedWeek, 10, this.classId, false, '', this.topicName).subscribe({
       next: (questions: any[]) => {
         this.quizLoading = false;
         if (questions && questions.length > 0) {
@@ -318,6 +319,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
 
     const payload = {
       week_number: this.selectedWeek,
+      topic_name: this.topicName,
       questions: telemetryQuestions
     };
 
@@ -332,6 +334,7 @@ export class LessonInterfaceComponent implements OnInit, OnChanges {
         this.globalStreakCount = res.global_streak || 0;
         this.exerciseCompleted.emit();
         this.quizCompleted.emit({
+          topic_name: this.topicName,
           score: res.score,
           total: res.total_questions,
           percentage: res.percentage,

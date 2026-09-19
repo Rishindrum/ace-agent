@@ -2,28 +2,30 @@ package main
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"net/http"
+	"net/url"
 	"os"
-	"time"
-	"io"
-	"strings"
 	"strconv"
+	"strings"
+	"time"
 
-	pb "ace-agent/backend-go/proto"
-	calendar "ace-agent/backend-go/calendar"
 	auth "ace-agent/backend-go/auth"
+	calendar "ace-agent/backend-go/calendar"
+	pb "ace-agent/backend-go/proto"
 
 	"cloud.google.com/go/bigquery"
-	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/credentials"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 // Global clients
@@ -283,11 +285,11 @@ func uploadHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"message":                         resp.Message,
-		"nodes":                           resp.NodesCreated,
-		"graph":                           graphData,
-		"status":                          status,
-		"recommended_study_days":          resp.RecommendedStudyDays,
+		"message":                        resp.Message,
+		"nodes":                          resp.NodesCreated,
+		"graph":                          graphData,
+		"status":                         status,
+		"recommended_study_days":         resp.RecommendedStudyDays,
 		"recommended_daily_pace_minutes": resp.RecommendedDailyPaceMinutes,
 	})
 }
@@ -526,7 +528,7 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 			http.Error(w, "Failed to parse multipart form: "+err.Error(), http.StatusBadRequest)
 			return
 		}
-		
+
 		fmt.Sscanf(r.FormValue("week_number"), "%d", &weekNum)
 		topicName = r.FormValue("topic_name")
 		rawText = r.FormValue("raw_text")
@@ -534,7 +536,7 @@ func ingestMaterialHandler(w http.ResponseWriter, r *http.Request) {
 		if r.FormValue("force") == "true" {
 			rawText = "[FORCE]" + rawText
 		}
-		
+
 		file, header, err := r.FormFile("file")
 		if err == nil {
 			defer file.Close()
@@ -625,6 +627,7 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req struct {
 		WeekNumber         int32  `json:"week_number"`
+		TopicName          string `json:"topic_name"`
 		QuestionCount      int32  `json:"question_count"`
 		ClassID            string `json:"class_id"`
 		Regenerate         bool   `json:"regenerate"`
@@ -646,7 +649,11 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Daily Gating: Check if Quiz is unlocked
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+	if req.TopicName != "" && req.WeekNumber <= 0 {
+		http.Error(w, "A unit requires a valid week number", http.StatusBadRequest)
+		return
+	}
+	sessionState := auth.GlobalDailySessionStore.GetUnitSessionState(userID, classID, int(req.WeekNumber), req.TopicName)
 	if !sessionState.QuizUnlocked {
 		w.Header().Set("Content-Type", "application/json")
 		w.WriteHeader(http.StatusForbidden)
@@ -681,7 +688,7 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// If they have already completed the current week, generate 'Maintenance Review' (-1)
-	if targetWeek == currentWeek {
+	if req.TopicName == "" && targetWeek == currentWeek {
 		completed, err := hasCompletedWeekQuiz(ctx, userID, classID, int(currentWeek))
 		if err == nil && completed {
 			targetWeek = -1
@@ -707,6 +714,7 @@ func generateQuizHandler(w http.ResponseWriter, r *http.Request) {
 		UserId:             userID,
 		WeakTopics:         weakTopics,
 		ClassId:            classID,
+		TopicName:          req.TopicName,
 		Regenerate:         req.Regenerate,
 		RegenerationPrompt: req.RegenerationPrompt,
 	}
@@ -771,14 +779,14 @@ func hasCompletedQuizToday(ctx context.Context, userID, classID string) (bool, e
 	}
 	now := time.Now()
 	todayStart := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location()).Format(time.RFC3339)
-	
+
 	queryStr := fmt.Sprintf("SELECT COUNT(*) as count FROM `ace-agent-demo.ace_analytics.quiz_attempts` WHERE user_id = '%s' AND class_id = '%s' AND timestamp >= TIMESTAMP('%s')", userID, classID, todayStart)
 	q := bqClient.Query(queryStr)
 	it, err := q.Read(ctx)
 	if err != nil {
 		return false, err
 	}
-	
+
 	var row struct {
 		Count int64 `bigquery:"count"`
 	}
@@ -893,7 +901,7 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	sched, ok := auth.GlobalScheduleStore.GetSchedule(userID, classID)
-	
+
 	if !ok {
 		sched = auth.UserSchedule{
 			UserID:          userID,
@@ -928,10 +936,10 @@ func userScheduleSettingsHandler(w http.ResponseWriter, r *http.Request) {
 	// Check if core streak/schedule settings are modified
 	coreModified := false
 	if ok {
-		if !slicesEqual(sched.PreferredDays, req.PreferredDays) || 
-		   sched.DailyPace != req.DailyPace || 
-		   sched.CourseStartDate != courseStartDate || 
-		   (req.ClassName != "" && sched.ClassName != req.ClassName) {
+		if !slicesEqual(sched.PreferredDays, req.PreferredDays) ||
+			sched.DailyPace != req.DailyPace ||
+			sched.CourseStartDate != courseStartDate ||
+			(req.ClassName != "" && sched.ClassName != req.ClassName) {
 			coreModified = true
 		}
 	}
@@ -1519,13 +1527,14 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	type QuestionChoice struct {
-		ID                 string `json:"id"`
+		ID                  string `json:"id"`
 		SelectedOptionIndex int    `json:"selected_option_index"`
 		CorrectOptionIndex  int    `json:"correct_option_index"`
 	}
 
 	var req struct {
 		WeekNumber int              `json:"week_number"`
+		TopicName  string           `json:"topic_name"`
 		Questions  []QuestionChoice `json:"questions"`
 		ClassID    string           `json:"class_id"`
 	}
@@ -1556,6 +1565,10 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 	if classID == "" {
 		classID = "default_class"
 	}
+	if req.TopicName != "" && req.WeekNumber <= 0 {
+		http.Error(w, "A unit requires a valid week number", http.StatusBadRequest)
+		return
+	}
 
 	scorePercentage := (float64(correctAnswers) / float64(totalQuestions)) * 100.0
 	attemptID := uuid.New().String()
@@ -1583,7 +1596,11 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	go func(row *QuizAttemptTelemetry, uID, cID string, weekNum int, percentage float64) {
+	scoreTopic := req.TopicName
+	if scoreTopic == "" {
+		scoreTopic = fmt.Sprintf("Week %d Quiz", req.WeekNumber)
+	}
+	go func(row *QuizAttemptTelemetry, uID, cID, topicName string, percentage float64) {
 		ctx, cancel := context.WithTimeout(context.Background(), 20*time.Second)
 		defer cancel()
 
@@ -1592,7 +1609,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 			_, err := tutorClient.SubmitQuizResult(ctx, &pb.QuizResultRequest{
 				UserId:    uID,
 				ClassId:   cID,
-				TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
+				TopicName: topicName,
 				Score:     int32(percentage),
 			})
 			if err != nil {
@@ -1615,7 +1632,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 			scoresRow := &QuizScoreTelemetry{
 				UserID:    uID,
 				ClassID:   cID,
-				TopicName: fmt.Sprintf("Week %d Quiz", weekNum),
+				TopicName: topicName,
 				Score:     int(percentage),
 				Timestamp: time.Now(),
 			}
@@ -1626,7 +1643,7 @@ func submitQuizTelemetryHandler(w http.ResponseWriter, r *http.Request) {
 				log.Printf("[BigQuery] Successfully streamed quiz_score row to ace_performance")
 			}
 		}
-	}(telemetry, userID, classID, req.WeekNumber, scorePercentage)
+	}(telemetry, userID, classID, scoreTopic, scorePercentage)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -1664,9 +1681,53 @@ func googleLoginHandler(w http.ResponseWriter, r *http.Request) {
 			state = tokenStr
 		}
 	}
+	if requestedOrigin := r.URL.Query().Get("return_origin"); requestedOrigin != "" {
+		origin, ok := allowedOAuthReturnOrigin(requestedOrigin)
+		if !ok {
+			http.Error(w, "Invalid return origin", http.StatusBadRequest)
+			return
+		}
+		mode := "login"
+		if state != "login" {
+			mode = "calendar"
+		}
+		encoded, err := json.Marshal(oauthReturnState{Mode: mode, Token: state, Origin: origin})
+		if err != nil {
+			http.Error(w, "Could not start Google login", http.StatusInternalServerError)
+			return
+		}
+		state = "ace:" + base64.RawURLEncoding.EncodeToString(encoded)
+	}
 
 	loginURL := calendar.GetLoginURL(state)
 	http.Redirect(w, r, loginURL, http.StatusTemporaryRedirect)
+}
+
+type oauthReturnState struct {
+	Mode   string `json:"mode"`
+	Token  string `json:"token"`
+	Origin string `json:"origin"`
+}
+
+func allowedOAuthReturnOrigin(rawOrigin string) (string, bool) {
+	parsed, err := url.Parse(rawOrigin)
+	if err != nil || parsed.User != nil || parsed.RawQuery != "" || parsed.Fragment != "" || (parsed.Path != "" && parsed.Path != "/") {
+		return "", false
+	}
+	origin := (&url.URL{Scheme: parsed.Scheme, Host: parsed.Host}).String()
+	if origin == "http://localhost:4200" || origin == "http://127.0.0.1:4200" {
+		return origin, true
+	}
+	configured := os.Getenv("FRONTEND_URL")
+	if configured == "" {
+		configured = "http://localhost:4200"
+	}
+	productionURL, err := url.Parse(configured)
+	if err != nil {
+		return "", false
+	}
+	productionOrigin := (&url.URL{Scheme: productionURL.Scheme, Host: productionURL.Host}).String()
+	return origin, origin != "" && origin == productionOrigin
 }
 
 func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
@@ -1696,6 +1757,29 @@ func googleCallbackHandler(w http.ResponseWriter, r *http.Request) {
 	frontendURL := os.Getenv("FRONTEND_URL")
 	if frontendURL == "" {
 		frontendURL = "http://localhost:4200"
+	}
+	if strings.HasPrefix(state, "ace:") {
+		encoded, err := base64.RawURLEncoding.DecodeString(strings.TrimPrefix(state, "ace:"))
+		if err != nil {
+			http.Error(w, "Invalid login state", http.StatusBadRequest)
+			return
+		}
+		var returnState oauthReturnState
+		if err := json.Unmarshal(encoded, &returnState); err != nil {
+			http.Error(w, "Invalid login state", http.StatusBadRequest)
+			return
+		}
+		origin, ok := allowedOAuthReturnOrigin(returnState.Origin)
+		if !ok || (returnState.Mode != "login" && returnState.Mode != "calendar") {
+			http.Error(w, "Invalid login state", http.StatusBadRequest)
+			return
+		}
+		frontendURL = origin
+		if returnState.Mode == "login" {
+			state = "login"
+		} else {
+			state = returnState.Token
+		}
 	}
 
 	if state == "login" || state == "" {
@@ -2055,7 +2139,6 @@ func main() {
 	auth.InitScheduleStore("data/schedules.json")
 	auth.InitDailySessionStore("data/daily_sessions.json")
 
-
 	// Start daily background worker loop
 	startBackgroundWorker()
 
@@ -2063,42 +2146,42 @@ func main() {
 	calendar.InitOAuthConfig()
 
 	tutorAddr := os.Getenv("PYTHON_SERVICE_URL")
-    if tutorAddr == "" {
-        tutorAddr = "localhost:50051"
-    }
+	if tutorAddr == "" {
+		tutorAddr = "localhost:50051"
+	}
 
-    // 1. Strip the protocol
-    tutorAddr = strings.Replace(tutorAddr, "https://", "", 1)
-    tutorAddr = strings.Replace(tutorAddr, "http://", "", 1)
+	// 1. Strip the protocol
+	tutorAddr = strings.Replace(tutorAddr, "https://", "", 1)
+	tutorAddr = strings.Replace(tutorAddr, "http://", "", 1)
 
-    // 2. Cloud Run gRPC logic
-    var opts []grpc.DialOption
-    
-    if strings.Contains(tutorAddr, "run.app") {
-        // IN THE CLOUD: We need to use "NewClient" and the correct transport credentials
-        // Cloud Run expects TLS (443) but we must use system certs
-        log.Printf("[Go] Using Secure Cloud Credentials for: %s", tutorAddr)
-        
-        creds := credentials.NewClientTLSFromCert(nil, "")
-        opts = append(opts, grpc.WithTransportCredentials(creds))
-        
-        if !strings.Contains(tutorAddr, ":") {
-            tutorAddr = tutorAddr + ":443"
-        }
-    } else {
-        // LOCALLY: We use insecure credentials
-        log.Printf("[Go] Connecting locally/insecurely to: %s", tutorAddr)
-        opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
-    }
-    opts = append(opts, grpc.WithDefaultCallOptions(
-        grpc.MaxCallRecvMsgSize(100*1024*1024),
-        grpc.MaxCallSendMsgSize(100*1024*1024),
-    ))
+	// 2. Cloud Run gRPC logic
+	var opts []grpc.DialOption
 
-    conn, err := grpc.NewClient(tutorAddr, opts...) // Use NewClient instead of Dial
-    if err != nil {
-        log.Fatalf("did not connect: %v", err)
-    }
+	if strings.Contains(tutorAddr, "run.app") {
+		// IN THE CLOUD: We need to use "NewClient" and the correct transport credentials
+		// Cloud Run expects TLS (443) but we must use system certs
+		log.Printf("[Go] Using Secure Cloud Credentials for: %s", tutorAddr)
+
+		creds := credentials.NewClientTLSFromCert(nil, "")
+		opts = append(opts, grpc.WithTransportCredentials(creds))
+
+		if !strings.Contains(tutorAddr, ":") {
+			tutorAddr = tutorAddr + ":443"
+		}
+	} else {
+		// LOCALLY: We use insecure credentials
+		log.Printf("[Go] Connecting locally/insecurely to: %s", tutorAddr)
+		opts = append(opts, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	}
+	opts = append(opts, grpc.WithDefaultCallOptions(
+		grpc.MaxCallRecvMsgSize(100*1024*1024),
+		grpc.MaxCallSendMsgSize(100*1024*1024),
+	))
+
+	conn, err := grpc.NewClient(tutorAddr, opts...) // Use NewClient instead of Dial
+	if err != nil {
+		log.Fatalf("did not connect: %v", err)
+	}
 	tutorClient = pb.NewTutorServiceClient(conn)
 
 	// Start Server
@@ -2208,7 +2291,9 @@ func getDailySessionStateHandler(w http.ResponseWriter, r *http.Request) {
 		classID = "default_class"
 	}
 
-	state := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+	unitWeek, _ := strconv.Atoi(r.URL.Query().Get("week_number"))
+	unitTopic := strings.TrimSpace(r.URL.Query().Get("topic_name"))
+	state := auth.GlobalDailySessionStore.GetUnitSessionState(userID, classID, unitWeek, unitTopic)
 
 	var currentWeek int32 = 1
 	var courseStartDate string
@@ -2225,12 +2310,33 @@ func getDailySessionStateHandler(w http.ResponseWriter, r *http.Request) {
 
 	insufficientMaterials := false
 	suffResp, err := tutorClient.CheckTopicSufficiency(ctx, &pb.SufficiencyRequest{
-		UserId:     userID,
-		ClassId:    classID,
-		WeekNumber: currentWeek,
+		UserId:  userID,
+		ClassId: classID,
+		WeekNumber: func() int32 {
+			if unitTopic != "" && unitWeek > 0 {
+				return int32(unitWeek)
+			}
+			return currentWeek
+		}(),
 	})
 	if err == nil && suffResp != nil {
-		insufficientMaterials = suffResp.InsufficientMaterials
+		if unitTopic != "" {
+			insufficientMaterials = true
+			for _, topic := range suffResp.AllTopics {
+				if topic == unitTopic {
+					insufficientMaterials = false
+					break
+				}
+			}
+			for _, topic := range suffResp.InsufficientTopics {
+				if topic == unitTopic {
+					insufficientMaterials = true
+					break
+				}
+			}
+		} else {
+			insufficientMaterials = suffResp.InsufficientMaterials
+		}
 	} else {
 		log.Printf("[getDailySessionStateHandler] Warning: CheckTopicSufficiency failed: %v", err)
 	}
@@ -2274,8 +2380,10 @@ func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var req struct {
-		Answers []ExerciseAnswer `json:"answers"`
-		ClassID string           `json:"class_id"`
+		Answers    []ExerciseAnswer `json:"answers"`
+		ClassID    string           `json:"class_id"`
+		WeekNumber int              `json:"week_number"`
+		TopicName  string           `json:"topic_name"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
@@ -2307,7 +2415,7 @@ func submitExerciseHandler(w http.ResponseWriter, r *http.Request) {
 	scorePercentage := (float64(correctCount) / float64(totalQuestions)) * 100.0
 	passed := scorePercentage >= 60.0
 
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+	sessionState := auth.GlobalDailySessionStore.GetUnitSessionState(userID, classID, req.WeekNumber, req.TopicName)
 	if passed {
 		sessionState.ExercisesCompleted = true
 		sessionState.QuizUnlocked = true
@@ -2339,6 +2447,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 
 	var req struct {
 		WeekNumber         int32  `json:"week_number"`
+		TopicName          string `json:"topic_name"`
 		ClassID            string `json:"class_id"`
 		Regenerate         bool   `json:"regenerate"`
 		RegenerationPrompt string `json:"regeneration_prompt"`
@@ -2361,6 +2470,10 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	if classID == "" {
 		classID = "default_class"
+	}
+	if req.TopicName != "" && req.WeekNumber <= 0 {
+		http.Error(w, "A unit requires a valid week number", http.StatusBadRequest)
+		return
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
@@ -2393,6 +2506,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 		UserId:             userID,
 		WeakTopics:         weakTopics,
 		ClassId:            classID,
+		TopicName:          req.TopicName,
 		Regenerate:         req.Regenerate,
 		RegenerationPrompt: req.RegenerationPrompt,
 	}
@@ -2414,7 +2528,7 @@ func generateLessonHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Set LessonCompleted = true
-	sessionState := auth.GlobalDailySessionStore.GetSessionState(userID, classID)
+	sessionState := auth.GlobalDailySessionStore.GetUnitSessionState(userID, classID, int(req.WeekNumber), req.TopicName)
 	sessionState.LessonCompleted = true
 	auth.GlobalDailySessionStore.SaveSessionState(sessionState)
 
@@ -2540,6 +2654,7 @@ func resetWeekProgressHandler(w http.ResponseWriter, r *http.Request) {
 		auth.GlobalDailySessionStore.SaveSessionState(sessionState)
 		log.Printf("[ResetWeekProgress] Reset daily session state for user %s and class %s", userID, classID)
 	}
+	auth.GlobalDailySessionStore.DeleteWeekSessionStates(userID, classID, weekNumber)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
@@ -2689,4 +2804,3 @@ func manualCalendarSyncHandler(w http.ResponseWriter, r *http.Request) {
 		"events_scheduled": eventsScheduled,
 	})
 }
-

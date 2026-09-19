@@ -122,6 +122,7 @@ message QuizRequest {
   string regeneration_prompt = 5;
   repeated string weak_topics = 6;
   string class_id = 7;
+  string topic_name = 8;
 }
 
 message Question {
@@ -155,6 +156,7 @@ message LessonRequest {
   bool regenerate = 4;
   string regeneration_prompt = 5;
   string class_id = 6;
+  string topic_name = 7;
 }
 
 message LessonResponse {
@@ -188,6 +190,7 @@ message DeleteClassResponse {
 message WeekTopics {
   int32 week_number = 1;
   repeated string topics = 2;
+  repeated string exams = 3;
 }
 
 message GetSyllabusRequest {

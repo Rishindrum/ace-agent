@@ -12,6 +12,18 @@ import { AuthService } from '../../services/auth.service';
 import { ApiService } from '../../services/api.service';
 import { IngestService } from '../../services/ingest.service';
 
+interface CourseUnit {
+  week: number;
+  topic: string;
+  number: number;
+  ready: boolean;
+}
+
+interface CourseMilestone {
+  week: number;
+  title: string;
+}
+
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -31,7 +43,7 @@ import { IngestService } from '../../services/ingest.service';
 })
 export class DashboardComponent implements OnInit {
   activeTab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings' = 'study';
-  studySubTab: 'lesson' | 'syllabus_graph' = 'lesson';
+  studySubTab: 'path' | 'lesson' | 'syllabus_graph' = 'path';
   isMobileMenuOpen: boolean = false;
 
   // Materials and Settings state
@@ -101,6 +113,8 @@ export class DashboardComponent implements OnInit {
   setupRecommendedPace: number = 45;
   setupRecommendedDays: number[] = [];
   setupTopicsList: any[] = [];
+  setupTopicsLoading: boolean = false;
+  setupTopicsLoadError: string = '';
 
   // Tutorial State
   isTutorialActive: boolean = false;
@@ -116,6 +130,7 @@ export class DashboardComponent implements OnInit {
   // Edit Syllabus Modal Flow
   isEditSyllabusModalOpen: boolean = false;
   editingSyllabusWeeks: any[] = [];
+  editSyllabusLoadError: string = '';
 
   // Topic Warnings & Materials
   allTopics: string[] = [];
@@ -123,6 +138,12 @@ export class DashboardComponent implements OnInit {
   topicSufficiencyLoading: boolean = false;
   allWeeksData: { [key: number]: { topics: string[], insufficient: string[] } } = {};
   allWeeksLoading: boolean = false;
+  topicsLoadFailed: boolean = false;
+  pathMaterialsLoading: boolean = false;
+  pathMaterialsLoaded: boolean = false;
+  unitMaterialKeys = new Set<string>();
+  selectedUnitTopic: string = '';
+  assessmentMilestones: CourseMilestone[] = [];
   addingMaterialTopic: string | null = null;
   newMaterialText: string = '';
   newMaterialFile: File | null = null;
@@ -151,6 +172,89 @@ export class DashboardComponent implements OnInit {
     return index;
   }
 
+  trackByUnit(_index: number, unit: CourseUnit): string {
+    return this.unitKey(unit.week, unit.topic);
+  }
+
+  private unitKey(week: number, topic: string): string {
+    return `${week}:${topic.trim().toLocaleLowerCase()}`;
+  }
+
+  getCourseUnits(): CourseUnit[] {
+    let number = 0;
+    return Object.keys(this.allWeeksData)
+      .map(Number)
+      .sort((a, b) => a - b)
+      .flatMap(week => (this.allWeeksData[week]?.topics || [])
+        .filter(topic => topic.trim() && topic !== 'Syllabus Overview')
+        .map(topic => ({
+          week,
+          topic,
+          number: ++number,
+          ready: this.unitMaterialKeys.has(this.unitKey(week, topic))
+        })));
+  }
+
+  getReadyUnitCount(): number {
+    return this.getCourseUnits().filter(unit => unit.ready).length;
+  }
+
+  getNextMilestone(): CourseMilestone | null {
+    const nextAssessment = this.assessmentMilestones.find(milestone => milestone.week >= this.currentWeek);
+    if (nextAssessment) return nextAssessment;
+    const units = this.getCourseUnits();
+    return units.length ? { week: units[units.length - 1].week, title: 'Course finish' } : null;
+  }
+
+  getPaceMarkerUnitNumber(): number {
+    const units = this.getCourseUnits();
+    if (!units.length) return 0;
+    return (units.find(unit => unit.week >= this.currentWeek) || units[units.length - 1]).number;
+  }
+
+  loadPathMaterials(classId: string): void {
+    this.pathMaterialsLoading = true;
+    this.pathMaterialsLoaded = false;
+    this.api.getMaterials(classId).subscribe({
+      next: (res: any) => {
+        if (this.selectedClass?.class_id !== classId) return;
+        if (res?.success === false) {
+          this.pathMaterialsLoading = false;
+          this.pathMaterialsLoaded = false;
+          return;
+        }
+        this.unitMaterialKeys = new Set((res?.materials || [])
+          .filter((material: any) =>
+            material.topic_name &&
+            material.week_number &&
+            (material.content || '').trim() &&
+            !String(material.material_id || '').startsWith('syllabus_')
+          )
+          .map((material: any) => this.unitKey(material.week_number, material.topic_name)));
+        this.pathMaterialsLoading = false;
+        this.pathMaterialsLoaded = true;
+      },
+      error: (err) => {
+        if (this.selectedClass?.class_id !== classId) return;
+        console.warn('Could not load topic materials for course path:', err);
+        this.unitMaterialKeys = new Set();
+        this.pathMaterialsLoading = false;
+        this.pathMaterialsLoaded = false;
+      }
+    });
+  }
+
+  openCourseUnit(unit: CourseUnit): void {
+    if (!unit.ready || !this.pathMaterialsLoaded) return;
+    this.selectTimelineWeek(unit.week, unit.topic);
+    this.studySubTab = 'lesson';
+  }
+
+  addMaterialsForUnit(unit: CourseUnit): void {
+    this.selectedTimelineWeek = unit.week;
+    this.openAddMaterials(unit.topic);
+  }
+
   mustStudyToday(classObj: any): boolean {
     if (!classObj || !classObj.preferred_days) return false;
     const today = new Date();
@@ -167,6 +271,14 @@ export class DashboardComponent implements OnInit {
 
   getCourseCompletion(classObj: any): number {
     if (!classObj) return 0;
+
+    if (this.selectedClass?.class_id === classObj.class_id) {
+      const units = this.getCourseUnits();
+      if (units.length) {
+        const completed = units.filter(unit => this.quizScores.some(score => score.topic_name === unit.topic)).length;
+        return Math.round(completed / units.length * 100);
+      }
+    }
 
     // Prioritize backend-persisted progress percentage
     if (classObj.progress_pct !== undefined && classObj.progress_pct > 0) {
@@ -243,9 +355,15 @@ export class DashboardComponent implements OnInit {
   openEditSyllabusModal(): void {
     if (!this.selectedClass) return;
     this.isEditSyllabusModalOpen = true;
+    this.editSyllabusLoadError = '';
+    this.editingSyllabusWeeks = [];
     this.api.getSyllabus(this.selectedClass.class_id).subscribe({
       next: (res: any) => {
         const weeksFromApi = res?.weeks || [];
+        if (res?.success === false || !weeksFromApi.some((week: any) => (week.topics || []).some((topic: string) => topic.trim()))) {
+          this.editSyllabusLoadError = 'Could not read saved topics. Nothing has been changed; try opening this editor again.';
+          return;
+        }
         this.editingSyllabusWeeks = [];
         for (let i = 1; i <= 12; i++) {
           const apiW = weeksFromApi.find((w: any) => w.week_number === i);
@@ -256,11 +374,8 @@ export class DashboardComponent implements OnInit {
         }
       },
       error: (err) => {
-        console.warn('Could not load syllabus from API, initializing default:', err);
-        this.editingSyllabusWeeks = [];
-        for (let i = 1; i <= 12; i++) {
-          this.editingSyllabusWeeks.push({ week_number: i, topics: [] });
-        }
+        console.warn('Could not load saved syllabus for editing:', err);
+        this.editSyllabusLoadError = 'Could not read saved topics. Nothing has been changed; try opening this editor again.';
       }
     });
   }
@@ -279,6 +394,10 @@ export class DashboardComponent implements OnInit {
 
   saveSyllabus(): void {
     if (!this.selectedClass) return;
+    if (this.editSyllabusLoadError || !this.editingSyllabusWeeks.some(week => week.topics.some((topic: string) => topic.trim()))) {
+      this.editSyllabusLoadError = 'Load saved topics before saving to protect your existing syllabus.';
+      return;
+    }
     
     // Clean up topics: remove empty topic names
     const cleanedWeeks = this.editingSyllabusWeeks.map(w => ({
@@ -291,6 +410,7 @@ export class DashboardComponent implements OnInit {
         this.isEditSyllabusModalOpen = false;
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
         this.loadAllTopicsSufficiency();
+        this.loadPathMaterials(this.selectedClass.class_id);
         this.loadSyllabusGraph(this.selectedClass.class_id);
         alert('Syllabus updated successfully!');
       },
@@ -304,8 +424,10 @@ export class DashboardComponent implements OnInit {
     if (!this.selectedClass) return;
     const userId = this.authService.getUserID();
     if (!userId) return;
-    this.api.getQuizScores(userId, this.selectedClass.class_id).subscribe({
+    const classId = this.selectedClass.class_id;
+    this.api.getQuizScores(userId, classId).subscribe({
       next: (res: any) => {
+        if (this.selectedClass?.class_id !== classId) return;
         const fetchedScores: any[] = res.scores || [];
         const mergedScores = [...this.quizScores];
         
@@ -397,6 +519,7 @@ export class DashboardComponent implements OnInit {
             this.selectedClass = updated;
             this.currentStreak = updated.class_streak || updated.current_streak || 0;
             this.loadAllTopicsSufficiency();
+            this.loadPathMaterials(updated.class_id);
             this.loadSyllabusGraph(updated.class_id);
             this.generateStreakCalendar();
           }
@@ -413,6 +536,13 @@ export class DashboardComponent implements OnInit {
     if (!classObj) {
       this.allTopics = [];
       this.insufficientTopics = [];
+      this.allWeeksData = {};
+      this.topicsLoadFailed = false;
+      this.assessmentMilestones = [];
+      this.unitMaterialKeys = new Set();
+      this.pathMaterialsLoaded = false;
+      this.selectedUnitTopic = '';
+      this.quizScores = [];
       localStorage.removeItem('selectedClassId');
       return;
     }
@@ -427,9 +557,19 @@ export class DashboardComponent implements OnInit {
     }
     
     this.selectedTimelineWeek = this.currentWeek;
+    this.selectedUnitTopic = '';
+    this.quizScores = [];
+    this.dailyState = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
+    this.studySubTab = 'path';
+    this.allWeeksData = {};
+    this.topicsLoadFailed = false;
+    this.assessmentMilestones = [];
+    this.unitMaterialKeys = new Set();
+    this.pathMaterialsLoaded = false;
     this.loadDailyState(classObj.class_id);
     this.loadTopicSufficiency(classObj.class_id, this.selectedTimelineWeek);
     this.loadAllTopicsSufficiency();
+    this.loadPathMaterials(classObj.class_id);
     this.loadQuizScores();
     this.loadSyllabusGraph(classObj.class_id);
     this.generateStreakCalendar();
@@ -439,6 +579,11 @@ export class DashboardComponent implements OnInit {
   loadSyllabusGraph(classId: string): void {
     this.api.getSyllabus(classId).subscribe({
       next: (res: any) => {
+        if (this.selectedClass?.class_id !== classId) return;
+        this.assessmentMilestones = (res?.weeks || [])
+          .flatMap((week: any) => (week.exams || []).map((title: string) => ({ week: week.week_number, title })))
+          .filter((milestone: CourseMilestone) => milestone.title && milestone.week > 0)
+          .sort((a: CourseMilestone, b: CourseMilestone) => a.week - b.week);
         if (res && res.graph_json) {
           try {
             const graphData = JSON.parse(res.graph_json);
@@ -496,13 +641,19 @@ export class DashboardComponent implements OnInit {
     return wk;
   }
 
-  selectTimelineWeek(week: number) {
+  selectTimelineWeek(week: number, topicName: string = '') {
     this.selectedTimelineWeek = week;
     if (!this.selectedClass) return;
 
-    this.loadTopicSufficiency(this.selectedClass.class_id, week);
-    this.api.getDailySessionState(this.selectedClass.class_id).subscribe({
+    this.selectedUnitTopic = topicName;
+    this.studySubTab = 'lesson';
+    this.dailyState = { lesson_completed: false, exercises_completed: false, quiz_unlocked: false };
+    const classId = this.selectedClass.class_id;
+
+    this.loadTopicSufficiency(classId, week);
+    this.api.getDailySessionState(classId, week, topicName).subscribe({
       next: (state) => {
+        if (this.selectedClass?.class_id !== classId || this.selectedTimelineWeek !== week || this.selectedUnitTopic !== topicName) return;
         if (state) {
           this.dailyState = state;
         }
@@ -525,7 +676,9 @@ export class DashboardComponent implements OnInit {
   selectTab(tab: 'study' | 'progress' | 'tutor' | 'materials' | 'settings'): void {
     this.activeTab = tab;
     this.isMobileMenuOpen = false;
-    if (tab === 'progress') {
+    if (tab === 'study') {
+      this.studySubTab = 'path';
+    } else if (tab === 'progress') {
       this.loadQuizScores();
     } else if (tab === 'materials') {
       this.loadMaterials();
@@ -567,6 +720,7 @@ export class DashboardComponent implements OnInit {
           this.selectedMaterial = null;
         }
         this.loadMaterials();
+        this.loadPathMaterials(this.selectedClass.class_id);
       },
       error: (err) => {
         alert('Failed to delete material: ' + (err.error?.message || err.message || err));
@@ -641,9 +795,12 @@ export class DashboardComponent implements OnInit {
   loadDailyState(classId?: string): void {
     const cid = classId || this.selectedClass?.class_id;
     if (!cid) return;
+    const week = this.selectedTimelineWeek;
+    const topic = this.selectedUnitTopic;
 
-    this.api.getDailySessionState(cid).subscribe({
+    this.api.getDailySessionState(cid, week, topic).subscribe({
       next: (state) => {
+        if (this.selectedClass?.class_id !== cid || this.selectedTimelineWeek !== week || this.selectedUnitTopic !== topic) return;
         if (state) {
           this.dailyState = state;
         }
@@ -672,49 +829,85 @@ export class DashboardComponent implements OnInit {
 
   loadAllTopicsSufficiency(): void {
     if (!this.selectedClass) return;
+    const classId = this.selectedClass.class_id;
     this.allWeeksLoading = true;
-    this.api.checkTopicSufficiency(this.selectedClass.class_id, 0).subscribe({
+    this.topicsLoadFailed = false;
+    this.api.getSyllabus(classId).subscribe({
       next: (res: any) => {
-        this.allWeeksLoading = false;
+        if (this.selectedClass?.class_id !== classId) return;
         const temp: { [key: number]: { topics: string[], insufficient: string[] } } = {};
-        
-        for (let i = 1; i <= 12; i++) {
-          temp[i] = { topics: [], insufficient: [] };
+        for (const week of res?.weeks || []) {
+          const weekNumber = Number(week.week_number);
+          if (!Number.isInteger(weekNumber) || weekNumber <= 0) continue;
+          const topics: string[] = (week.topics || [])
+            .filter((topic: unknown): topic is string => typeof topic === 'string')
+            .map((topic: string) => topic.trim())
+            .filter((topic: string) => topic.length > 0);
+          temp[weekNumber] = {
+            topics: [...new Set([...(temp[weekNumber]?.topics || []), ...topics])],
+            insufficient: []
+          };
         }
-        
-        const all = res.all_topics || [];
-        const insufficient = res.insufficient_topics || [];
-        
-        all.forEach((item: string) => {
-          const idx = item.indexOf(':');
-          if (idx !== -1) {
-            const wNum = parseInt(item.substring(0, idx), 10);
-            const topic = item.substring(idx + 1);
-            if (!isNaN(wNum)) {
-              if (!temp[wNum]) {
-                temp[wNum] = { topics: [], insufficient: [] };
-              }
-              temp[wNum].topics.push(topic);
-            }
-          }
-        });
-        
-        insufficient.forEach((item: string) => {
-          const idx = item.indexOf(':');
-          if (idx !== -1) {
-            const wNum = parseInt(item.substring(0, idx), 10);
-            const topic = item.substring(idx + 1);
-            if (!isNaN(wNum) && temp[wNum]) {
-              temp[wNum].insufficient.push(topic);
-            }
-          }
-        });
-        
+        if (!Object.values(temp).some(week => week.topics.length > 0)) {
+          this.loadTopicsFromSufficiency(classId);
+          return;
+        }
         this.allWeeksData = temp;
+        this.allWeeksLoading = false;
+        this.api.checkTopicSufficiency(classId, 0).subscribe({
+          next: (status: any) => {
+            if (this.selectedClass?.class_id !== classId) return;
+            for (const item of status?.insufficient_topics || []) {
+              const separator = item.indexOf(':');
+              if (separator < 0) continue;
+              const weekNumber = Number(item.slice(0, separator));
+              const topic = item.slice(separator + 1).trim();
+              if (this.allWeeksData[weekNumber]?.topics.includes(topic)) {
+                this.allWeeksData[weekNumber].insufficient.push(topic);
+              }
+            }
+          },
+          error: (err) => console.warn('Could not load material sufficiency; saved syllabus topics remain visible:', err)
+        });
       },
       error: (err) => {
-        console.warn('Could not load all topics sufficiency:', err);
+        if (this.selectedClass?.class_id !== classId) return;
+        console.warn('Could not load saved syllabus; trying topic index:', err);
+        this.loadTopicsFromSufficiency(classId);
+      }
+    });
+  }
+
+  private loadTopicsFromSufficiency(classId: string): void {
+    this.api.checkTopicSufficiency(classId, 0).subscribe({
+      next: (res: any) => {
+        if (this.selectedClass?.class_id !== classId) return;
+        const temp: { [key: number]: { topics: string[], insufficient: string[] } } = {};
+        for (const item of res?.all_topics || []) {
+          const separator = item.indexOf(':');
+          if (separator < 0) continue;
+          const weekNumber = Number(item.slice(0, separator));
+          const topic = item.slice(separator + 1).trim();
+          if (!Number.isInteger(weekNumber) || weekNumber <= 0 || !topic) continue;
+          temp[weekNumber] ||= { topics: [], insufficient: [] };
+          if (!temp[weekNumber].topics.includes(topic)) temp[weekNumber].topics.push(topic);
+        }
+        for (const item of res?.insufficient_topics || []) {
+          const separator = item.indexOf(':');
+          if (separator < 0) continue;
+          const weekNumber = Number(item.slice(0, separator));
+          const topic = item.slice(separator + 1).trim();
+          if (temp[weekNumber]?.topics.includes(topic)) temp[weekNumber].insufficient.push(topic);
+        }
+        this.allWeeksData = temp;
         this.allWeeksLoading = false;
+        this.topicsLoadFailed = false;
+      },
+      error: (err) => {
+        if (this.selectedClass?.class_id !== classId) return;
+        console.warn('Could not load topic index:', err);
+        this.allWeeksLoading = false;
+        this.topicsLoadFailed = true;
       }
     });
   }
@@ -727,6 +920,8 @@ export class DashboardComponent implements OnInit {
     this.isAddingClass = false;
     this.addClassStep = 1;
     this.setupTopicsList = [];
+    this.setupTopicsLoading = false;
+    this.setupTopicsLoadError = '';
     this.isAddClassModalOpen = true;
   }
 
@@ -773,15 +968,8 @@ export class DashboardComponent implements OnInit {
           d.selected = this.setupRecommendedDays.includes(d.value);
         });
 
-        // Load topics from syllabus
-        this.api.getSyllabus(classId).subscribe({
-          next: (res: any) => {
-            this.setupTopicsList = res.weeks || [];
-          },
-          error: (err) => {
-            console.warn('Failed to load syllabus for post-upload preview:', err);
-          }
-        });
+        // Read the already-saved syllabus; the PDF does not need to be uploaded again.
+        this.loadSetupTopicsFromSavedSyllabus();
       },
       error: (uploadErr) => {
         this.isAddingClass = false;
@@ -794,6 +982,34 @@ export class DashboardComponent implements OnInit {
     if (this.setupTopicsList[weekIdx]) {
       this.setupTopicsList[weekIdx].topics.push('');
     }
+  }
+
+  loadSetupTopicsFromSavedSyllabus(): void {
+    const classId = this.setupClassId;
+    if (!classId) return;
+    this.setupTopicsLoading = true;
+    this.setupTopicsLoadError = '';
+    this.api.getSyllabus(classId).subscribe({
+      next: (res: any) => {
+        if (this.setupClassId !== classId) return;
+        this.setupTopicsLoading = false;
+        const weeks = res?.weeks || [];
+        if (res?.success === false || !weeks.some((week: any) => (week.topics || []).some((topic: string) => topic.trim()))) {
+          this.setupTopicsLoadError = 'No topics were returned from the saved syllabus. Retry loading; no reupload is needed.';
+          return;
+        }
+        this.setupTopicsList = weeks.map((week: any) => ({
+          week_number: week.week_number,
+          topics: [...(week.topics || [])]
+        }));
+      },
+      error: (err) => {
+        if (this.setupClassId !== classId) return;
+        console.warn('Could not load topics from saved syllabus:', err);
+        this.setupTopicsLoading = false;
+        this.setupTopicsLoadError = 'Could not read topics from the saved syllabus. Retry; no reupload is needed.';
+      }
+    });
   }
 
   removeTopicFromSetupSyllabus(weekIdx: number, topicIdx: number): void {
@@ -819,6 +1035,10 @@ export class DashboardComponent implements OnInit {
   }
 
   saveSetupSettings(): void {
+    if (this.setupTopicsLoading || this.setupTopicsLoadError || !this.setupTopicsList.some(week => (week.topics || []).some((topic: string) => topic.trim()))) {
+      this.setupTopicsLoadError = 'Wait for the saved topics to load before saving. Nothing has been overwritten.';
+      return;
+    }
     const selectedDays = this.streakSettingsDays.filter(d => d.selected).map(d => d.value);
     if (selectedDays.length === 0) {
       alert('Please select at least one preferred study day.');
@@ -957,6 +1177,7 @@ export class DashboardComponent implements OnInit {
         this.ingestMessage = 'Material successfully ingested!';
         this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
         this.loadAllTopicsSufficiency();
+        this.loadPathMaterials(this.selectedClass.class_id);
         this.loadMaterials();
         setTimeout(() => {
           this.closeAddMaterials();
@@ -974,6 +1195,7 @@ export class DashboardComponent implements OnInit {
     if (!this.selectedClass) return;
     this.loadTopicSufficiency(this.selectedClass.class_id, this.selectedTimelineWeek);
     this.loadAllTopicsSufficiency();
+    this.loadPathMaterials(this.selectedClass.class_id);
     this.loadMaterials();
   }
 
@@ -1073,7 +1295,12 @@ export class DashboardComponent implements OnInit {
 
   enableCalendarInTutorial(): void {
     const token = this.authService.getToken();
-    window.location.href = `${this.api.baseUrl}/api/v1/auth/google/login?token=${token}`;
+    const loginUrl = new URL(`${this.api.baseUrl}/api/v1/auth/google/login`);
+    loginUrl.searchParams.set('token', token || '');
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      loginUrl.searchParams.set('return_origin', window.location.origin);
+    }
+    window.location.href = loginUrl.toString();
   }
 
   // Reset Progress per week
@@ -1122,7 +1349,7 @@ export class DashboardComponent implements OnInit {
       const newRecord = {
         user_id: this.authService.getUserID() || 'default_user',
         class_id: cid,
-        topic_name: `Week ${this.selectedTimelineWeek} Quiz`,
+        topic_name: event.topic_name || `Week ${this.selectedTimelineWeek} Quiz`,
         score: percentage,
         timestamp: new Date().toISOString()
       };
@@ -1305,4 +1532,3 @@ export class DashboardComponent implements OnInit {
     return days.length > 0 ? days.join(', ') : 'None';
   }
 }
-

@@ -137,7 +137,7 @@
     </div>
 
     <!-- Course Timeline & Streak Bar -->
-    <div class="timeline-bar-container card">
+    <div class="timeline-bar-container card" *ngIf="activeTab === 'study' && studySubTab === 'syllabus_graph'">
       <div class="timeline-left">
         <div class="streak-widget">
           <mat-icon class="streak-icon">local_fire_department</mat-icon>
@@ -161,7 +161,7 @@
             [class.past]="week < currentWeek"
             [class.future]="week > currentWeek"
             [class.selected-timeline]="week === selectedTimelineWeek"
-            (click)="selectTimelineWeek(week)"
+            (click)="toggleSyllabusWeek(week)"
             title="Click to study topics for this week"
           >
             <span class="week-num">W{{ week }}</span>
@@ -175,8 +175,8 @@
       </div>
 
       <div class="timeline-right">
-        <button class="btn-study" (click)="selectTimelineWeek(currentWeek)">
-          <mat-icon>local_library</mat-icon> Study
+        <button class="btn-study" (click)="studySubTab = 'path'">
+          <mat-icon>local_library</mat-icon> Learning Path
         </button>
         <button class="btn-view-syllabus" (click)="viewSyllabusDirect()">
           <mat-icon>assignment</mat-icon> View Roadmap
@@ -190,7 +190,7 @@
 
 
     <!-- Daily Gating Progress Checklist -->
-    <div class="daily-progress-container card fade-in" *ngIf="activeTab === 'study'">
+    <div class="daily-progress-container card fade-in" *ngIf="activeTab === 'study' && studySubTab === 'lesson'">
       <div class="daily-progress-header">
         <mat-icon class="progress-title-icon">today</mat-icon>
         <h3>Today's Study Checklist</h3>
@@ -200,8 +200,8 @@
         <div class="checklist-item" [class.completed]="dailyState.lesson_completed">
           <mat-icon class="check-icon">{{ dailyState.lesson_completed ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
           <div class="item-text">
-            <span class="item-title">1. Study Daily Lecture</span>
-            <span class="item-desc">Learn the core concepts for this week</span>
+            <span class="item-title">1. Study Unit Lesson</span>
+            <span class="item-desc">Learn {{ selectedUnitTopic }}</span>
           </div>
         </div>
         <div class="checklist-item" [class.completed]="dailyState.exercises_completed">
@@ -214,7 +214,7 @@
         <div class="checklist-item" [class.completed]="dailyState.quiz_unlocked" [class.locked]="!dailyState.quiz_unlocked">
           <mat-icon class="check-icon">{{ dailyState.quiz_unlocked ? 'lock_open' : 'lock' }}</mat-icon>
           <div class="item-text">
-            <span class="item-title">3. Unlock Weekly Quiz</span>
+            <span class="item-title">3. Unlock Unit Quiz</span>
             <span class="item-desc">{{ dailyState.quiz_unlocked ? 'Quiz is unlocked! Take it now to extend your study streak' : 'Locked: Complete exercises first' }}</span>
           </div>
         </div>
@@ -222,9 +222,13 @@
     </div>
     <!-- Study Sub-Navigation Navbar -->
     <div class="study-sub-nav" *ngIf="activeTab === 'study'" style="display: flex; gap: 8px; margin: 16px auto 20px auto; padding: 6px; width: fit-content; background: rgba(30, 41, 59, 0.3); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: 12px; backdrop-filter: blur(10px);">
-      <button class="sub-tab-btn" [class.active]="studySubTab === 'lesson'" (click)="studySubTab = 'lesson'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+      <button class="sub-tab-btn" [class.active]="studySubTab === 'path'" (click)="studySubTab = 'path'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent;">
+        <mat-icon style="font-size: 18px; width:18px; height:18px;">map</mat-icon>
+        <span>Learning Path</span>
+      </button>
+      <button *ngIf="selectedUnitTopic" class="sub-tab-btn" [class.active]="studySubTab === 'lesson'" (click)="studySubTab = 'lesson'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
         <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">local_library</mat-icon>
-        <span>Daily Lecture</span>
+        <span>Current Unit</span>
       </button>
       <button class="sub-tab-btn" [class.active]="studySubTab === 'syllabus_graph'" (click)="studySubTab = 'syllabus_graph'" style="display: flex; align-items: center; gap: 8px; padding: 8px 18px; border: none; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; color: #94a3b8; background: transparent; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
         <mat-icon style="font-size: 18px; width:18px; height:18px; color: #94a3b8;">route</mat-icon>
@@ -236,6 +240,70 @@
     <main class="app-workspace">
       <!-- Combined Study Hub Tab -->
       <div *ngIf="activeTab === 'study'" class="tab-content fade-in">
+        <section class="learning-path" *ngIf="studySubTab === 'path'" aria-label="Course learning path">
+          <div class="learning-path-hero">
+            <div>
+              <span class="path-eyebrow">YOUR COURSE ADVENTURE</span>
+              <h2>Choose your next unit</h2>
+              <p>Each unit is a topic from your syllabus. Add course materials to unlock its study session.</p>
+              <p class="path-milestone" *ngIf="getNextMilestone() as milestone"><mat-icon>flag</mat-icon> Next milestone: {{ milestone.title }} · Week {{ milestone.week }}</p>
+            </div>
+            <div class="path-progress" *ngIf="!allWeeksLoading && getCourseUnits().length > 0">
+              <span class="path-progress-value">{{ getReadyUnitCount() }} / {{ getCourseUnits().length }}</span>
+              <span class="path-progress-label">units ready</span>
+            </div>
+          </div>
+
+          <div class="path-loading" *ngIf="allWeeksLoading">
+            <mat-icon>auto_awesome</mat-icon>
+            <span>Loading topics from your saved syllabus...</span>
+          </div>
+          <div class="path-loading path-error" *ngIf="!allWeeksLoading && topicsLoadFailed">
+            <mat-icon>error_outline</mat-icon>
+            <span>We couldn't read your saved topics. Your syllabus is still stored.</span>
+            <button class="path-upload-button" (click)="loadAllTopicsSufficiency()">Retry</button>
+          </div>
+          <div class="path-loading" *ngIf="!allWeeksLoading && getCourseUnits().length > 0 && pathMaterialsLoading">
+            <mat-icon>hourglass_empty</mat-icon>
+            <span>Checking which units have materials...</span>
+          </div>
+          <div class="path-loading path-error" *ngIf="!allWeeksLoading && getCourseUnits().length > 0 && !pathMaterialsLoading && !pathMaterialsLoaded">
+            <mat-icon>error_outline</mat-icon>
+            <span>Topics are loaded, but material status is temporarily unavailable.</span>
+            <button class="path-upload-button" (click)="loadPathMaterials(selectedClass.class_id)">Retry</button>
+          </div>
+          <div class="path-empty" *ngIf="!allWeeksLoading && !topicsLoadFailed && getCourseUnits().length === 0">
+            <mat-icon>route</mat-icon>
+            <h3>No saved topics found</h3>
+            <p>Your syllabus does not need to be uploaded again. Try reloading its saved topics first.</p>
+            <button class="path-upload-button" (click)="loadAllTopicsSufficiency()">Reload topics</button>
+          </div>
+
+          <div class="path-track" *ngIf="!allWeeksLoading && getCourseUnits().length > 0">
+            <article class="path-unit" *ngFor="let unit of getCourseUnits(); let i = index; trackBy: trackByUnit" [class.path-unit-locked]="!unit.ready" [class.path-unit-left]="i % 2 === 0" [class.path-unit-right]="i % 2 !== 0">
+              <div class="path-pace-marker" *ngIf="unit.number === getPaceMarkerUnitNumber()"><mat-icon>outlined_flag</mat-icon><span>On-track point for {{ getNextMilestone()?.title || 'this course' }}</span></div>
+              <span class="path-connector" *ngIf="i > 0" aria-hidden="true"></span>
+              <button class="path-node" type="button" [disabled]="!unit.ready" (click)="openCourseUnit(unit)" [attr.aria-label]="unit.ready ? 'Open unit ' + unit.number + ': ' + unit.topic : 'Unit ' + unit.number + ' locked: ' + unit.topic">
+                <mat-icon>{{ unit.ready ? 'auto_stories' : 'lock' }}</mat-icon>
+              </button>
+              <div class="path-unit-card">
+                <div class="path-unit-meta">
+                  <span>UNIT {{ unit.number }}</span>
+                  <span class="path-status" [class.path-status-ready]="unit.ready">{{ !pathMaterialsLoaded ? 'CHECKING MATERIALS' : (unit.ready ? 'READY TO LEARN' : 'NEEDS MATERIALS') }}</span>
+                </div>
+                <h3>{{ unit.topic }}</h3>
+                <p>{{ !pathMaterialsLoaded ? 'This topic is saved. We could not confirm its materials yet.' : (unit.ready ? 'Learn this topic, practice, then take its quiz.' : 'Upload notes, slides, or a reading for this topic to unlock it.') }}</p>
+                <div class="path-steps" aria-label="Unit steps">
+                  <span><mat-icon>menu_book</mat-icon> Learn</span>
+                  <span><mat-icon>edit_note</mat-icon> Practice</span>
+                  <span><mat-icon>emoji_events</mat-icon> Quiz</span>
+                </div>
+                <button class="path-primary-action" type="button" *ngIf="unit.ready" (click)="openCourseUnit(unit)">Start unit <mat-icon>arrow_forward</mat-icon></button>
+                <button class="path-upload-button" type="button" *ngIf="!unit.ready && pathMaterialsLoaded" (click)="addMaterialsForUnit(unit)"><mat-icon>upload_file</mat-icon> Add materials</button>
+              </div>
+            </article>
+          </div>
+        </section>
         <div class="syllabus-layout" *ngIf="studySubTab === 'syllabus_graph'">
           <div class="sidebar-column">
             
@@ -319,8 +387,13 @@
 
         <!-- Integrated Lesson Workspace: Lesson text, exercises, and quiz -->
         <div class="lesson-section card" *ngIf="studySubTab === 'lesson'" style="margin-top: 0;">
+          <div class="unit-session-context" *ngIf="selectedUnitTopic">
+            <button type="button" (click)="studySubTab = 'path'"><mat-icon>arrow_back</mat-icon> Learning path</button>
+            <span>Unit: {{ selectedUnitTopic }}</span>
+          </div>
           <app-lesson-interface 
             [selectedWeek]="selectedTimelineWeek" 
+            [topicName]="selectedUnitTopic"
             [dailyState]="dailyState"
             [classId]="selectedClass.class_id"
             [className]="selectedClass.class_name"
@@ -819,13 +892,14 @@
 
           <div *ngIf="setupTopicsList.length === 0" class="loading-preview" style="font-size: 12px; color: #94a3b8; display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 20px 0;">
             <div style="display: flex; align-items: center; gap: 8px;">
-              <mat-icon class="animate-spin" style="font-size: 18px; width: 18px; height: 18px; color: #38bdf8;">autorenew</mat-icon>
-              <span>Extracting weekly schedule from curriculum roadmap...</span>
+              <mat-icon style="font-size: 18px; width: 18px; height: 18px; color: #38bdf8;">autorenew</mat-icon>
+              <span>{{ setupTopicsLoading ? 'Loading topics from your saved syllabus...' : 'Saved topics are not available yet.' }}</span>
             </div>
-            <button class="btn btn-secondary" (click)="addWeekToSetupSyllabus()" style="font-size: 11px; padding: 6px 12px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.2); background: transparent; color: #e2e8f0; cursor: pointer; font-weight: 600; transition: all 0.2s;">
-              Create Manually
+            <button class="btn btn-secondary" *ngIf="!setupTopicsLoading" (click)="loadSetupTopicsFromSavedSyllabus()" style="font-size: 11px; padding: 6px 12px; border-radius: 6px; border: 1px dashed rgba(255,255,255,0.2); background: transparent; color: #e2e8f0; cursor: pointer; font-weight: 600; transition: all 0.2s;">
+              Retry saved syllabus
             </button>
           </div>
+          <p *ngIf="setupTopicsLoadError" role="alert" style="color: #fca5a5; font-size: 12px; margin: 0;">{{ setupTopicsLoadError }}</p>
         </div>
       </div>
 
@@ -885,7 +959,7 @@
       <button 
         class="btn btn-primary" 
         (click)="saveSetupSettings()" 
-        [disabled]="isAddingClass"
+        [disabled]="isAddingClass || setupTopicsLoading || !!setupTopicsLoadError || setupTopicsList.length === 0"
         style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
       >
         <mat-icon style="font-size: 16px; width: 16px; height: 16px;">play_circle_outline</mat-icon> Save & Start Course Tour
@@ -912,6 +986,7 @@
       <p class="modal-desc" style="font-size: 13px; color: #94a3b8; margin: 0; line-height: 1.5;">
         Modify the scheduled topics for each week of the course. Empty topics will be automatically ignored.
       </p>
+      <p *ngIf="editSyllabusLoadError" role="alert" style="color: #fca5a5; font-size: 12px; margin: 0;">{{ editSyllabusLoadError }}</p>
 
       <div *ngFor="let week of editingSyllabusWeeks; let wIdx = index" class="edit-week-section" style="border-bottom: 1px solid rgba(255, 255, 255, 0.05); padding-bottom: 12px; margin-bottom: 4px;">
         <h4 style="margin: 0 0 8px 0; color: #38bdf8; font-size: 14px;">Week {{ week.week_number }}</h4>
@@ -939,6 +1014,7 @@
       <button 
         class="btn btn-primary" 
         (click)="saveSyllabus()"
+        [disabled]="!!editSyllabusLoadError || editingSyllabusWeeks.length === 0"
         style="padding: 8px 16px; font-size: 13px; border-radius: 6px; border: none; background: #6366f1; color: white; cursor: pointer; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; box-shadow: 0 0 15px rgba(99, 102, 241, 0.4);"
       >
         <mat-icon style="font-size: 16px; width: 16px; height: 16px;">save</mat-icon>
