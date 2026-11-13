@@ -92,8 +92,13 @@ func initBigQuery() {
 		log.Println("[BigQuery] Found key.json in parent directory")
 	}
 
-	// Always use ace-agent-demo as the project ID
-	projectID := "ace-agent-demo"
+	projectID := os.Getenv("GCP_PROJECT_ID")
+	if projectID == "" {
+		projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	}
+	if projectID == "" {
+		projectID = "ace-agent-demo"
+	}
 	client, err := bigquery.NewClient(ctx, projectID, opts...)
 	if err != nil {
 		log.Printf("[BigQuery] Failed to create client: %v", err)

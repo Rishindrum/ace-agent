@@ -3,6 +3,7 @@ from concurrent import futures
 import time
 import os
 import json
+import threading
 from pydantic import BaseModel, Field
 from typing import List
 import io
@@ -278,18 +279,67 @@ class SyllabusResponseModel(BaseModel):
 
 class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def __init__(self):
-        print("[Python] Connecting to Graph Database...")
-        try:
-            self.driver = GraphDatabase.driver(
-                NEO4J_URI, 
-                auth=(NEO4J_USER, NEO4J_PASSWORD),
-                connection_timeout=5.0,
-                connection_acquisition_timeout=5.0
-            )
-            self.driver.verify_connectivity()
-        except Exception as e:
-            print(f"[Python] WARNING: Neo4j Connection FAILED. Setting driver to None. Error: {e}")
-            self.driver = None
+        self.driver = None
+        self._driver_lock = threading.Lock()
+        self._last_driver_check = 0.0
+        self._ensure_driver()
+
+    def _discard_driver(self):
+        driver = self.driver
+        self.driver = None
+        self._last_driver_check = 0.0
+        if driver:
+            try:
+                driver.close()
+            except Exception:
+                pass
+
+    def _ensure_driver(self) -> bool:
+        """Connect or reconnect to Neo4j so a temporary outage does not require a redeploy."""
+        if self.driver and time.monotonic() - self._last_driver_check < 30:
+            return True
+
+        with self._driver_lock:
+            if self.driver and time.monotonic() - self._last_driver_check < 30:
+                return True
+
+            if self.driver:
+                try:
+                    self.driver.verify_connectivity()
+                    self._last_driver_check = time.monotonic()
+                    return True
+                except Exception as e:
+                    print(f"[Python] Neo4j connection became unavailable; reconnecting: {e}")
+                    self._discard_driver()
+
+            if not NEO4J_URI or not NEO4J_USER or not NEO4J_PASSWORD:
+                print("[Python] Neo4j configuration is incomplete. NEO4J_URI, NEO4J_USER, and NEO4J_PASSWORD are required.")
+                return False
+
+            print("[Python] Connecting to Graph Database...")
+            try:
+                driver = GraphDatabase.driver(
+                    NEO4J_URI,
+                    auth=(NEO4J_USER, NEO4J_PASSWORD),
+                    connection_timeout=5.0,
+                    connection_acquisition_timeout=5.0
+                )
+                driver.verify_connectivity()
+                self.driver = driver
+                self._last_driver_check = time.monotonic()
+                print("[Python] Neo4j connection is ready.")
+                return True
+            except Exception as e:
+                print(f"[Python] WARNING: Neo4j connection failed: {e}")
+                self.driver = None
+                return False
+
+    def _require_driver(self, context) -> bool:
+        if self._ensure_driver():
+            return True
+        context.set_code(grpc.StatusCode.UNAVAILABLE)
+        context.set_details("The course knowledge store is temporarily unavailable. Please try again shortly.")
+        return False
 
     def _evaluate_generation(self, generated_content: str, context_chunks: str, mode: str) -> dict:
         criteria = ""
@@ -329,13 +379,23 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return {"passed": result.passed, "reasoning": result.reasoning}
         except Exception as e:
             print(f"[Judge] Error during evaluation: {e}")
-            return {"passed": True, "reasoning": f"Judge error: {e}"}
+            return {"passed": False, "reasoning": "The verification service was unavailable; do not return unverified content."}
 
     def ProcessSyllabus(self, request, context):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         class_name = request.class_name if request.class_name else "Default Class"
         print(f"[Python] Processing syllabus for class {class_name} ({class_id}): {request.file_name}")
+
+        if not self._require_driver(context):
+            return ace_pb2.SyllabusResponse(
+                success=False,
+                message="The course knowledge store is unavailable, so the syllabus was not saved. Please retry after Neo4j is available.",
+                nodes_created=0,
+                graph_json="[]",
+                recommended_study_days=[1, 3, 5],
+                recommended_daily_pace_minutes=45
+            )
         
         # 1. Try to read local text fallback for vector store chunking
         full_text = ""
@@ -503,6 +563,7 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     content=full_text if full_text.strip() else "Syllabus processed directly via Gemini.")
             except Exception as db_err:
                 print(f"[Python] Neo4j Write Error: {db_err}")
+                self._discard_driver()
                 return ace_pb2.SyllabusResponse(
                     success=False,
                     message=f"Failed to save syllabus to database: {str(db_err)}",
@@ -511,9 +572,6 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
                     recommended_study_days=[1, 3, 5],
                     recommended_daily_pace_minutes=45
                 )
-        else:
-            print("[Python] Skipping Graph/Schedule Extraction (DB Down)")
-
         return ace_pb2.SyllabusResponse(
             success=True,
             message=f"Processed {request.file_name}",
@@ -956,6 +1014,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         unit_topic = request.topic_name.strip() if request.topic_name else ""
         content_type = "unit_quiz" if unit_topic else "quiz"
         print(f"[Python] GenerateQuiz for week '{request.week_number}', question count '{request.question_count}' for user '{request.user_id}', class '{class_id}', weak topics {weak_topics_list}...")
+        if not self._require_driver(context):
+            return ace_pb2.QuizResponse()
         try:
             current_topics = []
             prev_weak_topics = []
@@ -1200,6 +1260,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         weak_topics_list = list(request.weak_topics) if hasattr(request, "weak_topics") else []
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GenerateCramSession for user '{request.user_id}' under class '{class_id}' from Week {request.start_week} to {request.end_week}, weak topics {weak_topics_list}...")
+        if not self._require_driver(context):
+            return ace_pb2.CramResponse()
         try:
             topic_names = []
             chunks = []
@@ -1311,6 +1373,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
 
     def GenerateLesson(self, request, context):
         class_id = request.class_id if request.class_id else "default_class"
+        if not self._require_driver(context):
+            return ace_pb2.LessonResponse(insufficient_materials=True)
         print(f"[Python] GenerateLesson for week '{request.week_number}' for user '{request.user_id}', class '{class_id}'...")
         try:
             topic_names = []
@@ -1429,6 +1493,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         unit_topic = request.topic_name.strip() if request.topic_name else ""
         content_type = "unit_lesson" if unit_topic else "lesson"
         print(f"[Python] GenerateLessonAndExercises for week '{request.week_number}' for user '{request.user_id}', class '{class_id}'...")
+        if not self._require_driver(context):
+            return ace_pb2.LessonResponse(insufficient_materials=True)
         try:
             topic_names = []
             chunks = []
@@ -1828,6 +1894,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
     def CheckTopicSufficiency(self, request, context):
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] CheckTopicSufficiency for week '{request.week_number}', user '{request.user_id}', class '{class_id}'...")
+        if not self._require_driver(context):
+            return ace_pb2.SufficiencyResponse(insufficient_materials=True, insufficient_topics=[], all_topics=[])
         try:
             is_insufficient, insufficient_topics, all_topics = self._check_sufficiency(request.user_id, class_id, request.week_number)
             print(f"[Python] CheckTopicSufficiency result: insufficient_materials={is_insufficient}, insufficient_topics={insufficient_topics}, all_topics={all_topics}")
@@ -1868,6 +1936,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] DeleteClass for user {user_id} and class {class_id}")
+        if not self._require_driver(context):
+            return ace_pb2.DeleteClassResponse(success=False, message="The course knowledge store is unavailable.")
         try:
             # Delete Neo4j nodes
             if self.driver:
@@ -1889,6 +1959,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_id = request.class_id if request.class_id else "default_class"
         week_number = request.week_number
         print(f"[Python] ResetWeekProgress for user {user_id}, class {class_id}, week {week_number}")
+        if not self._require_driver(context):
+            return ace_pb2.ResetWeekProgressResponse(success=False, message="The course knowledge store is unavailable.")
         try:
             if self.driver:
                 with self.driver.session() as session:
@@ -1936,6 +2008,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GetSyllabus for user {user_id} and class {class_id}")
+        if not self._require_driver(context):
+            return ace_pb2.GetSyllabusResponse(success=False, message="The course knowledge store is unavailable.")
         try:
             weeks_pb = []
             graph_json = ""
@@ -2009,6 +2083,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] EditSyllabus for user {user_id} and class {class_id}")
+        if not self._require_driver(context):
+            return ace_pb2.EditSyllabusResponse(success=False, message="The course knowledge store is unavailable.")
         try:
             if not any(topic.strip() for week in request.weeks for topic in week.topics):
                 context.set_code(grpc.StatusCode.INVALID_ARGUMENT)
@@ -2028,6 +2104,8 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         user_id = request.user_id if request.user_id else "default_user"
         class_id = request.class_id if request.class_id else "default_class"
         print(f"[Python] GetMaterials for user {user_id} and class {class_id}")
+        if not self._require_driver(context):
+            return ace_pb2.GetMaterialsResponse(success=False, message="The course knowledge store is unavailable.")
         try:
             materials_list = []
             if self.driver:
@@ -2072,10 +2150,9 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
         class_id = request.class_id if request.class_id else "default_class"
         material_id = request.material_id
         print(f"[Python] DeleteMaterial for user {user_id}, class {class_id}, material {material_id}")
+        if not self._require_driver(context):
+            return ace_pb2.DeleteMaterialResponse(success=False, message="The course knowledge store is unavailable.")
         try:
-            if not self.driver:
-                return ace_pb2.DeleteMaterialResponse(success=False, message="Database driver not initialized")
-            
             with self.driver.session() as session:
                 # 1. Delete the Material node from Neo4j (and any of its relationships)
                 delete_query = """

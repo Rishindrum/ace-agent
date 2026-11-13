@@ -13,7 +13,7 @@ for path in possible_key_paths:
         print(f"[AnalyticalMemory] Set credentials from: {os.path.abspath(path)}")
         break
 
-PROJECT_ID = "ace-agent-demo"
+PROJECT_ID = os.getenv("GCP_PROJECT_ID") or os.getenv("GOOGLE_CLOUD_PROJECT") or "ace-agent-demo"
 DATASET_ID = "ace_performance"
 TABLE_ID = "quiz_scores"
 

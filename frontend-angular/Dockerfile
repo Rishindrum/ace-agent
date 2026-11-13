@@ -4,6 +4,10 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+ARG API_URL=https://backend-go-31441781562.us-central1.run.app
+ARG WS_URL=wss://backend-go-31441781562.us-central1.run.app
+RUN sed -i "s#apiUrl: '[^']*'#apiUrl: '${API_URL}'#" src/environments/environment.prod.ts \
+    && sed -i "s#wsUrl: '[^']*'#wsUrl: '${WS_URL}'#" src/environments/environment.prod.ts
 RUN npx ng build --configuration production
 
 # Stage 2: Serve with Nginx

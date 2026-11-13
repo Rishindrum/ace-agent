@@ -22,3 +22,5 @@ ANTIGRAVITY.md
 
 # Ignore IDE and OS files
 node_modules/
+frontend-angular/.angular/
+frontend-angular/dist/

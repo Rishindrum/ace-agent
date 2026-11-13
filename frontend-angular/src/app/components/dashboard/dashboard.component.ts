@@ -527,6 +527,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.warn('Could not load enrolled classes:', err);
+        this.classes = [];
       }
     });
   }
@@ -598,6 +599,7 @@ export class DashboardComponent implements OnInit {
       },
       error: (err) => {
         console.warn('Could not load syllabus graph:', err);
+        this.assessmentMilestones = [];
         this.api.updateGraphData([]);
       }
     });
@@ -848,7 +850,7 @@ export class DashboardComponent implements OnInit {
             insufficient: []
           };
         }
-        if (!Object.values(temp).some(week => week.topics.length > 0)) {
+        if (!Object.values(temp).some(week => week.topics.some(topic => topic !== 'Syllabus Overview'))) {
           this.loadTopicsFromSufficiency(classId);
           return;
         }
@@ -888,7 +890,7 @@ export class DashboardComponent implements OnInit {
           if (separator < 0) continue;
           const weekNumber = Number(item.slice(0, separator));
           const topic = item.slice(separator + 1).trim();
-          if (!Number.isInteger(weekNumber) || weekNumber <= 0 || !topic) continue;
+          if (!Number.isInteger(weekNumber) || weekNumber <= 0 || !topic || topic === 'Syllabus Overview') continue;
           temp[weekNumber] ||= { topics: [], insufficient: [] };
           if (!temp[weekNumber].topics.includes(topic)) temp[weekNumber].topics.push(topic);
         }
@@ -899,13 +901,20 @@ export class DashboardComponent implements OnInit {
           const topic = item.slice(separator + 1).trim();
           if (temp[weekNumber]?.topics.includes(topic)) temp[weekNumber].insufficient.push(topic);
         }
-        this.allWeeksData = temp;
-        this.allWeeksLoading = false;
-        this.topicsLoadFailed = false;
+        if (Object.values(temp).some(week => week.topics.length > 0)) {
+          this.allWeeksData = temp;
+          this.allWeeksLoading = false;
+          this.topicsLoadFailed = false;
+        } else {
+          this.allWeeksData = {};
+          this.allWeeksLoading = false;
+          this.topicsLoadFailed = true;
+        }
       },
       error: (err) => {
         if (this.selectedClass?.class_id !== classId) return;
         console.warn('Could not load topic index:', err);
+        this.allWeeksData = {};
         this.allWeeksLoading = false;
         this.topicsLoadFailed = true;
       }
