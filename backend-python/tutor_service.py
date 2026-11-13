@@ -64,7 +64,12 @@ elif project_id:
 else:
     GCS_BUCKET_NAME = "ace-agent-brain-bucket"
 
-client = genai.Client(api_key=GEMINI_API_KEY)
+# Structured output with response schemas currently requires the Gemini v1beta API.
+# Set it explicitly so SDK default changes cannot silently move ACE to v1.
+client = genai.Client(
+    api_key=GEMINI_API_KEY,
+    http_options={"api_version": "v1beta"}
+)
 
 
 class PersistentVectorStore:
