@@ -1375,7 +1375,10 @@ func editSyllabusHandler(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	// Editing a full syllabus can require updating many topic relationships in
+	// Neo4j. Allow the Python service enough time to finish instead of returning
+	// a 500 while the database transaction is still in progress.
+	ctx, cancel := context.WithTimeout(context.Background(), 60*time.Second)
 	defer cancel()
 
 	res, err := tutorClient.EditSyllabus(ctx, &pb.EditSyllabusRequest{

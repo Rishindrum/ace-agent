@@ -2042,47 +2042,47 @@ class TutorService(ace_pb2_grpc.TutorServiceServicer):
             return ace_pb2.GetSyllabusResponse(success=False, message=str(e))
 
     def _edit_syllabus_nodes(self, tx, user_id, class_id, weeks):
-        for w in weeks:
-            w_num = w.week_number
-            w_topics = w.topics
-            
-            # 1. Ensure Week node exists and link to Class
-            tx.run("""
-                MERGE (c:Class {id: $class_id})
-                MERGE (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-                MERGE (c)-[:HAS_SYLLABUS]->(w)
-            """, class_id=class_id, user_id=user_id, w_num=w_num)
-            
-            # 2. Delete all existing SCHEDULED_FOR relationships for this week
-            tx.run("""
-                MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})-[r:SCHEDULED_FOR]->(t:Topic)
-                DELETE r
-            """, user_id=user_id, class_id=class_id, w_num=w_num)
-            
-            # 3. Create or Merge new Topics and link to Week & Class
-            for topic_name in w_topics:
-                tx.run("""
-                    MERGE (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                """, user_id=user_id, class_id=class_id, topic_name=topic_name)
-                
-                tx.run("""
-                    MATCH (c:Class {id: $class_id})
-                    MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                    MERGE (c)-[:COVERS]->(t)
-                """, class_id=class_id, user_id=user_id, topic_name=topic_name)
-                
-                tx.run("""
-                    MATCH (w:Week {number: $w_num, user_id: $user_id, class_id: $class_id})
-                    MATCH (t:Topic {name: $topic_name, user_id: $user_id, class_id: $class_id})
-                    MERGE (w)-[:SCHEDULED_FOR]->(t)
-                """, user_id=user_id, class_id=class_id, w_num=w_num, topic_name=topic_name)
-        
-        # 4. Clean up orphaned topics for this user and class
+        week_data = [
+            {
+                "week_number": int(w.week_number),
+                "topics": [topic.strip() for topic in w.topics if topic.strip()]
+            }
+            for w in weeks
+        ]
+
+        # Update the entire syllabus in one batched query. The previous version
+        # issued several Aura round trips for every topic, which could exceed the
+        # gateway timeout for a normal 16-week syllabus.
+        tx.run("""
+            MERGE (c:Class {id: $class_id})
+            WITH c
+            UNWIND $weeks AS week_data
+            MERGE (w:Week {
+                number: week_data.week_number,
+                user_id: $user_id,
+                class_id: $class_id
+            })
+            MERGE (c)-[:HAS_SYLLABUS]->(w)
+            WITH c, w, week_data
+            OPTIONAL MATCH (w)-[old:SCHEDULED_FOR]->(:Topic)
+            DELETE old
+            WITH c, w, week_data
+            UNWIND week_data.topics AS topic_name
+            MERGE (t:Topic {
+                name: topic_name,
+                user_id: $user_id,
+                class_id: $class_id
+            })
+            MERGE (c)-[:COVERS]->(t)
+            MERGE (w)-[:SCHEDULED_FOR]->(t)
+        """, class_id=class_id, user_id=user_id, weeks=week_data).consume()
+
+        # Clean up topics removed from every week in this class.
         tx.run("""
             MATCH (t:Topic {user_id: $user_id, class_id: $class_id})
             WHERE NOT (t)<-[:SCHEDULED_FOR]-()
             DETACH DELETE t
-        """, user_id=user_id, class_id=class_id)
+        """, user_id=user_id, class_id=class_id).consume()
 
     def EditSyllabus(self, request, context):
         user_id = request.user_id if request.user_id else "default_user"
