@@ -172,8 +172,12 @@ export class DashboardComponent implements OnInit {
     return index;
   }
 
-  trackByUnit(_index: number, unit: CourseUnit): string {
-    return this.unitKey(unit.week, unit.topic);
+  trackByUnit(index: number, unit: CourseUnit): string {
+    // Angular invokes trackBy callbacks without preserving the component's
+    // `this` binding. Build the key directly so a missing binding cannot stop
+    // the entire learning path from rendering. Include the index to keep
+    // repeated syllabus topics distinct.
+    return `${unit.week}:${unit.topic.trim().toLocaleLowerCase()}:${index}`;
   }
 
   private unitKey(week: number, topic: string): string {
